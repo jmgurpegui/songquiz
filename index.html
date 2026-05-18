@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SongQuiz - Aprende con Música</title>
+  
+  <!-- Fuentes modernas de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* VARIABLES GLOBALES Y DISEÑO BASE */
+    :root {
+      --bg-color: #0b0c10;
+      --surface-color: rgba(31, 40, 51, 0.6);
+      --glass-border: rgba(102, 252, 241, 0.15);
+      --primary: #66fcf1;
+      --secondary: #45a29e;
+      --accent: #ff007a;
+      --text-main: #ffffff;
+      --text-muted: #c5c6c7;
+      --success: #00e676;
+      --error: #ff3d00;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      /* Fondo dinámico y oscuro */
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(69, 162, 158, 0.15), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(255, 0, 122, 0.1), transparent 30%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ENCABEZADO */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 900;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+    
+    .score-board {
+      background: var(--surface-color);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      border: 1px solid var(--glass-border);
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      color: var(--primary);
+    }
+
+    /* ÁREA PRINCIPAL DEL JUEGO */
+    .game-card {
+      background: var(--surface-color);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    @media(min-width: 600px) {
+      .game-card { padding: 2rem; }
+    }
+
+    /* Módulo de Playlist (Decorativo / Contexto) */
+    .playlist-info {
+      background: rgba(0,0,0,0.4);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .playlist-info label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .playlist-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .playlist-input-group input {
+      flex: 1;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted);
+      padding: 0.6rem;
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.9rem;
+      font-family: monospace;
+    }
+    .playlist-input-group button {
+      background: var(--secondary);
+      border: none;
+      color: white;
+      padding: 0 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: default;
+    }
+    .playlist-info p {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    /* CONTENEDOR DE VIDEO Y OVERLAY */
+    .video-container {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .video-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      backdrop-filter: blur(25px) saturate(180%) brightness(0.6);
+      -webkit-backdrop-filter: blur(25px) saturate(180%) brightness(0.6);
+      background: rgba(11, 12, 16, 0.4);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    
+    .video-overlay.revealed {
+      backdrop-filter: blur(0px) saturate(100%) brightness(1);
+      -webkit-backdrop-filter: blur(0px) saturate(100%) brightness(1);
+      background: rgba(0,0,0,0);
+      pointer-events: none;
+    }
+    
+    .video-overlay.hidden {
+      display: none;
+    }
+
+    .overlay-content {
+      text-align: center;
+      z-index: 11;
+      transition: opacity 0.4s ease;
+      padding: 1rem;
+    }
+    
+    .video-overlay.revealed .overlay-content {
+      opacity: 0;
+    }
+
+    /* Animación de ondas musicales */
+    .music-waves {
+      display: flex;
+      gap: 6px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .wave {
+      width: 6px;
+      height: 10px;
+      background: var(--primary);
+      border-radius: 3px;
+      animation: wave-anim 1s infinite ease-in-out;
+    }
+    .wave:nth-child(2) { animation-delay: 0.1s; background: var(--secondary); }
+    .wave:nth-child(3) { animation-delay: 0.2s; height: 20px; background: var(--accent); }
+    .wave:nth-child(4) { animation-delay: 0.3s; background: var(--secondary); }
+    .wave:nth-child(5) { animation-delay: 0.4s; background: var(--primary); }
+
+    @keyframes wave-anim {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(2.5); }
+    }
+
+    #ytplayer {
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* Previene clicks mientras está borroso */
+    }
+    .video-container.interactive #ytplayer {
+      pointer-events: auto; /* Permite clicks tras revelar */
+    }
+
+    /* BOTONES DE OPCIONES (4 RESPUESTAS) */
+    .controls {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .btn-main {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      color: #0b0c10;
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(102, 252, 241, 0.3);
+      transition: all 0.2s;
+      width: 100%;
+      max-width: 300px;
+    }
+    .btn-main:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 252, 241, 0.5);
+    }
+    .btn-main:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    .btn-main:disabled {
+      background: #333;
+      color: #888;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      width: 100%;
+    }
+    @media(min-width: 600px) {
+      .options-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      padding: 1.2rem;
+      border-radius: 16px;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+    }
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .option-btn.correct {
+      background: rgba(0, 230, 118, 0.15);
+      border-color: var(--success);
+      color: var(--success);
+      box-shadow: 0 0 15px rgba(0, 230, 118, 0.2);
+      opacity: 1;
+    }
+    .option-btn.wrong {
+      background: rgba(255, 61, 0, 0.15);
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .hidden { display: none !important; }
+    
+    .status-msg {
+      text-align: center;
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      font-weight: 700;
+      min-height: 2rem;
+    }
+
+    /* SECCIÓN DE APRENDIZAJE */
+    .learning-section {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      animation: slide-up 0.6s ease forwards;
+    }
+    .learning-section.active {
+      display: flex;
+    }
+
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media(min-width: 768px) {
+      .cards-container {
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+      }
+    }
+
+    .info-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .info-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      margin-bottom: 1.2rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .lyrics-box {
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 10px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    /* Scrollbar estilizado para las letras */
+    .lyrics-box::-webkit-scrollbar { width: 6px; }
+    .lyrics-box::-webkit-scrollbar-track { background: transparent; }
+    .lyrics-box::-webkit-scrollbar-thumb { background: rgba(102, 252, 241, 0.3); border-radius: 10px; }
+
+    .lyric-stanza {
+      background: rgba(0,0,0,0.3);
+      padding: 1.2rem;
+      border-radius: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .lyric-en {
+      font-weight: 500;
+      margin-bottom: 0.8rem;
+      color: #fff;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .lyric-es {
+      font-size: 0.95rem;
+      color: var(--secondary);
+      font-style: italic;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .culture-text {
+      line-height: 1.7;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      flex: 1;
+    }
+
+    .next-action {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+      margin-bottom: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo">SongQuiz</div>
+      <div class="score-board">Puntuación: <span id="score-display">0</span></div>
+    </header>
+
+    <main>
+      <!-- ÁREA DE JUEGO -->
+      <div class="game-card">
+        
+        <!-- Información de Playlist (Simulando carga de YouTube Music) -->
+        <div class="playlist-info">
+          <label>Cargando lista de reproducción</label>
+          <div class="playlist-input-group">
+            <input type="text" readonly value="https://music.youtube.com/playlist?list=RDCLAK5uy_kHSavu4ofFfVIOzsA_wa4SuMS3dc76TYQ">
+            <button>✓ Activa</button>
+          </div>
+          <p>★ Se están utilizando datos enriquecidos (letras y curiosidades) para la experiencia de aprendizaje.</p>
+        </div>
+
+        <!-- Reproductor de YouTube -->
+        <div class="video-container" id="video-container">
+          <div id="ytplayer"></div>
+          
+          <div class="video-overlay" id="video-overlay">
+            <div class="overlay-content">
+              <div class="music-waves" id="music-waves" style="display: none;">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+              </div>
+              <h2 style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 0.5rem;">¿Qué canción está sonando?</h2>
+              <p style="color: var(--text-muted);">Escucha atentamente el audio...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón Inicial -->
+        <div id="start-screen" class="controls">
+          <button id="start-btn" class="btn-main" disabled onclick="startRound()">Cargando Motor de Audio...</button>
+        </div>
+
+        <!-- Controles durante el juego -->
+        <div id="game-controls" class="hidden">
+          <div class="options-grid" id="options-grid">
+            <!-- Los botones se inyectan dinámicamente con JavaScript -->
+          </div>
+          <div class="status-msg" id="status-msg"></div>
+        </div>
+
+      </div>
+
+      <!-- SECCIÓN DE APRENDIZAJE (Letras y Cultura) -->
+      <div class="learning-section" id="learning-section">
+        <h2 style="text-align: center; font-family: var(--font-heading); font-size: 2rem; color: var(--primary); margin-top: 1rem;">Aprende y Descubre</h2>
+        
+        <div class="cards-container">
+          
+          <!-- Tarjeta 1: Letras en Inglés y Español -->
+          <div class="info-card">
+            <h3>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg> 
+              Letra Original y Traducción
+            </h3>
+            <div class="lyrics-box">
+              <div class="lyric-stanza">
+                <div class="lyric-en" id="lyrics-en"></div>
+                <div class="lyric-es" id="lyrics-es"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta 2: Cultura Musical -->
+          <div class="info-card">
+            <h3>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> 
+              Cultura Musical e Historia
+            </h3>
+            <p class="culture-text" id="culture-text"></p>
+          </div>
+
+        </div>
+
+        <!-- Botón de Siguiente Canción -->
+        <div class="next-action">
+          <button class="btn-main" onclick="nextSong()">Siguiente Canción 🎵</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /**
+     * @fileoverview SongQuiz - Aplicación interactiva de adivinanza musical.
+     * Contiene toda la lógica de UI, control del reproductor de YouTube y gestión del estado del juego.
+     */
+
+    // ==========================================
+    // 1. ESTRUCTURA DE DATOS (MOCK DATA)
+    // ==========================================
+    const bibliotecaMusical = [
+      {
+        id: "4NRXx6U8ABQ", 
+        titulo: "Blinding Lights",
+        artista: "The Weeknd",
+        opcionesIncorrectas: ["As It Was - Harry Styles", "Levitating - Dua Lipa", "Watermelon Sugar - Harry Styles"],
+        letraIngles: "I said, ooh, I'm blinded by the lights\nNo, I can't sleep until I feel your touch\nI said, ooh, I'm drowning in the night",
+        letraEspanol: "Dije, ooh, estoy cegado por las luces\nNo, no puedo dormir hasta que sienta tu toque\nDije, ooh, me estoy ahogando en la noche",
+        datoCultural: "Lanzada a finales de 2019, 'Blinding Lights' se convirtió en la canción más exitosa de todos los tiempos en la lista Billboard Hot 100, permaneciendo en el top 10 durante un tiempo récord y redefiniendo el sonido synth-pop de los años 80 para una nueva generación."
+      },
+      {
+        id: "JGwWNGJdvx8",
+        titulo: "Shape of You",
+        artista: "Ed Sheeran",
+        opcionesIncorrectas: ["Thinking Out Loud - Ed Sheeran", "Love Yourself - Justin Bieber", "Closer - The Chainsmokers"],
+        letraIngles: "The club isn't the best place to find a lover\nSo the bar is where I go\nMe and my friends at the table doing shots",
+        letraEspanol: "El club no es el mejor lugar para encontrar un amor\nAsí que al bar es a donde voy\nMis amigos y yo en la mesa tomando chupitos",
+        datoCultural: "Originalmente, Ed Sheeran escribió esta canción pensando en ofrecérsela a Rihanna, pero a mitad del proceso de grabación decidió que la cantaría él mismo. Fue el sencillo digital más vendido a nivel mundial en el año 2017."
+      },
+      {
+        id: "fJ9rUzIMcZQ",
+        titulo: "Bohemian Rhapsody",
+        artista: "Queen",
+        opcionesIncorrectas: ["Stairway to Heaven - Led Zeppelin", "Hotel California - The Eagles", "Imagine - John Lennon"],
+        letraIngles: "Is this the real life? Is this just fantasy?\nCaught in a landslide, no escape from reality\nOpen your eyes, look up to the skies and see",
+        letraEspanol: "¿Es esta la vida real? ¿Es solo fantasía?\nAtrapado en un derrumbe, sin escape de la realidad\nAbre los ojos, mira a los cielos y ve",
+        datoCultural: "Lanzada en 1975, no tiene estribillo y consta de varias secciones: balada, operística y hard rock. Al principio, los ejecutivos pensaron que era demasiado larga (casi 6 minutos) para sonar en la radio, pero rompió todos los moldes comerciales."
+      },
+      {
+        id: "Zi_XLOBDo_Y", 
+        titulo: "Billie Jean",
+        artista: "Michael Jackson",
+        opcionesIncorrectas: ["Beat It - Michael Jackson", "Purple Rain - Prince", "Sweet Child O' Mine - Guns N' Roses"],
+        letraIngles: "Billie Jean is not my lover\nShe's just a girl who claims that I am the one\nBut the kid is not my son",
+        letraEspanol: "Billie Jean no es mi amante\nElla es solo una chica que afirma que yo soy el elegido\nPero el niño no es mi hijo",
+        datoCultural: "El icónico video musical de esta canción en 1983 ayudó a romper las barreras raciales en la programación de MTV. Además, fue durante la interpretación de esta pista donde Michael Jackson estrenó mundialmente su famoso paso de baile 'Moonwalk'."
+      }
+    ];
+
+    // ==========================================
+    // 2. ESTADO DEL JUEGO Y VARIABLES GLOBALES
+    // ==========================================
+    let player;
+    let currentSongIndex = 0;
+    let score = 0;
+
+    // ==========================================
+    // 3. INICIALIZACIÓN DE YOUTUBE IFRAME API
+    // ==========================================
+    
+    // Cargar el script de la API de YouTube de forma asíncrona
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    /**
+     * Función global requerida por la API de YouTube.
+     * Se ejecuta automáticamente cuando el script ha cargado.
+     */
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytplayer', {
+        height: '100%',
+        width: '100%',
+        videoId: '', // Se asignará dinámicamente al iniciar ronda
+        playerVars: {
+          'autoplay': 1,
+          'playsinline': 1,
+          'controls': 0, // Ocultar controles para que no puedan ver el título
+          'disablekb': 1, // Desactivar atajos de teclado
+          'fs': 0, // Sin botón de pantalla completa
+          'rel': 0, // No mostrar videos relacionados
+          'modestbranding': 1, // Minimizar marca de YouTube
+          'showinfo': 0 
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange,
+          'onError': onPlayerError
+        }
+      });
+    }
+
+    /**
+     * Evento: El reproductor está listo para recibir comandos.
+     */
+    function onPlayerReady(event) {
+      // Habilitar el botón de iniciar juego
+      const startBtn = document.getElementById('start-btn');
+      startBtn.textContent = "▶ Iniciar Juego";
+      startBtn.disabled = false;
+      
+      // Asegurarse de que el reproductor no esté silenciado y tenga volumen al máximo
+      player.unMute();
+      player.setVolume(100);
+
+      // Mezclar las canciones al cargar el juego por primera vez
+      bibliotecaMusical.sort(() => Math.random() - 0.5);
+    }
+
+    /**
+     * Evento: Cambia el estado del reproductor (Play, Pause, Buffering).
+     */
+    function onPlayerStateChange(event) {
+      const waves = document.getElementById('music-waves');
+      // Si está reproduciendo (estado 1), mostramos animación de ondas
+      if (event.data === YT.PlayerState.PLAYING) {
+          waves.style.display = 'flex';
+      } else {
+          waves.style.display = 'none';
+      }
+    }
+
+    /**
+     * Evento: Ocurrió un error (ej. video bloqueado por derechos).
+     */
+    function onPlayerError(event) {
+      console.error("YouTube Error:", event.data);
+      const statusMsg = document.getElementById('status-msg');
+      if (event.data === 101 || event.data === 150) {
+        statusMsg.textContent = "🚫 Audio bloqueado por el artista (Pasa a la siguiente)";
+      } else {
+        statusMsg.textContent = "🚫 Error de carga (" + event.data + ")";
+      }
+      statusMsg.style.color = "var(--error)";
+      document.getElementById('video-overlay').classList.add('revealed');
+    }
+
+    // ==========================================
+    // 4. LÓGICA PRINCIPAL DEL JUEGO
+    // ==========================================
+
+    /**
+     * Inicia una nueva ronda de adivinanza.
+     */
+    function startRound() {
+      const song = bibliotecaMusical[currentSongIndex];
+      
+      // 1. Reiniciar UI de Aprendizaje y Mensajes
+      document.getElementById('learning-section').classList.remove('active');
+      document.getElementById('status-msg').textContent = "";
+      
+      // 2. Ocultar video (aplicar overlay difuminado)
+      const overlay = document.getElementById('video-overlay');
+      overlay.classList.remove('revealed');
+      overlay.classList.remove('hidden');
+      document.getElementById('video-container').classList.remove('interactive');
+      
+      // 3. Cargar el video en el reproductor e intentar forzar reproducción
+      player.loadVideoById(song.id);
+      setTimeout(() => {
+        if(player && typeof player.playVideo === 'function') {
+          player.playVideo();
+        }
+      }, 300);
+      
+      // 4. Generar botones de respuestas
+      generateOptions(song);
+      
+      // 5. Transición de pantallas
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-controls').classList.remove('hidden');
+    }
+
+    /**
+     * Construye dinámicamente los 4 botones de respuesta.
+     */
+    function generateOptions(song) {
+      const optionsGrid = document.getElementById('options-grid');
+      optionsGrid.innerHTML = ''; // Limpiar grilla anterior
+      
+      const correctAnswer = `${song.titulo} - ${song.artista}`;
+      let options = [...song.opcionesIncorrectas, correctAnswer];
+      
+      // Mezclar opciones aleatoriamente
+      options = options.sort(() => Math.random() - 0.5);
+      
+      options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span style="opacity: 0.5; font-size: 0.8em; font-weight: bold; width: 20px;">0${index + 1}</span> <span>${opt}</span>`;
+        
+        btn.onclick = () => checkAnswer(opt, correctAnswer, btn);
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    /**
+     * Valida la respuesta seleccionada por el usuario.
+     */
+    function checkAnswer(selected, correct, btnElement) {
+      // Desactivar todos los botones para evitar doble clic
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(b => b.disabled = true);
+      
+      const statusMsg = document.getElementById('status-msg');
+      
+      // Comprobación
+      if (selected === correct) {
+        btnElement.classList.add('correct');
+        score += 100;
+        updateScore();
+        statusMsg.textContent = "¡Correcto! 🎉";
+        statusMsg.style.color = "var(--success)";
+      } else {
+        btnElement.classList.add('wrong');
+        
+        // Resaltar visualmente cuál era la respuesta correcta
+        buttons.forEach(b => {
+          if (b.textContent.includes(correct)) {
+            b.classList.add('correct');
+          }
+        });
+        
+        statusMsg.textContent = "¡Incorrecto! 😢";
+        statusMsg.style.color = "var(--error)";
+      }
+      
+      // Proceder a revelar el video y la información
+      revealVideoAndInfo();
+    }
+
+    /**
+     * Revela el video, llena las tarjetas de aprendizaje y despliega la sección.
+     */
+    function revealVideoAndInfo() {
+      // 1. Quitar el difuminado del video
+      const overlay = document.getElementById('video-overlay');
+      overlay.classList.add('revealed');
+      document.getElementById('video-container').classList.add('interactive');
+      
+      // 2. Pausar la música automáticamente después de 5 segundos para que el usuario pueda leer
+      setTimeout(() => {
+        if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        }
+      }, 5000);
+      
+      // 3. Preparar los datos de las tarjetas
+      const song = bibliotecaMusical[currentSongIndex];
+      
+      document.getElementById('lyrics-en').textContent = song.letraIngles;
+      document.getElementById('lyrics-es').textContent = song.letraEspanol;
+      document.getElementById('culture-text').textContent = song.datoCultural;
+      
+      // 4. Mostrar Sección de Aprendizaje
+      const learningSection = document.getElementById('learning-section');
+      learningSection.classList.add('active');
+      
+      // 5. Scroll suave hacia abajo para enfocar la lectura
+      setTimeout(() => {
+        learningSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }
+
+    /**
+     * Avanza al siguiente elemento del array o reinicia si es el final.
+     */
+    function nextSong() {
+      currentSongIndex++;
+      
+      // Si llegamos al final de la biblioteca
+      if (currentSongIndex >= bibliotecaMusical.length) {
+        alert(`¡Has completado todas las canciones! Tu puntuación final es: ${score}`);
+        currentSongIndex = 0;
+        score = 0;
+        updateScore();
+        // Volvemos a mezclar
+        bibliotecaMusical.sort(() => Math.random() - 0.5);
+      }
+      
+      // Scroll hacia arriba
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Retrasar el inicio levemente para permitir el scroll
+      setTimeout(() => {
+        startRound();
+      }, 400);
+    }
+
+    /**
+     * Actualiza el texto del marcador en el Header.
+     */
+    function updateScore() {
+      document.getElementById('score-display').textContent = score;
+    }
+
+  </script>
+</body>
+</html>
