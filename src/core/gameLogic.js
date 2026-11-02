@@ -1,10 +1,10 @@
 /**
  * @fileoverview Lógica de negocio, reglas de puntuación, cálculo de combos y temporizador.
- * Gestiona el bucle de rondas, la persistencia local y el soporte para listas personalizadas importadas.
+ * Gestiona los modos "Classic Trivia" y "Lyrics Challenge" (Cloze test activo).
  */
 
-import { GameStates } from './gameState.js';
-import { shuffle, generateOptions } from '../utils/random.js';
+import { GameStates, GameModes } from './gameState.js';
+import { shuffle, generateOptions, generateLyricsChallenge } from '../utils/random.js';
 import { sfx } from '../audio/soundFX.js';
 
 export const STORAGE_KEYS = {
@@ -39,7 +39,6 @@ export class GameLogic {
 
   /**
    * Carga el catálogo maestro e inicia una nueva partida.
-   * Si existe una lista personalizada guardada en localStorage, la utiliza con prioridad.
    * @param {Array<Object>} defaultSongs
    */
   startNewGame(defaultSongs) {
@@ -66,9 +65,7 @@ export class GameLogic {
     this.allSongs = [...importedSongs];
     try {
       localStorage.setItem(STORAGE_KEYS.CUSTOM_PLAYLIST, JSON.stringify(importedSongs));
-    } catch {
-      // Ignorar fallos de cuota o incógnito
-    }
+    } catch {}
     this.startNewGame(this.allSongs);
   }
 
@@ -97,7 +94,7 @@ export class GameLogic {
   }
 
   /**
-   * Inicia una ronda de adivinanza cargando audio y generando opciones.
+   * Inicia una ronda de adivinanza adaptada al modo de juego activo.
    */
   async startRound() {
     this._clearTimer();
@@ -109,19 +106,44 @@ export class GameLogic {
     }
 
     this.gameState.currentSong = track;
-    const { options, correctAnswer } = generateOptions(track, this.allSongs);
-    this.gameState.currentOptions = options;
-    this.gameState.correctAnswer = correctAnswer;
     this.gameState.timeRemaining = this.gameState.maxRoundTime;
 
-    // Notificar transición a PLAYING
-    this.gameState.transition(GameStates.PLAYING, {
+    let roundPayload = {
       song: track,
-      options,
-      correctAnswer,
       roundNumber: this.gameState.currentIndex + 1,
-      totalRounds: this.gameState.totalRounds
-    });
+      totalRounds: this.gameState.totalRounds,
+      gameMode: this.gameState.gameMode
+    };
+
+    if (this.gameState.gameMode === GameModes.LYRICS) {
+      // Modo Lyrics Challenge: generar desafío pedagógico tipo Cloze
+      const lyricsData = generateLyricsChallenge(track, this.allSongs);
+      this.gameState.lyricsChallengeData = lyricsData;
+      this.gameState.currentOptions = lyricsData.options;
+      this.gameState.correctAnswer = lyricsData.targetWord;
+
+      roundPayload = {
+        ...roundPayload,
+        options: lyricsData.options,
+        correctAnswer: lyricsData.targetWord,
+        lyricsData
+      };
+    } else {
+      // Modo Classic Trivia: adivinar Título - Artista
+      const { options, correctAnswer } = generateOptions(track, this.allSongs);
+      this.gameState.lyricsChallengeData = null;
+      this.gameState.currentOptions = options;
+      this.gameState.correctAnswer = correctAnswer;
+
+      roundPayload = {
+        ...roundPayload,
+        options,
+        correctAnswer
+      };
+    }
+
+    // Transición a PLAYING
+    this.gameState.transition(GameStates.PLAYING, roundPayload);
 
     // Iniciar visualizador y audio
     this.visualizer.start();
@@ -169,18 +191,24 @@ export class GameLogic {
   }
 
   /**
-   * Procesa la respuesta seleccionada por el jugador.
-   * @param {string} selectedOption
+   * Procesa la respuesta seleccionada por el jugador con tolerancia a mayúsculas/espacios.
+   * @param {string} rawSelectedOption
    * @returns {{ isCorrect: boolean, correctAnswer: string, pointsEarned: number }}
    */
-  submitAnswer(selectedOption) {
+  submitAnswer(rawSelectedOption) {
     if (this.gameState.status !== GameStates.PLAYING) {
       return { isCorrect: false, correctAnswer: this.gameState.correctAnswer, pointsEarned: 0 };
     }
 
     this._clearTimer();
     const timeSpent = Math.max(0, (performance.now() - this.roundStartTime) / 1000);
-    const isCorrect = selectedOption === this.gameState.correctAnswer;
+
+    const selected = (rawSelectedOption || '').trim().toLowerCase();
+    const correct = (this.gameState.correctAnswer || '').trim().toLowerCase();
+
+    // Validación insensible a puntuación o mayúsculas
+    const cleanWord = (s) => s.replace(/^[^\w]+|[^\w]+$/g, '');
+    const isCorrect = cleanWord(selected) === cleanWord(correct);
 
     let pointsEarned = 0;
     if (isCorrect) {
@@ -207,11 +235,13 @@ export class GameLogic {
     this.gameState.recordAnswer(isCorrect, pointsEarned, timeSpent);
 
     this.gameState.transition(GameStates.ROUND_OVER, {
-      selectedOption,
+      selectedOption: rawSelectedOption,
       isCorrect,
       correctAnswer: this.gameState.correctAnswer,
       song: this.gameState.currentSong,
-      pointsEarned
+      lyricsData: this.gameState.lyricsChallengeData,
+      pointsEarned,
+      gameMode: this.gameState.gameMode
     });
 
     return {
@@ -235,7 +265,9 @@ export class GameLogic {
       isTimeout: true,
       correctAnswer: this.gameState.correctAnswer,
       song: this.gameState.currentSong,
-      pointsEarned: 0
+      lyricsData: this.gameState.lyricsChallengeData,
+      pointsEarned: 0,
+      gameMode: this.gameState.gameMode
     });
   }
 
@@ -290,7 +322,8 @@ export class GameLogic {
       correctCount,
       totalRounds,
       maxStreak: this.gameState.maxStreak,
-      avgTime
+      avgTime,
+      gameMode: this.gameState.gameMode
     });
   }
 

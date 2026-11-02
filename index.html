@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SongQuiz - Trivia musical y aprendizaje de letras estilo Spotify. 100% Client-Side.">
+  <meta name="description" content="SongQuiz - Trivia musical y aprendizaje de inglés con letras estilo Spotify. 100% Client-Side.">
   <meta name="theme-color" content="#121212">
 
   <title>SongQuiz - Trivia Musical & Letras (Spotify Edition)</title>
@@ -71,6 +71,18 @@
       </div>
     </header>
 
+    <!-- SELECTOR DE MODO DE JUEGO (SPOTIFY PILL TOGGLE) -->
+    <div class="mode-selector-wrapper">
+      <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
+        <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Adivina el título y artista por el clip musical">
+          <span>🎵</span> Classic Trivia
+        </button>
+        <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Completa el hueco en el verso en inglés">
+          <span>📝</span> Lyrics Challenge
+        </button>
+      </div>
+    </div>
+
     <!-- ÁREA PRINCIPAL DEL JUEGO -->
     <main class="game-viewport">
       <section class="game-card" aria-label="Ronda de adivinanza musical">
@@ -92,6 +104,30 @@
           </div>
           <div class="timer-bar-track">
             <div class="timer-bar-fill" id="timer-bar-fill"></div>
+          </div>
+        </div>
+
+        <!-- Caja de Desafío Lyrics Challenge (Visible en Modo Lyrics) -->
+        <div class="lyrics-challenge-box hidden" id="lyrics-challenge-box" aria-label="Desafío de completar la letra">
+          <div class="challenge-header-row">
+            <span class="challenge-type-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              Listen & Fill in the Blank (Completa el verso)
+            </span>
+          </div>
+
+          <div class="verse-quote-box">
+            <p class="verse-english-text" id="verse-english-text"></p>
+            <p class="verse-spanish-translation" id="verse-spanish-translation"></p>
+          </div>
+
+          <!-- Entrada opcional de texto para mecanografía directa -->
+          <div class="lyrics-input-row">
+            <input type="text" id="lyrics-input-field" class="lyrics-input-field" placeholder="Escribe la palabra que falta o pulsa una opción..." autocomplete="off">
+            <button id="btn-lyrics-submit" class="btn-spotify-subtle" type="button">Validar</button>
           </div>
         </div>
 

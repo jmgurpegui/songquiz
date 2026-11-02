@@ -1,6 +1,7 @@
 /**
  * @fileoverview Máquina de estados finitos (FSM) y contenedor reactivo de estado para SongQuiz.
  * Emplea la API nativa EventTarget para emisión desacoplada de eventos sin librerías externas.
+ * Soporta modos de juego: Classic Trivia y Lyrics Challenge.
  */
 
 export const GameStates = Object.freeze({
@@ -10,12 +11,20 @@ export const GameStates = Object.freeze({
   GAME_OVER: 'GAME_OVER'
 });
 
+export const GameModes = Object.freeze({
+  CLASSIC: 'CLASSIC',
+  LYRICS: 'LYRICS'
+});
+
 export class GameState extends EventTarget {
   constructor() {
     super();
 
     /** @type {keyof typeof GameStates} */
     this.status = GameStates.IDLE;
+
+    /** @type {keyof typeof GameModes} */
+    this.gameMode = this._loadSavedGameMode();
 
     /** @type {Array<Object>} */
     this.playlist = [];
@@ -28,6 +37,9 @@ export class GameState extends EventTarget {
     /** @type {string} */
     this.correctAnswer = '';
 
+    /** @type {Object|null} */
+    this.lyricsChallengeData = null;
+
     // Métricas y puntuación
     this.score = 0;
     this.streak = 0;
@@ -37,6 +49,36 @@ export class GameState extends EventTarget {
 
     /** @type {Array<{songId: string, correct: boolean, timeSpent: number, points: number}>} */
     this.history = [];
+  }
+
+  /**
+   * Carga el modo guardado en localStorage o usa CLASSIC por defecto.
+   * @private
+   */
+  _loadSavedGameMode() {
+    try {
+      const saved = localStorage.getItem('songquiz_game_mode');
+      if (saved && Object.values(GameModes).includes(saved)) {
+        return saved;
+      }
+    } catch {}
+    return GameModes.CLASSIC;
+  }
+
+  /**
+   * Cambia el modo de juego activo.
+   * @param {keyof typeof GameModes} mode
+   */
+  setGameMode(mode) {
+    if (!Object.values(GameModes).includes(mode)) return;
+    this.gameMode = mode;
+    try {
+      localStorage.setItem('songquiz_game_mode', mode);
+    } catch {}
+
+    this.dispatchEvent(new CustomEvent('modeChange', {
+      detail: { mode: this.gameMode }
+    }));
   }
 
   /**
@@ -77,6 +119,7 @@ export class GameState extends EventTarget {
       detail: {
         prevState,
         currentState: this.status,
+        gameMode: this.gameMode,
         ...payload
       }
     }));
@@ -95,9 +138,10 @@ export class GameState extends EventTarget {
     this.history = [];
     this.timeRemaining = this.maxRoundTime;
     this.status = GameStates.IDLE;
+    this.lyricsChallengeData = null;
 
     this.dispatchEvent(new CustomEvent('gameInit', {
-      detail: { totalSongs: this.playlist.length }
+      detail: { totalSongs: this.playlist.length, gameMode: this.gameMode }
     }));
   }
 
@@ -134,7 +178,8 @@ export class GameState extends EventTarget {
         songId: this.currentSong.id,
         correct: isCorrect,
         timeSpent,
-        points: pointsEarned
+        points: pointsEarned,
+        mode: this.gameMode
       });
     }
 

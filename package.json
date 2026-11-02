@@ -1,7 +1,8 @@
 {
   "name": "songquiz",
-  "version": "2.0.0",
-  "description": "SongQuiz Pro - Aplicación interactiva de trivia musical y aprendizaje activo basada en Web Audio API (Zero-API, Zero-IA)",
+  "version": "2.2.0",
+  "type": "module",
+  "description": "SongQuiz - Trivia musical y aprendizaje de inglés con Web Audio API (Zero-API, Zero-IA)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,9 +14,10 @@
   },
   "keywords": [
     "music-quiz",
+    "lyrics-challenge",
+    "english-learning",
     "web-audio-api",
-    "html5-audio",
-    "es6-modules",
+    "spotify-ui",
     "zero-api",
     "pwa"
   ],
