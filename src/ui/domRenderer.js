@@ -14,13 +14,15 @@ export class DOMRenderer {
    * @param {import('../audio/audioEngine.js').AudioEngine} audioEngine
    * @param {import('../audio/soundFX.js').SoundFX} soundFX
    * @param {Array<Object>} defaultSongs
+   * @param {import('../audio/youtubePlayer.js').YouTubePlayerEngine} [youtubePlayer=null]
    */
-  constructor(gameState, gameLogic, audioEngine, soundFX, defaultSongs = []) {
+  constructor(gameState, gameLogic, audioEngine, soundFX, defaultSongs = [], youtubePlayer = null) {
     this.gameState = gameState;
     this.gameLogic = gameLogic;
     this.audioEngine = audioEngine;
     this.soundFX = soundFX;
     this.defaultSongs = defaultSongs;
+    this.youtubePlayer = youtubePlayer;
 
     // Estado interno para accesibilidad y modales
     this._activeModal = null;
@@ -59,6 +61,7 @@ export class DOMRenderer {
       stageOverlay: document.getElementById('stage-overlay'),
       stageTitle: document.getElementById('stage-title'),
       stageSubtitle: document.getElementById('stage-subtitle'),
+      audioStage: document.getElementById('audio-stage'),
 
       timerBar: document.getElementById('timer-bar-fill'),
       timerText: document.getElementById('timer-text'),
@@ -82,6 +85,7 @@ export class DOMRenderer {
       cultureText: document.getElementById('culture-text'),
       genreBadge: document.getElementById('genre-badge'),
       btnNext: document.getElementById('btn-next'),
+      btnYtExternal: document.getElementById('btn-yt-external'),
 
       gameOverModal: document.getElementById('game-over-modal'),
       finalScore: document.getElementById('final-score'),
@@ -145,6 +149,9 @@ export class DOMRenderer {
     this.dom.btnMute?.addEventListener('click', () => {
       const isMuted = this.audioEngine.toggleMute();
       this.soundFX.toggleMute();
+      if (this.youtubePlayer) {
+        this.youtubePlayer.setMuted(isMuted);
+      }
       this._updateMuteIcon(isMuted);
       this.announce(isMuted ? 'Sonido silenciado' : 'Sonido activado');
     });
@@ -516,6 +523,14 @@ export class DOMRenderer {
     this.dom.statusMsg.textContent = '';
     this.dom.statusMsg.className = 'status-msg';
 
+    // Ocultar vídeo de YouTube durante la fase de adivinanza
+    if (this.dom.audioStage) {
+      this.dom.audioStage.classList.remove('revealed');
+    }
+    if (this.dom.btnYtExternal) {
+      this.dom.btnYtExternal.style.display = 'none';
+    }
+
     if (this.dom.roundIndicator) {
       const modeLabel = gameMode === GameModes.LYRICS ? 'Lyrics' : 'Trivia';
       this.dom.roundIndicator.textContent = `${modeLabel} • Pista ${roundNumber} / ${totalRounds}`;
@@ -663,6 +678,20 @@ export class DOMRenderer {
     this.dom.stageTitle.textContent = `${song.title}`;
     this.dom.stageSubtitle.textContent = `${song.artist} • ${song.year || ''}`;
 
+    // Revelar el vídeo interactivo de YouTube para escuchar la canción completa
+    if (this.dom.audioStage) {
+      this.dom.audioStage.classList.add('revealed');
+    }
+
+    if (this.dom.btnYtExternal) {
+      if (song.youtubeId) {
+        this.dom.btnYtExternal.href = `https://www.youtube.com/watch?v=${song.youtubeId}`;
+        this.dom.btnYtExternal.style.display = 'inline-flex';
+      } else {
+        this.dom.btnYtExternal.style.display = 'none';
+      }
+    }
+
     if (this.dom.genreBadge) {
       this.dom.genreBadge.textContent = song.genre || 'Música';
     }
@@ -764,7 +793,12 @@ export class DOMRenderer {
       if ((e.code === 'Space' || e.key === ' ') && !isInput) {
         e.preventDefault();
         if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.ROUND_OVER) {
-          const isPlaying = await this.audioEngine.togglePlayPause();
+          let isPlaying = false;
+          if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
+            isPlaying = this.youtubePlayer.togglePlayPause();
+          } else {
+            isPlaying = await this.audioEngine.togglePlayPause();
+          }
           this.announce(isPlaying ? 'Audio reanudado' : 'Audio pausado');
         }
         return;

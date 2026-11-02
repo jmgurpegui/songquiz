@@ -5,6 +5,7 @@
     "artist": "The Weeknd",
     "genre": "Synthwave / Pop",
     "year": 2019,
+    "youtubeId": "4NRXx6U8ABQ",
     "audioSrc": "assets/audio/blinding_lights.wav",
     "lyrics": {
       "en": "I said, ooh, I'm blinded by the lights\nNo, I can't sleep until I feel your touch\nI said, ooh, I'm drowning in the night\nOh, when I'm like this, you're the one I trust",
@@ -18,6 +19,7 @@
     "artist": "Ed Sheeran",
     "genre": "Pop / Dancehall",
     "year": 2017,
+    "youtubeId": "JGwWNGJdvx8",
     "audioSrc": "assets/audio/shape_of_you.wav",
     "lyrics": {
       "en": "The club isn't the best place to find a lover\nSo the bar is where I go\nMe and my friends at the table doing shots\nDrinking fast and then we talk slow",
@@ -31,6 +33,7 @@
     "artist": "Queen",
     "genre": "Progressive Rock / Opera",
     "year": 1975,
+    "youtubeId": "fJ9rUzIMcZQ",
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "lyrics": {
       "en": "Is this the real life? Is this just fantasy?\nCaught in a landslide, no escape from reality\nOpen your eyes, look up to the skies and see\nI'm just a poor boy, I need no sympathy",
@@ -44,6 +47,7 @@
     "artist": "Michael Jackson",
     "genre": "Post-Disco / Funk / Pop",
     "year": 1982,
+    "youtubeId": "Zi_XLOBDo_Y",
     "audioSrc": "assets/audio/billie_jean.wav",
     "lyrics": {
       "en": "Billie Jean is not my lover\nShe's just a girl who claims that I am the one\nBut the kid is not my son\nShe says I am the one, but the kid is not my son",
@@ -57,6 +61,7 @@
     "artist": "Bee Gees",
     "genre": "Disco / Funk",
     "year": 1977,
+    "youtubeId": "I_izvAbhExY",
     "audioSrc": "assets/audio/stayin_alive.wav",
     "lyrics": {
       "en": "Well, you can tell by the way I use my walk\nI'm a woman's man, no time to talk\nMusic loud and women warm, I've been kicked around\nSince I was born",
@@ -70,6 +75,7 @@
     "artist": "a-ha",
     "genre": "Synth-pop / New Wave",
     "year": 1985,
+    "youtubeId": "djV11Xbc914",
     "audioSrc": "assets/audio/take_on_me.wav",
     "lyrics": {
       "en": "We're talking away, I don't know what I'm to say\nI'll say it anyway, today's another day to find you\nShying away, I'll be coming for your love, okay?\nTake on me, take me on",

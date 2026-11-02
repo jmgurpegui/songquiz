@@ -1,17 +1,18 @@
 /**
  * @fileoverview Punto de entrada (bootstrap) de la aplicación SongQuiz con estética Spotify.
- * Coordina la inyección de dependencias, la carga del catálogo y el gestor de playlist.
+ * Coordina la inyección de dependencias, YouTube Player, Web Audio y gestor de playlists.
  */
 
 import { GameState } from './core/gameState.js';
 import { GameLogic } from './core/gameLogic.js';
 import { audioEngine } from './audio/audioEngine.js';
 import { sfx } from './audio/soundFX.js';
+import { youtubePlayer } from './audio/youtubePlayer.js';
 import { AudioVisualizer } from './ui/visualizer.js';
 import { DOMRenderer } from './ui/domRenderer.js';
 
 async function bootstrap() {
-  console.log('%c🟢 SongQuiz Spotify Edition v2.1 (Zero-API / Zero-IA)', 'color: #1db954; font-weight: bold; font-size: 14px;');
+  console.log('%c🟢 SongQuiz Spotify & YouTube Edition v2.5', 'color: #1db954; font-weight: bold; font-size: 14px;');
 
   const canvas = document.getElementById('visualizer-canvas');
   if (!canvas) {
@@ -19,9 +20,14 @@ async function bootstrap() {
     return;
   }
 
+  // Inicializar YouTube IFrame API en segundo plano
+  youtubePlayer.init('ytplayer').catch((e) => {
+    console.warn('YouTube IFrame API no disponible inmediatamente:', e);
+  });
+
   const visualizer = new AudioVisualizer(canvas, audioEngine);
   const gameState = new GameState();
-  const gameLogic = new GameLogic(gameState, audioEngine, visualizer);
+  const gameLogic = new GameLogic(gameState, audioEngine, visualizer, youtubePlayer);
 
   try {
     const response = await fetch('./src/data/songs.json');
@@ -30,8 +36,8 @@ async function bootstrap() {
     }
     const defaultSongs = await response.json();
 
-    // Iniciar renderizador del DOM pasando las canciones por defecto
-    new DOMRenderer(gameState, gameLogic, audioEngine, sfx, defaultSongs);
+    // Iniciar renderizador del DOM
+    new DOMRenderer(gameState, gameLogic, audioEngine, sfx, defaultSongs, youtubePlayer);
 
     const startBtn = document.getElementById('btn-start');
     if (startBtn) {

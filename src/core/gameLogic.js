@@ -1,11 +1,13 @@
 /**
  * @fileoverview Lógica de negocio, reglas de puntuación, cálculo de combos y temporizador.
- * Gestiona los modos "Classic Trivia" y "Lyrics Challenge" (Cloze test activo).
+ * Gestiona los modos "Classic Trivia" y "Lyrics Challenge", con soporte para
+ * reproducción de vídeos completos de YouTube y fallback a Web Audio HTML5.
  */
 
 import { GameStates, GameModes } from './gameState.js';
 import { shuffle, generateOptions, generateLyricsChallenge } from '../utils/random.js';
 import { sfx } from '../audio/soundFX.js';
+import { youtubePlayer } from '../audio/youtubePlayer.js';
 
 export const STORAGE_KEYS = {
   HIGH_SCORE: 'songquiz_high_score',
@@ -19,22 +21,36 @@ export class GameLogic {
    * @param {import('./gameState.js').GameState} gameState
    * @param {import('../audio/audioEngine.js').AudioEngine} audioEngine
    * @param {import('../ui/visualizer.js').AudioVisualizer} visualizer
+   * @param {import('../audio/youtubePlayer.js').YouTubePlayerEngine} [ytPlayer=youtubePlayer]
    */
-  constructor(gameState, audioEngine, visualizer) {
+  constructor(gameState, audioEngine, visualizer, ytPlayer = youtubePlayer) {
     this.gameState = gameState;
     this.audioEngine = audioEngine;
     this.visualizer = visualizer;
+    this.youtubePlayer = ytPlayer;
 
     this.allSongs = [];
     this.timerInterval = null;
     this.roundStartTime = 0;
 
-    // Vincular finalización natural de la pista de audio
+    // Vincular finalización natural de la pista de audio local
     this.audioEngine.onEnded(() => {
       if (this.gameState.status === GameStates.PLAYING) {
         this.handleTimeout();
       }
     });
+
+    // Fallback si YouTube devuelve un error de reproducción
+    if (this.youtubePlayer) {
+      this.youtubePlayer.onError((errCode) => {
+        console.warn(`Error en YouTube embebido (${errCode}). Activando fallback local.`);
+        if (this.gameState.currentSong?.audioSrc) {
+          this.audioEngine.load(this.gameState.currentSong.audioSrc)
+            .then(() => this.audioEngine.play())
+            .catch(() => {});
+        }
+      });
+    }
   }
 
   /**
@@ -94,7 +110,8 @@ export class GameLogic {
   }
 
   /**
-   * Inicia una ronda de adivinanza adaptada al modo de juego activo.
+   * Inicia una ronda de adivinanza adaptada al modo de juego activo
+   * e inicia la reproducción en YouTube con soporte de escucha completa.
    */
   async startRound() {
     this._clearTimer();
@@ -116,7 +133,6 @@ export class GameLogic {
     };
 
     if (this.gameState.gameMode === GameModes.LYRICS) {
-      // Modo Lyrics Challenge: generar desafío pedagógico tipo Cloze
       const lyricsData = generateLyricsChallenge(track, this.allSongs);
       this.gameState.lyricsChallengeData = lyricsData;
       this.gameState.currentOptions = lyricsData.options;
@@ -129,7 +145,6 @@ export class GameLogic {
         lyricsData
       };
     } else {
-      // Modo Classic Trivia: adivinar Título - Artista
       const { options, correctAnswer } = generateOptions(track, this.allSongs);
       this.gameState.lyricsChallengeData = null;
       this.gameState.currentOptions = options;
@@ -145,15 +160,30 @@ export class GameLogic {
     // Transición a PLAYING
     this.gameState.transition(GameStates.PLAYING, roundPayload);
 
-    // Iniciar visualizador y audio
+    // Iniciar visualizador
     this.visualizer.start();
-    try {
-      if (track.audioSrc) {
+
+    // Iniciar reproducción: Priorizar YouTube oficial para escuchar la canción completa
+    if (track.youtubeId && this.youtubePlayer) {
+      try {
+        this.audioEngine.stop();
+        await this.youtubePlayer.loadVideo(track.youtubeId);
+      } catch (err) {
+        console.warn('Reproducción de YouTube diferida o bloqueada, activando fallback local:', err);
+        if (track.audioSrc) {
+          try {
+            await this.audioEngine.load(track.audioSrc);
+            await this.audioEngine.play();
+          } catch {}
+        }
+      }
+    } else if (track.audioSrc) {
+      try {
         await this.audioEngine.load(track.audioSrc);
         await this.audioEngine.play();
+      } catch (e) {
+        console.warn('Reproducción de audio local diferida a gesto del usuario:', e);
       }
-    } catch (e) {
-      console.warn('Reproducción diferida a primer toque del usuario:', e);
     }
 
     this.roundStartTime = performance.now();
@@ -191,7 +221,8 @@ export class GameLogic {
   }
 
   /**
-   * Procesa la respuesta seleccionada por el jugador con tolerancia a mayúsculas/espacios.
+   * Procesa la respuesta seleccionada por el jugador.
+   * La música de YouTube NO se interrumpe, permitiendo escucharla completa.
    * @param {string} rawSelectedOption
    * @returns {{ isCorrect: boolean, correctAnswer: string, pointsEarned: number }}
    */
@@ -206,7 +237,6 @@ export class GameLogic {
     const selected = (rawSelectedOption || '').trim().toLowerCase();
     const correct = (this.gameState.correctAnswer || '').trim().toLowerCase();
 
-    // Validación insensible a puntuación o mayúsculas
     const cleanWord = (s) => s.replace(/^[^\w]+|[^\w]+$/g, '');
     const isCorrect = cleanWord(selected) === cleanWord(correct);
 
@@ -234,6 +264,7 @@ export class GameLogic {
 
     this.gameState.recordAnswer(isCorrect, pointsEarned, timeSpent);
 
+    // Revelar sin detener la canción de YouTube para escucharla completa
     this.gameState.transition(GameStates.ROUND_OVER, {
       selectedOption: rawSelectedOption,
       isCorrect,
@@ -253,6 +284,7 @@ export class GameLogic {
 
   /**
    * Penalización cuando el tiempo de la ronda llega a cero.
+   * Permite que la canción siga reproduciéndose para su escucha.
    */
   handleTimeout() {
     this._clearTimer();
@@ -273,9 +305,14 @@ export class GameLogic {
 
   /**
    * Pasa a la siguiente canción de la lista o finaliza.
+   * Detiene el reproductor actual para cargar la siguiente pista.
    */
   nextRound() {
+    if (this.youtubePlayer) {
+      this.youtubePlayer.stop();
+    }
     this.audioEngine.stop();
+
     const hasMore = this.gameState.advanceRound();
     if (hasMore) {
       this.startRound();
@@ -289,6 +326,9 @@ export class GameLogic {
    */
   finishGame() {
     this._clearTimer();
+    if (this.youtubePlayer) {
+      this.youtubePlayer.stop();
+    }
     this.audioEngine.stop();
     sfx.playGameOver();
 
