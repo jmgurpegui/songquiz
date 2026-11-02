@@ -6,6 +6,7 @@
 
 import { GameStates, GameModes } from '../core/gameState.js';
 import { fetchPlaylistFromYouTube, parseTextPlaylist } from '../utils/playlistParser.js';
+import { THEMATIC_PLAYLISTS } from '../data/thematicPlaylists.js';
 
 export class DOMRenderer {
   /**
@@ -58,9 +59,11 @@ export class DOMRenderer {
       a11yAnnouncer: document.getElementById('a11y-announcer'),
       a11yAlert: document.getElementById('a11y-alert'),
 
-      // Selector de modo
+      // Selector de modo y listas temáticas
       btnModeClassic: document.getElementById('btn-mode-classic'),
       btnModeLyrics: document.getElementById('btn-mode-lyrics'),
+      themePillsBar: document.getElementById('theme-pills-bar'),
+      thematicPlaylistsGrid: document.getElementById('thematic-playlists-grid'),
 
       stageOverlay: document.getElementById('stage-overlay'),
       stageTitle: document.getElementById('stage-title'),
@@ -271,6 +274,16 @@ export class DOMRenderer {
    * @private
    */
   _bindPlaylistManagerEvents() {
+    this._renderThematicPlaylists();
+
+    // Píldoras de selección rápida de listas temáticas en la pantalla principal
+    this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const themeId = pill.dataset.themeId;
+        this._activateThematicPlaylist(themeId);
+      });
+    });
+
     // Importación directa desde enlace de YouTube
     this.dom.btnFetchYoutubePlaylist?.addEventListener('click', async () => {
       const url = this.dom.youtubePlaylistUrlInput?.value.trim();
@@ -380,6 +393,79 @@ export class DOMRenderer {
         });
       });
     });
+  }
+
+  /**
+   * Renderiza las tarjetas de listas populares por temática en YouTube Music dentro del modal.
+   * @private
+   */
+  _renderThematicPlaylists() {
+    if (!this.dom.thematicPlaylistsGrid) return;
+    this.dom.thematicPlaylistsGrid.innerHTML = '';
+
+    THEMATIC_PLAYLISTS.forEach(pl => {
+      const card = document.createElement('div');
+      card.className = 'thematic-card';
+      card.innerHTML = `
+        <div>
+          <div class="thematic-card-header">
+            <span class="thematic-card-title">${pl.name}</span>
+            <span class="brand-badge" style="font-size: 0.65rem;">${pl.badge}</span>
+          </div>
+          <p class="thematic-card-desc" style="margin-top: 4px;">${pl.description}</p>
+        </div>
+        <div class="thematic-card-actions">
+          <a href="${pl.youtubeUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 0.72rem; color: var(--color-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Abrir lista en YouTube Music">
+            <span>🔗 YouTube Music</span>
+          </a>
+          <button type="button" class="btn-spotify-subtle btn-load-theme" data-theme-id="${pl.id}" style="padding: 5px 12px; font-size: 0.72rem; border-color: var(--spotify-green); color: var(--spotify-green-light);">
+            ▶ Jugar (${pl.songs.length})
+          </button>
+        </div>
+      `;
+
+      const loadBtn = card.querySelector('.btn-load-theme');
+      loadBtn?.addEventListener('click', () => {
+        this._activateThematicPlaylist(pl.id);
+        this._closePlaylistModal();
+      });
+
+      this.dom.thematicPlaylistsGrid.appendChild(card);
+    });
+  }
+
+  /**
+   * Activa una lista temática predefinida y actualiza la partida en curso.
+   * @param {string} themeId
+   * @private
+   */
+  _activateThematicPlaylist(themeId) {
+    // Actualizar estado activo de las píldoras superiores
+    this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.themeId === themeId);
+    });
+
+    if (themeId === 'default') {
+      this.gameLogic.resetToDefaultPlaylist(this.defaultSongs);
+      this.announce(`Mix General activado con ${this.defaultSongs.length} canciones.`);
+    } else {
+      const found = THEMATIC_PLAYLISTS.find(p => p.id === themeId);
+      if (!found) return;
+      this.gameLogic.setCustomPlaylist(found.songs);
+      this.announce(`Lista temática ${found.name} activada con ${found.songs.length} canciones.`);
+    }
+
+    this._renderPlaylistTable();
+    if (this.dom.roundIndicator) {
+      this.dom.roundIndicator.textContent = `Pista 1 / ${this.gameState.totalRounds}`;
+    }
+
+    // Si ya había iniciado la partida, lanzar inmediatamente la nueva ronda
+    if (this.dom.startScreen?.classList.contains('visually-hidden')) {
+      this.gameLogic.startRound();
+    } else {
+      this.dom.startScreen?.classList.remove('visually-hidden');
+    }
   }
 
   _openPlaylistModal() {
@@ -791,15 +877,17 @@ export class DOMRenderer {
     if (this.dom.timerBar) {
       this.dom.timerBar.style.width = `${percent}%`;
       this.dom.timerBar.classList.remove('warning', 'danger');
-      if (remaining <= 5) {
+      if (remaining <= 10) {
         this.dom.timerBar.classList.add('danger');
-      } else if (remaining <= 8) {
+      } else if (remaining <= 25) {
         this.dom.timerBar.classList.add('warning');
       }
     }
 
     if (this.dom.timerText) {
-      this.dom.timerText.textContent = `${remaining}s`;
+      const mins = Math.floor(remaining / 60);
+      const secs = String(remaining % 60).padStart(2, '0');
+      this.dom.timerText.textContent = `${mins}:${secs}`;
     }
   }
 

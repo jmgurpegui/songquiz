@@ -5,82 +5,138 @@
     "artist": "The Weeknd",
     "genre": "Synthwave / Pop",
     "year": 2019,
-    "youtubeId": "4NRXx6U8ABQ",
     "audioSrc": "assets/audio/blinding_lights.wav",
+    "youtubeId": "4NRXx6U8ABQ",
     "lyrics": {
-      "en": "I said, ooh, I'm blinded by the lights\nNo, I can't sleep until I feel your touch\nI said, ooh, I'm drowning in the night\nOh, when I'm like this, you're the one I trust",
-      "es": "Dije, ooh, estoy cegado por las luces\nNo, no puedo dormir hasta sentir tu caricia\nDije, ooh, me estoy ahogando en la noche\nOh, cuando estoy así, eres la única en quien confío"
+      "en": "I've been tryna call\nI've been on my own for long enough\nMaybe you can show me how to love, maybe\nI'm going through withdrawals",
+      "es": "He estado intentando llamar\nHe estado solo durante demasiado tiempo\nTal vez puedas enseñarme cómo amar, quizá\nEstoy pasando por síndrome de abstinencia"
     },
-    "culturalTrivia": "Publicada a finales de 2019, 'Blinding Lights' se convirtió en la canción más exitosa de la historia de la lista Billboard Hot 100, permaneciendo 90 semanas en el ranking y catalizando el renacimiento moderno de los sintetizadores analógicos de los años 80."
+    "culturalTrivia": "Inspirada en el sonido synth-pop de los años 80 (especialmente a-ha y Depeche Mode), esta canción de Abel Tesfaye superó a 'The Twist' de Chubby Checker como la canción número 1 histórica del ranking Billboard Hot 100 de todos los tiempos."
   },
   {
     "id": "shape_of_you",
     "title": "Shape of You",
     "artist": "Ed Sheeran",
-    "genre": "Pop / Dancehall",
+    "genre": "Tropical House / Pop",
     "year": 2017,
-    "youtubeId": "JGwWNGJdvx8",
     "audioSrc": "assets/audio/shape_of_you.wav",
+    "youtubeId": "JGwWNGJdvx8",
     "lyrics": {
       "en": "The club isn't the best place to find a lover\nSo the bar is where I go\nMe and my friends at the table doing shots\nDrinking fast and then we talk slow",
-      "es": "El club no es el mejor lugar para encontrar pareja\nAsí que al bar es a donde voy\nMis amigos y yo en la mesa tomando chupitos\nBebiendo rápido y luego hablando despacio"
+      "es": "El club no es el mejor lugar para encontrar pareja\nAsí que al bar es a donde voy\nMis amigos y yo en la mesa tomando tragos\nBebiendo rápido y luego hablamos despacio"
     },
-    "culturalTrivia": "Ed Sheeran compuso inicialmente el pegadizo riff de marimba pensando en cedérselo a Rihanna. Sin embargo, al completar las estrofas decidió conservarla; terminó siendo el sencillo más reproducido de la década de 2010 en plataformas digitales."
+    "culturalTrivia": "Ed Sheeran la compuso originalmente pensando en Rihanna. Su ostinato rítmico de marimba tropical se convirtió en la primera pista de la historia en superar los 3.000 millones de reproducciones."
   },
   {
     "id": "bohemian_rhapsody",
     "title": "Bohemian Rhapsody",
     "artist": "Queen",
-    "genre": "Progressive Rock / Opera",
+    "genre": "Progressive Rock",
     "year": 1975,
-    "youtubeId": "fJ9rUzIMcZQ",
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "youtubeId": "fJ9rUzIMcZQ",
     "lyrics": {
-      "en": "Is this the real life? Is this just fantasy?\nCaught in a landslide, no escape from reality\nOpen your eyes, look up to the skies and see\nI'm just a poor boy, I need no sympathy",
-      "es": "¿Es esta la vida real? ¿Es solo una fantasía?\nAtrapado en un derrumbe, sin escape de la realidad\nAbre tus ojos, mira a los cielos y observa\nSolo soy un chico pobre, no necesito compasión"
+      "en": "Is this the real life? Is this just fantasy?\nCaught in a landslide, no escape from reality\nOpen your eyes, look up to the skies and see",
+      "es": "¿Es esto la vida real? ¿Es solo fantasía?\nAtrapado en un derrumbe, sin escape de la realidad\nAbre tus ojos, mira hacia los cielos y observa"
     },
-    "culturalTrivia": "Freddie Mercury escribió la suite prescindiendo del estribillo tradicional. La sección operística requirió más de 180 sobregrabaciones vocales analógicas en cinta de 2 pulgadas, desgastando la cinta magnética original hasta hacerla casi transparente durante las sesiones de mezcla."
+    "culturalTrivia": "Escrita por Freddie Mercury para el álbum 'A Night at the Opera' (1975). Rompió todos los esquemas radiofónicos con sus 6 minutos de duración, uniendo balada, ópera y hard rock sin tener un estribillo tradicional."
   },
   {
     "id": "billie_jean",
     "title": "Billie Jean",
     "artist": "Michael Jackson",
-    "genre": "Post-Disco / Funk / Pop",
+    "genre": "Post-Disco / Funk",
     "year": 1982,
-    "youtubeId": "Zi_XLOBDo_Y",
     "audioSrc": "assets/audio/billie_jean.wav",
+    "youtubeId": "Zi_XLOBDo_Y",
     "lyrics": {
-      "en": "Billie Jean is not my lover\nShe's just a girl who claims that I am the one\nBut the kid is not my son\nShe says I am the one, but the kid is not my son",
-      "es": "Billie Jean no es mi amante\nElla solo es una chica que afirma que yo soy el indicado\nPero el niño no es mi hijo\nElla dice que yo soy el elegido, pero el niño no es mi hijo"
+      "en": "Billie Jean is not my lover\nShe's just a girl who claims that I am the one\nBut the kid is not my son",
+      "es": "Billie Jean no es mi amante\nEs solo una chica que afirma que yo soy el único\nPero el niño no es mi hijo"
     },
-    "culturalTrivia": "El productor Quincy Jones quería titularla 'Not My Lover' para evitar confusiones con la tenista Billie Jean King, y consideraba la icónica introducción de bajo demasiado larga. Michael Jackson insistió en mantenerla porque 'esa línea de bajo te obliga a bailar de inmediato'."
+    "culturalTrivia": "Perteneciente a 'Thriller' (el álbum más vendido de la historia). Su videoclip rompió la barrera racial en MTV y fue la canción con la que Michael Jackson estrenó su legendario paso 'Moonwalk' en el 25 aniversario de Motown (1983)."
   },
   {
     "id": "stayin_alive",
     "title": "Stayin' Alive",
     "artist": "Bee Gees",
-    "genre": "Disco / Funk",
+    "genre": "Disco",
     "year": 1977,
-    "youtubeId": "I_izvAbhExY",
     "audioSrc": "assets/audio/stayin_alive.wav",
+    "youtubeId": "I_izvAbhExY",
     "lyrics": {
-      "en": "Well, you can tell by the way I use my walk\nI'm a woman's man, no time to talk\nMusic loud and women warm, I've been kicked around\nSince I was born",
-      "es": "Bueno, puedes notar por la forma en que camino\nQue soy un hombre de mujeres, sin tiempo para hablar\nMúsica alta y mujeres cálidas, me han tratado a golpes\nDesde que nací"
+      "en": "Whether you're a brother or whether you're a mother\nYou're stayin' alive, stayin' alive\nFeel the city breakin' and everybody shakin'",
+      "es": "Ya seas un hermano o ya seas una madre\nTe mantienes con vida, sobreviviendo\nSiente la ciudad romperse y a todo el mundo vibrar"
     },
-    "culturalTrivia": "Con un ritmo constante y riguroso de 103 a 104 pulsaciones por minuto (BPM), la American Heart Association recomienda tararear 'Stayin Alive' al practicar reanimación cardiopulmonar (RCP) para mantener la cadencia ideal de compresiones torácicas."
+    "culturalTrivia": "Con un tempo exacto de 103 pulsaciones por minuto (BPM), la Asociación Estadounidense del Corazón y los servicios médicos internacionales la utilizan oficialmente para entrenar el ritmo de las compresiones en maniobras de reanimación cardiopulmonar (RCP)."
   },
   {
     "id": "take_on_me",
     "title": "Take On Me",
     "artist": "a-ha",
-    "genre": "Synth-pop / New Wave",
+    "genre": "Synth-pop",
     "year": 1985,
-    "youtubeId": "djV11Xbc914",
     "audioSrc": "assets/audio/take_on_me.wav",
+    "youtubeId": "djV11Xbc914",
     "lyrics": {
-      "en": "We're talking away, I don't know what I'm to say\nI'll say it anyway, today's another day to find you\nShying away, I'll be coming for your love, okay?\nTake on me, take me on",
-      "es": "Estamos conversando, no sé qué debería decir\nLo diré de todos modos, hoy es otro día para encontrarte\nEsquiva, iré a por tu amor, ¿de acuerdo?\nAcéptame, ponte a prueba conmigo"
+      "en": "Take on me, take me on\nI'll be gone\nIn a day or two",
+      "es": "Acéptame, ponme a prueba\nMe habré ido\nEn un día o dos"
     },
-    "culturalTrivia": "El cantante noruego Morten Harket alcanza un registro vocal prodigioso de más de dos octavas y media durante la canción, culminando en un Mi agudo (E5) en falsete con voz de cabeza pura que se convirtió en una de las notas más memorables de la historia del pop."
+    "culturalTrivia": "El grupo noruego a-ha revolucionó la historia de los vídeos musicales usando la técnica de rotoscopia (dibujo a lápiz cuadro por cuadro sobre imagen real). El vocalista Morten Harket alcanza un rango vocal de más de dos octavas y media en el estribillo."
+  },
+  {
+    "id": "viva_la_vida",
+    "title": "Viva La Vida",
+    "artist": "Coldplay",
+    "genre": "Baroque Pop",
+    "year": 2008,
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "youtubeId": "dvgZkm1xWPE",
+    "lyrics": {
+      "en": "I used to rule the world\nSeas would rise when I gave the word\nNow in the morning, I sleep alone\nSweep the streets I used to own",
+      "es": "Yo solía gobernar el mundo\nLos mares se alzaban cuando yo daba la orden\nAhora por la mañana duermo en soledad\nBarro las calles que antes me pertenecían"
+    },
+    "culturalTrivia": "El título está tomado de una pintura de naturaleza muerta con sandías realizada por la artista mexicana Frida Kahlo apenas ocho días antes de fallecer en 1954."
+  },
+  {
+    "id": "smells_like_teen_spirit",
+    "title": "Smells Like Teen Spirit",
+    "artist": "Nirvana",
+    "genre": "Grunge / Alternative Rock",
+    "year": 1991,
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "youtubeId": "hTWKbfoikeg",
+    "lyrics": {
+      "en": "With the lights out, it's less dangerous\nHere we are now, entertain us\nI feel stupid and contagious\nHere we are now, entertain us",
+      "es": "Con las luces apagadas, es menos peligroso\nAquí estamos ahora, entreténgannos\nMe siento estúpido y contagioso\nAquí estamos ahora, entreténgannos"
+    },
+    "culturalTrivia": "El título nació cuando Kathleen Hanna escribió en la pared de Kurt Cobain 'Kurt smells like Teen Spirit', refiriéndose a una marca de desodorante juvenil; Cobain lo interpretó como un lema revolucionario generacional."
+  },
+  {
+    "id": "in_the_end",
+    "title": "In the End",
+    "artist": "Linkin Park",
+    "genre": "Nu Metal / Alternative Rock",
+    "year": 2000,
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "youtubeId": "eVTXPUF4Oz4",
+    "lyrics": {
+      "en": "I tried so hard and got so far\nBut in the end, it doesn't even matter\nI had to fall to lose it all\nBut in the end, it doesn't even matter",
+      "es": "Lo intenté con tantas fuerzas y llegué tan lejos\nPero al final, ni siquiera importa\nTuve que caer para perderlo todo\nPero al final, ni siquiera importa"
+    },
+    "culturalTrivia": "Chester Bennington confesó que al principio no estaba convencido de incluirla en el álbum 'Hybrid Theory', sin imaginar que se convertiría en el mayor himno del rock del siglo XXI."
+  },
+  {
+    "id": "flowers",
+    "title": "Flowers",
+    "artist": "Miley Cyrus",
+    "genre": "Disco-Pop / Funk",
+    "year": 2023,
+    "audioSrc": "assets/audio/stayin_alive.wav",
+    "youtubeId": "G7KNmW9a75Y",
+    "lyrics": {
+      "en": "I can buy myself flowers\nWrite my name in the sand\nTalk to myself for hours\nSay things you don't understand",
+      "es": "Puedo comprarme flores a mí misma\nEscribir mi nombre en la arena\nHablar conmigo misma durante horas\nDecir cosas que tú no entiendes"
+    },
+    "culturalTrivia": "Su estribillo responde líricamente a 'When I Was Your Man' de Bruno Mars, transformando una balada de arrepentimiento en un himno mundial de autosuficiencia y ganando el Grammy a Grabación del Año."
   }
 ]

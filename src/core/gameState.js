@@ -40,12 +40,12 @@ export class GameState extends EventTarget {
     /** @type {Object|null} */
     this.lyricsChallengeData = null;
 
-    // Métricas y puntuación
+    // Métricas y puntuación (hasta 2 minutos = 120 segundos para averiguar la canción)
     this.score = 0;
     this.streak = 0;
     this.maxStreak = 0;
-    this.timeRemaining = 15;
-    this.maxRoundTime = 15;
+    this.timeRemaining = 120;
+    this.maxRoundTime = 120;
 
     /** @type {Array<{songId: string, correct: boolean, timeSpent: number, points: number}>} */
     this.history = [];

@@ -164,10 +164,11 @@ export class GameLogic {
     this.visualizer.start();
 
     // Iniciar reproducción: Priorizar YouTube oficial para escuchar la canción completa
-    if (track.youtubeId && this.youtubePlayer) {
+    const hasValidYtId = Boolean(track.youtubeId && /^[a-zA-Z0-9_\-]{11}$/.test(track.youtubeId.trim()));
+    if (hasValidYtId && this.youtubePlayer) {
       try {
         this.audioEngine.stop();
-        await this.youtubePlayer.loadVideo(track.youtubeId);
+        await this.youtubePlayer.loadVideo(track.youtubeId.trim());
       } catch (err) {
         console.warn('Reproducción de YouTube diferida o bloqueada, activando fallback local:', err);
         if (track.audioSrc) {
@@ -248,22 +249,20 @@ export class GameLogic {
 
     if (isCorrect) {
       const remainingSec = this.gameState.timeRemaining;
+      const maxTime = this.gameState.maxRoundTime || 120;
 
-      // Escala dinámica de bonus por tiempo: cuanto más rápido se adivine, más puntos se obtienen
-      if (remainingSec >= 13) {
-        speedBonus = 150;
+      // Bonificación proporcional continua según los segundos restantes (sobre 120s = 2 min)
+      speedBonus = Math.max(10, Math.round((remainingSec / maxTime) * 150));
+
+      if (remainingSec >= 105) {
         speedBadge = '⚡ Relámpago';
-      } else if (remainingSec >= 10) {
-        speedBonus = 100;
+      } else if (remainingSec >= 85) {
         speedBadge = '🔥 Súper Rápido';
-      } else if (remainingSec >= 7) {
-        speedBonus = 65;
+      } else if (remainingSec >= 60) {
         speedBadge = '⏱️ Buen Ritmo';
-      } else if (remainingSec >= 4) {
-        speedBonus = 35;
+      } else if (remainingSec >= 30) {
         speedBadge = '👍 A Tiempo';
       } else {
-        speedBonus = 15;
         speedBadge = '⏳ Al Límite';
       }
 
