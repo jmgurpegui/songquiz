@@ -91,11 +91,41 @@
     <main class="game-viewport">
       <section class="game-card" aria-label="Ronda de adivinanza musical">
 
-        <!-- Escenario de Audio y Vídeo Embebido con Espectrograma Canvas -->
+        <!-- Escenario de Audio y Vídeo Embebido con Espectrograma Canvas y Minimizado Antispoiler -->
         <div class="audio-stage" id="audio-stage">
+          <!-- Barra superior de control para Minimizar / Modo Antispoiler -->
+          <div class="audio-stage-toolbar">
+            <button id="btn-toggle-minimize" class="stage-minimize-btn" type="button" aria-label="Minimizar reproductor para ocultar vídeo y título" title="Minimizar reproductor (Ocultar vídeo / Modo Antispoiler) [V]">
+              <svg id="icon-minimize-svg" class="icon-minimize" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+              </svg>
+              <svg id="icon-expand-svg" class="icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+              <span id="label-toggle-minimize">Ocultar vídeo</span>
+            </button>
+          </div>
+
           <!-- Reproductor de YouTube Embebido -->
           <div id="ytplayer-container" class="yt-player-container">
             <div id="ytplayer"></div>
+          </div>
+
+          <!-- Barra compacta estilo Spotify visible cuando está minimizado -->
+          <div class="minimized-audio-bar" id="minimized-audio-bar">
+            <div class="spotify-eq-bars" aria-hidden="true">
+              <span class="eq-bar bar-1"></span>
+              <span class="eq-bar bar-2"></span>
+              <span class="eq-bar bar-3"></span>
+              <span class="eq-bar bar-4"></span>
+            </div>
+            <div class="minimized-meta">
+              <span class="minimized-title" id="minimized-title">Reproductor en modo audio puro 🎧</span>
+              <span class="minimized-subtitle" id="minimized-subtitle">Vídeo y título ocultos para evitar spoilers</span>
+            </div>
           </div>
 
           <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio en tiempo real"></canvas>

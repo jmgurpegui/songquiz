@@ -29,7 +29,11 @@ export class DOMRenderer {
     this._previousFocusedElement = null;
     this._modalKeyHandler = null;
 
+    // Estado de minimizado del reproductor (persiste en localStorage)
+    this.isPlayerMinimized = localStorage.getItem('songquiz_player_minimized') === 'true';
+
     this._cacheDOMElements();
+    this._applyMinimizeState();
     this._bindDOMEvents();
     this._bindStateListeners();
     this._bindKeyboardShortcuts();
@@ -62,6 +66,13 @@ export class DOMRenderer {
       stageTitle: document.getElementById('stage-title'),
       stageSubtitle: document.getElementById('stage-subtitle'),
       audioStage: document.getElementById('audio-stage'),
+      btnToggleMinimize: document.getElementById('btn-toggle-minimize'),
+      iconMinimizeSvg: document.getElementById('icon-minimize-svg'),
+      iconExpandSvg: document.getElementById('icon-expand-svg'),
+      labelToggleMinimize: document.getElementById('label-toggle-minimize'),
+      minimizedAudioBar: document.getElementById('minimized-audio-bar'),
+      minimizedTitle: document.getElementById('minimized-title'),
+      minimizedSubtitle: document.getElementById('minimized-subtitle'),
 
       timerBar: document.getElementById('timer-bar-fill'),
       timerText: document.getElementById('timer-text'),
@@ -111,6 +122,26 @@ export class DOMRenderer {
   }
 
   /**
+   * Aplica el estado visual de minimizado en el escenario del reproductor.
+   * En modo minimizado, el vídeo queda completamente oculto previniendo spoilers de títulos.
+   * @private
+   */
+  _applyMinimizeState() {
+    if (!this.dom.audioStage) return;
+    this.dom.audioStage.classList.toggle('minimized', this.isPlayerMinimized);
+
+    if (this.dom.iconMinimizeSvg) {
+      this.dom.iconMinimizeSvg.style.display = this.isPlayerMinimized ? 'none' : 'block';
+    }
+    if (this.dom.iconExpandSvg) {
+      this.dom.iconExpandSvg.style.display = this.isPlayerMinimized ? 'block' : 'none';
+    }
+    if (this.dom.labelToggleMinimize) {
+      this.dom.labelToggleMinimize.textContent = this.isPlayerMinimized ? 'Expandir vídeo' : 'Ocultar vídeo';
+    }
+  }
+
+  /**
    * Comunica mensajes a lectores de pantalla (NVDA, JAWS, VoiceOver) mediante ARIA Live.
    * @param {string} message - Texto descriptivo.
    * @param {boolean} [isAlert=false] - Si es true, usa aria-live="assertive" (interrumpe la lectura para alertas críticas).
@@ -154,6 +185,15 @@ export class DOMRenderer {
       }
       this._updateMuteIcon(isMuted);
       this.announce(isMuted ? 'Sonido silenciado' : 'Sonido activado');
+    });
+
+    this.dom.btnToggleMinimize?.addEventListener('click', () => {
+      this.isPlayerMinimized = !this.isPlayerMinimized;
+      this._applyMinimizeState();
+      try {
+        localStorage.setItem('songquiz_player_minimized', String(this.isPlayerMinimized));
+      } catch {}
+      this.announce(this.isPlayerMinimized ? 'Reproductor minimizado (modo audio puro sin spoilers)' : 'Reproductor expandido (vídeo visible)');
     });
 
     this.dom.btnOpenImporter?.addEventListener('click', () => {
@@ -531,6 +571,11 @@ export class DOMRenderer {
       this.dom.btnYtExternal.style.display = 'none';
     }
 
+    if (this.dom.minimizedTitle) {
+      this.dom.minimizedTitle.textContent = '🎧 Modo Audio Puro (Adivinando...)';
+      this.dom.minimizedSubtitle.textContent = 'Vídeo y título ocultos para evitar spoilers';
+    }
+
     if (this.dom.roundIndicator) {
       const modeLabel = gameMode === GameModes.LYRICS ? 'Lyrics' : 'Trivia';
       this.dom.roundIndicator.textContent = `${modeLabel} • Pista ${roundNumber} / ${totalRounds}`;
@@ -635,7 +680,7 @@ export class DOMRenderer {
    * Revela la información pedagógica y anuncia la evaluación con ARIA Live.
    * @private
    */
-  _renderRoundOverState({ selectedOption, isCorrect, correctAnswer, song, pointsEarned, isTimeout, gameMode, lyricsData }) {
+  _renderRoundOverState({ selectedOption, isCorrect, correctAnswer, song, pointsEarned, speedBonus = 0, speedBadge = '', multiplier = 1, isTimeout, gameMode, lyricsData }) {
     const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
     const clean = (s) => (s || '').replace(/^[^\w]+|[^\w]+$/g, '').toLowerCase();
 
@@ -661,22 +706,42 @@ export class DOMRenderer {
     }
 
     if (isTimeout) {
-      this.dom.statusMsg.textContent = '⏰ ¡Tiempo agotado!';
-      this.dom.statusMsg.style.color = 'var(--color-warning)';
+      this.dom.statusMsg.innerHTML = `
+        <div class="score-feedback-card wrong">
+          <span>⏰ ¡Tiempo agotado! La respuesta correcta era <strong>"${correctAnswer}"</strong></span>
+        </div>
+      `;
       this.announce(`Tiempo agotado. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para pasar a la siguiente pista.`, true);
     } else if (isCorrect) {
-      const extra = gameMode === GameModes.LYRICS ? `"${correctAnswer}"` : '';
-      this.dom.statusMsg.textContent = `¡Correcto! ${extra} +${pointsEarned} pts 🎉`;
-      this.dom.statusMsg.style.color = 'var(--spotify-green-light)';
-      this.announce(`¡Correcto! Respuesta acertada: ${correctAnswer}. Has obtenido ${pointsEarned} puntos. Pulsa Enter para continuar.`);
+      const extraWord = gameMode === GameModes.LYRICS ? `"${correctAnswer}" • ` : '';
+      const bonusHtml = speedBonus > 0 ? `<span class="score-speed-tag">${speedBadge} +${speedBonus}</span>` : '';
+      const streakHtml = multiplier > 1 ? `<span class="score-streak-tag">x${multiplier} Racha 🔥</span>` : '';
+
+      this.dom.statusMsg.innerHTML = `
+        <div class="score-feedback-card correct">
+          <span>¡Correcto! ${extraWord}</span>
+          <span class="score-points-badge">+${pointsEarned} pts</span>
+          ${bonusHtml}
+          ${streakHtml}
+        </div>
+      `;
+      this.announce(`¡Correcto! Respuesta acertada: ${correctAnswer}. Has obtenido ${pointsEarned} puntos (${speedBadge} +${speedBonus} por tiempo). Pulsa Enter para continuar.`);
     } else {
-      this.dom.statusMsg.textContent = `¡Incorrecto! La respuesta correcta era "${correctAnswer}" 🎶`;
-      this.dom.statusMsg.style.color = 'var(--color-error)';
+      this.dom.statusMsg.innerHTML = `
+        <div class="score-feedback-card wrong">
+          <span>¡Incorrecto! La respuesta correcta era <strong>"${correctAnswer}"</strong> 🎶</span>
+        </div>
+      `;
       this.announce(`Incorrecto. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para continuar.`);
     }
 
     this.dom.stageTitle.textContent = `${song.title}`;
     this.dom.stageSubtitle.textContent = `${song.artist} • ${song.year || ''}`;
+
+    if (this.dom.minimizedTitle) {
+      this.dom.minimizedTitle.textContent = `${song.title} - ${song.artist} 🎵`;
+      this.dom.minimizedSubtitle.textContent = 'Audio en reproducción • Pulsa "Expandir vídeo" para ver el videoclip';
+    }
 
     // Revelar el vídeo interactivo de YouTube para escuchar la canción completa
     if (this.dom.audioStage) {
@@ -846,6 +911,14 @@ export class DOMRenderer {
       if (e.key.toLowerCase() === 'm') {
         e.preventDefault();
         this.dom.btnMute?.click();
+        return;
+      }
+
+      // Tecla V: Minimizar / Expandir reproductor (Anti-spoilers)
+      if (e.key.toLowerCase() === 'v') {
+        e.preventDefault();
+        this.dom.btnToggleMinimize?.click();
+        return;
       }
     });
   }

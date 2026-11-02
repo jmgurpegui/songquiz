@@ -241,10 +241,31 @@ export class GameLogic {
     const isCorrect = cleanWord(selected) === cleanWord(correct);
 
     let pointsEarned = 0;
+    let speedBonus = 0;
+    let speedBadge = '';
+    let multiplier = 1.0;
+    const basePoints = 100;
+
     if (isCorrect) {
-      const basePoints = 100;
-      const speedBonus = Math.round(this.gameState.timeRemaining * 10);
-      let multiplier = 1.0;
+      const remainingSec = this.gameState.timeRemaining;
+
+      // Escala dinámica de bonus por tiempo: cuanto más rápido se adivine, más puntos se obtienen
+      if (remainingSec >= 13) {
+        speedBonus = 150;
+        speedBadge = '⚡ Relámpago';
+      } else if (remainingSec >= 10) {
+        speedBonus = 100;
+        speedBadge = '🔥 Súper Rápido';
+      } else if (remainingSec >= 7) {
+        speedBonus = 65;
+        speedBadge = '⏱️ Buen Ritmo';
+      } else if (remainingSec >= 4) {
+        speedBonus = 35;
+        speedBadge = '👍 A Tiempo';
+      } else {
+        speedBonus = 15;
+        speedBadge = '⏳ Al Límite';
+      }
 
       if (this.gameState.streak >= 4) {
         multiplier = 2.0;
@@ -272,6 +293,10 @@ export class GameLogic {
       song: this.gameState.currentSong,
       lyricsData: this.gameState.lyricsChallengeData,
       pointsEarned,
+      basePoints,
+      speedBonus,
+      speedBadge,
+      multiplier,
       gameMode: this.gameState.gameMode
     });
 
