@@ -191,7 +191,7 @@ export class DOMRenderer {
     this.dom.btnRestart?.addEventListener('click', () => {
       this._releaseFocusTrap(this.dom.gameOverModal);
       this.dom.gameOverModal.classList.remove('open');
-      this.gameLogic.startNewGame(this.gameLogic.allSongs);
+      this.gameLogic.startNewGame(this.gameLogic.allSongs, this.gameLogic.isOrderedMode);
     });
 
     this.dom.btnMute?.addEventListener('click', () => {
@@ -474,6 +474,7 @@ export class DOMRenderer {
 
   /**
    * Activa una lista temática predefinida y actualiza la partida en curso.
+   * Si la lista tiene `ordered: true` (ej. Top 100 YouTube), reproduce en orden estricto #1 a #100.
    * @param {string} themeId
    * @private
    */
@@ -485,17 +486,18 @@ export class DOMRenderer {
 
     if (themeId === 'default') {
       this.gameLogic.resetToDefaultPlaylist(this.defaultSongs);
-      this.announce(`Mix General activado con ${this.defaultSongs.length} canciones.`);
+      this.announce(`Catálogo Maestro de ${this.defaultSongs.length} canciones y curiosidades activado.`);
     } else {
       const found = THEMATIC_PLAYLISTS.find(p => p.id === themeId);
       if (!found) return;
-      this.gameLogic.setCustomPlaylist(found.songs);
-      this.announce(`Lista temática ${found.name} activada con ${found.songs.length} canciones.`);
+      this.gameLogic.setCustomPlaylist(found.songs, Boolean(found.ordered));
+      this.announce(`Lista ${found.name} activada con ${found.songs.length} canciones${found.ordered ? ' en orden estricto del #1 al #100' : ''}.`);
     }
 
     this._renderPlaylistTable();
     if (this.dom.roundIndicator) {
-      this.dom.roundIndicator.textContent = `Pista 1 / ${this.gameState.totalRounds}`;
+      const prefix = this.gameLogic.isOrderedMode ? 'Top 100 YT • #1' : 'Pista 1';
+      this.dom.roundIndicator.textContent = `${prefix} / ${this.gameState.totalRounds}`;
     }
 
     // Si ya había iniciado la partida, lanzar inmediatamente la nueva ronda
@@ -617,15 +619,15 @@ export class DOMRenderer {
 
     songs.forEach((song, idx) => {
       const tr = document.createElement('tr');
-      const hasLyrics = song.lyrics?.en && song.lyrics?.es;
       const hasTrivia = Boolean(song.culturalTrivia);
+      const rankLabel = song.rank ? `#${song.rank}` : `${idx + 1}`;
 
       tr.innerHTML = `
-        <td style="color: var(--color-text-dim); font-family: var(--font-mono);">${idx + 1}</td>
+        <td style="color: var(--color-text-dim); font-family: var(--font-mono);">${rankLabel}</td>
         <td style="font-weight: 700;">${song.title}</td>
         <td style="color: var(--color-secondary);">${song.artist}</td>
         <td><span class="genre-pill" style="margin: 0; font-size: 0.7rem;">${song.genre || 'General'}</span></td>
-        <td style="text-align: center;">${hasLyrics ? '✅' : '⚠️'}</td>
+        <td style="text-align: center; font-family: var(--font-mono); color: var(--color-secondary);">${song.year || '—'}</td>
         <td style="text-align: center;">${hasTrivia ? '✅' : '⚠️'}</td>
       `;
       this.dom.playlistTableBody.appendChild(tr);
@@ -748,9 +750,10 @@ export class DOMRenderer {
 
   /**
    * Configura la interfaz al iniciar una ronda activa con accesibilidad WAI-ARIA (radiogroup) y Roving Tabindex.
+   * Las 4 opciones de respuesta cambian completamente en cada canción.
    * @private
    */
-  _renderPlayingState({ options, roundNumber, totalRounds, gameMode, lyricsData, song }) {
+  _renderPlayingState({ options, roundNumber, totalRounds, isOrderedMode, song }) {
     this.dom.discoveryPanel?.classList.remove('active');
     this._setCuriosityExpanded(false);
     this.dom.btnNext?.classList.add('hidden');
@@ -775,58 +778,28 @@ export class DOMRenderer {
     }
 
     if (this.dom.roundIndicator) {
-      const modeLabel = gameMode === GameModes.LYRICS ? 'Lyrics' : 'Trivia';
-      this.dom.roundIndicator.textContent = `${modeLabel} • Pista ${roundNumber} / ${totalRounds}`;
+      if (isOrderedMode || song?.rank) {
+        this.dom.roundIndicator.textContent = `Top 100 YT • #${song?.rank || roundNumber} / ${totalRounds}`;
+      } else {
+        this.dom.roundIndicator.textContent = `Pista ${roundNumber} / ${totalRounds}`;
+      }
     }
 
     this.dom.stageOverlay.classList.remove('hidden');
 
-    if (gameMode === GameModes.LYRICS && lyricsData) {
-      if (this.gameLogic.isTimerRunning) {
-        this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
-        this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
-      } else {
-        this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
-      }
-
-      if (this.dom.lyricsChallengeBox) {
-        this.dom.lyricsChallengeBox.classList.remove('hidden');
-
-        const regex = new RegExp(`\\b${lyricsData.targetWord}\\b`, 'i');
-        const parts = lyricsData.fullLine.split(regex);
-        if (parts.length >= 2) {
-          this.dom.verseEnglishText.innerHTML = `${parts[0]}<span class="lyrics-blank-token" id="lyrics-blank-token">[ ? ]</span>${parts.slice(1).join('')}`;
-        } else {
-          this.dom.verseEnglishText.innerHTML = lyricsData.blankedLine.replace('[ _____ ]', '<span class="lyrics-blank-token" id="lyrics-blank-token">[ ? ]</span>');
-        }
-
-        if (this.dom.verseSpanishTranslation) {
-          this.dom.verseSpanishTranslation.textContent = `💡 Traducción contextual: "${lyricsData.spanishContext}"`;
-        }
-
-        if (this.dom.lyricsInputField) {
-          this.dom.lyricsInputField.value = '';
-          this.dom.lyricsInputField.disabled = false;
-        }
-      }
-
-      this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción en Modo Lyrics Challenge. Pulsa S si ya suena la música.`);
+    if (this.gameLogic.isTimerRunning) {
+      this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
+      this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
+        ? `Puesto #${song.rank} más reproducido en YouTube (${song.views || 'Top Histórico'})`
+        : 'Escucha con atención las frecuencias...';
     } else {
-      if (this.gameLogic.isTimerRunning) {
-        this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
-        this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
-      } else {
-        this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
-      }
-
-      if (this.dom.lyricsChallengeBox) {
-        this.dom.lyricsChallengeBox.classList.add('hidden');
-      }
-
-      this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción en Modo Classic Trivia. Pulsa S si ya suena la música.`);
+      this.dom.stageTitle.textContent = 'Preparando canción...';
+      this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
+        ? `Puesto #${song.rank} en YouTube • Sincronizando audio o esperando fin de anuncio...`
+        : 'Sincronizando audio o esperando fin de anuncio...';
     }
+
+    this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción. Pulsa S si ya suena la música.`);
 
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
 
@@ -843,7 +816,7 @@ export class DOMRenderer {
       btn.dataset.option = optText;
 
       let labelHtml = `<span class="option-title-main">${optText}</span>`;
-      if (gameMode !== GameModes.LYRICS && optText.includes(' - ')) {
+      if (optText.includes(' - ')) {
         const sepIdx = optText.lastIndexOf(' - ');
         const songTitle = optText.slice(0, sepIdx).trim();
         const songArtist = optText.slice(sepIdx + 3).trim();

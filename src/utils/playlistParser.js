@@ -119,10 +119,6 @@ export function createSongEntry(title, artist, videoId = '') {
     year: new Date().getFullYear(),
     audioSrc: 'assets/audio/blinding_lights.wav',
     youtubeId: cleanVideoId,
-    lyrics: {
-      en: `Listen to the rhythm of ${title}\nFeel the melody tonight\nEvery word and every sound\nShining in the bright light`,
-      es: `Escucha el ritmo de "${title}"\nSiente la melodía esta noche\nCada palabra y cada sonido\nBrillando bajo la luz`
-    },
     culturalTrivia: `Tema interpretado por ${artist}, importado desde lista pública de YouTube Music.`
   };
 }

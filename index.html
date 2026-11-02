@@ -41,15 +41,11 @@
           <span class="brand-title">SongQuiz</span>
         </a>
 
-        <!-- Selector de modo integrado en cabecera para ahorrar altura vertical -->
-        <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
-          <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Adivina el título y artista por el clip musical">
-            <span>🎵</span> Classic
-          </button>
-          <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Completa el hueco en el verso en inglés">
-            <span>📝</span> Lyrics
-          </button>
-        </div>
+        <!-- Conexión directa con el cuaderno NotebookLM SongQuiz (500 Canciones y Curiosidades) -->
+        <a href="https://notebooklm.google.com/notebook/3926d997-19b3-45b1-80da-ff8e01a86e55" target="_blank" rel="noopener noreferrer" class="brand-badge" title="Conectado con cuaderno NotebookLM SongQuiz (500 Canciones + Top 100 YouTube)" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+          <span>🧠</span>
+          <span>NotebookLM • 500 Canciones</span>
+        </a>
       </div>
 
       <div class="header-status">
@@ -87,12 +83,13 @@
 
     <!-- BARRA COMPACTA DE PÍLDORAS TEMÁTICAS -->
     <nav class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas rápidas">
-      <button class="theme-pill active" data-theme-id="default" type="button">🌟 Mix General</button>
+      <button class="theme-pill active" data-theme-id="default" type="button" title="Catálogo maestro de 500 canciones con sus curiosidades sincronizado con NotebookLM">📚 500 Canciones & Curiosidades</button>
+      <button class="theme-pill" data-theme-id="top_100_youtube" type="button" title="Las 100 canciones más reproducidas de la historia de YouTube en estricto orden del #1 al #100">🏆 Top 100 YouTube (En Orden #1–100)</button>
       <button class="theme-pill" data-theme-id="pop_hits" type="button">🔥 Top Global Pop</button>
       <button class="theme-pill" data-theme-id="rock_legends" type="button">🎸 Leyendas del Rock</button>
-      <button class="theme-pill" data-theme-id="retro_80s" type="button">🕺 Clásicos 80s & Disco</button>
-      <button class="theme-pill" data-theme-id="english_academy" type="button">🎓 Inglés Pedagógico</button>
+      <button class="theme-pill" data-theme-id="retro_80s" type="button">🕺 Clásicos 70s & 80s</button>
       <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">💿 Éxitos 90s & 2000s</button>
+      <button class="theme-pill" data-theme-id="latin_hits" type="button">🌎 Hits en Español</button>
     </nav>
 
     <!-- ESCENARIO CENTRAL DEL JUEGO (DISEÑO COMPACTO SIN SCROLL) -->
@@ -187,22 +184,6 @@
               <button id="btn-start" class="btn-primary btn-cta-inline" type="button" disabled>Cargando Audio...</button>
             </div>
             <button id="btn-next" class="btn-primary btn-cta-inline hidden" type="button">Siguiente Canción ➔</button>
-          </div>
-        </div>
-
-        <!-- Caja de Desafío Lyrics Challenge (Visible solo en Modo Lyrics) -->
-        <div class="lyrics-challenge-box hidden" id="lyrics-challenge-box" aria-label="Desafío de completar la letra">
-          <div class="verse-quote-box">
-            <div class="verse-english-row">
-              <span class="challenge-badge">Listen & Fill</span>
-              <p class="verse-english-text" id="verse-english-text"></p>
-            </div>
-            <p class="verse-spanish-translation" id="verse-spanish-translation"></p>
-          </div>
-
-          <div class="lyrics-input-row">
-            <input type="text" id="lyrics-input-field" class="lyrics-input-field" placeholder="Escribe la palabra que falta o elige una opción..." autocomplete="off">
-            <button id="btn-lyrics-submit" class="btn-subtle" type="button">Validar</button>
           </div>
         </div>
 
@@ -303,8 +284,8 @@
                 <th>Título</th>
                 <th>Artista</th>
                 <th>Género</th>
-                <th style="text-align: center; width: 60px;">Letra</th>
-                <th style="text-align: center; width: 60px;">Trivia</th>
+                <th style="text-align: center; width: 60px;">Año</th>
+                <th style="text-align: center; width: 60px;">Curiosidad</th>
               </tr>
             </thead>
             <tbody id="playlist-table-body">

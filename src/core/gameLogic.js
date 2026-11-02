@@ -4,8 +4,8 @@
  * reproducción de vídeos completos de YouTube y fallback a Web Audio HTML5.
  */
 
-import { GameStates, GameModes } from './gameState.js';
-import { shuffle, generateOptions, generateLyricsChallenge } from '../utils/random.js';
+import { GameStates } from './gameState.js';
+import { shuffle, generateOptions } from '../utils/random.js';
 import { sfx } from '../audio/soundFX.js';
 import { youtubePlayer } from '../audio/youtubePlayer.js';
 
@@ -13,7 +13,7 @@ export const STORAGE_KEYS = {
   HIGH_SCORE: 'songquiz_high_score',
   GAMES_PLAYED: 'songquiz_games_count',
   BEST_STREAK: 'songquiz_best_streak',
-  CUSTOM_PLAYLIST: 'songquiz_custom_playlist'
+  CUSTOM_PLAYLIST: 'songquiz_custom_playlist_v3'
 };
 
 export class GameLogic {
@@ -30,6 +30,9 @@ export class GameLogic {
     this.youtubePlayer = ytPlayer;
 
     this.allSongs = [];
+    this.masterCatalog = [];
+    this.lastRoundOptions = [];
+    this.isOrderedMode = false;
     this.timerInterval = null;
     this.roundStartTime = 0;
     this.isTimerRunning = false;
@@ -73,33 +76,47 @@ export class GameLogic {
   /**
    * Carga el catálogo maestro e inicia una nueva partida.
    * @param {Array<Object>} defaultSongs
+   * @param {boolean} [ordered=false] - Si es true, mantiene el orden exacto de la lista (ej. Top 100 YouTube #1 a #100).
    */
-  startNewGame(defaultSongs) {
+  startNewGame(defaultSongs, ordered = false) {
+    if (Array.isArray(defaultSongs) && defaultSongs.length >= 100 && this.masterCatalog.length === 0) {
+      this.masterCatalog = [...defaultSongs];
+    }
+
+    this.isOrderedMode = Boolean(ordered);
+    this.lastRoundOptions = [];
+
     const savedCustom = this.getCustomPlaylist();
-    if (savedCustom && Array.isArray(savedCustom) && savedCustom.length > 0) {
+    if (!ordered && savedCustom && Array.isArray(savedCustom) && savedCustom.length > 0) {
       this.allSongs = [...savedCustom];
-    } else {
+    } else if (Array.isArray(defaultSongs) && defaultSongs.length > 0) {
       this.allSongs = [...defaultSongs];
     }
 
-    const shuffledSongs = shuffle(this.allSongs);
-    this.gameState.initGame(shuffledSongs);
+    const gameSongs = this.isOrderedMode ? [...this.allSongs] : shuffle(this.allSongs);
+    this.gameState.initGame(gameSongs);
     this.startRound();
   }
 
   /**
-   * Reemplaza la lista activa por una lista importada por el usuario y reinicia el juego.
+   * Reemplaza la lista activa por una lista seleccionada o importada y reinicia el juego.
    * @param {Array<Object>} importedSongs
+   * @param {boolean} [ordered=false] - Si es true, reproduce en orden estricto sin barajar.
    */
-  setCustomPlaylist(importedSongs) {
+  setCustomPlaylist(importedSongs, ordered = false) {
     if (!Array.isArray(importedSongs) || importedSongs.length === 0) {
       throw new Error('La lista de canciones no es válida.');
     }
     this.allSongs = [...importedSongs];
+    this.isOrderedMode = Boolean(ordered);
     try {
-      localStorage.setItem(STORAGE_KEYS.CUSTOM_PLAYLIST, JSON.stringify(importedSongs));
+      if (!ordered) {
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_PLAYLIST, JSON.stringify(importedSongs));
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.CUSTOM_PLAYLIST);
+      }
     } catch {}
-    this.startNewGame(this.allSongs);
+    this.startNewGame(this.allSongs, this.isOrderedMode);
   }
 
   /**
@@ -110,7 +127,10 @@ export class GameLogic {
     try {
       localStorage.removeItem(STORAGE_KEYS.CUSTOM_PLAYLIST);
     } catch {}
-    this.startNewGame(defaultSongs);
+    const catalog = (Array.isArray(defaultSongs) && defaultSongs.length > 0)
+      ? defaultSongs
+      : this.masterCatalog;
+    this.startNewGame(catalog, false);
   }
 
   /**
@@ -142,37 +162,25 @@ export class GameLogic {
     this.gameState.currentSong = track;
     this.gameState.timeRemaining = this.gameState.maxRoundTime;
 
-    let roundPayload = {
+    const distractorPool = this.allSongs.length >= 20
+      ? this.allSongs
+      : [...this.allSongs, ...this.masterCatalog];
+
+    const { options, correctAnswer } = generateOptions(track, distractorPool, 4, this.lastRoundOptions);
+    this.lastRoundOptions = options;
+    this.gameState.lyricsChallengeData = null;
+    this.gameState.currentOptions = options;
+    this.gameState.correctAnswer = correctAnswer;
+
+    const roundPayload = {
       song: track,
       roundNumber: this.gameState.currentIndex + 1,
       totalRounds: this.gameState.totalRounds,
-      gameMode: this.gameState.gameMode
+      gameMode: this.gameState.gameMode,
+      isOrderedMode: this.isOrderedMode,
+      options,
+      correctAnswer
     };
-
-    if (this.gameState.gameMode === GameModes.LYRICS) {
-      const lyricsData = generateLyricsChallenge(track, this.allSongs);
-      this.gameState.lyricsChallengeData = lyricsData;
-      this.gameState.currentOptions = lyricsData.options;
-      this.gameState.correctAnswer = lyricsData.targetWord;
-
-      roundPayload = {
-        ...roundPayload,
-        options: lyricsData.options,
-        correctAnswer: lyricsData.targetWord,
-        lyricsData
-      };
-    } else {
-      const { options, correctAnswer } = generateOptions(track, this.allSongs);
-      this.gameState.lyricsChallengeData = null;
-      this.gameState.currentOptions = options;
-      this.gameState.correctAnswer = correctAnswer;
-
-      roundPayload = {
-        ...roundPayload,
-        options,
-        correctAnswer
-      };
-    }
 
     // Transición a AWAITING_AUDIO ("Preparando canción...") sin iniciar aún la cuenta atrás de 120s
     this.isTimerRunning = false;
