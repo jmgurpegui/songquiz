@@ -1,0 +1,274 @@
+/**
+ * @fileoverview Lógica de negocio, reglas de puntuación, cálculo de combos y temporizador.
+ * Gestiona el bucle de rondas y la persistencia local de estadísticas en localStorage.
+ */
+
+import { GameStates } from './gameState.js';
+import { shuffle, generateOptions } from '../utils/random.js';
+import { sfx } from '../audio/soundFX.js';
+
+const STORAGE_KEYS = {
+  HIGH_SCORE: 'songquiz_high_score',
+  GAMES_PLAYED: 'songquiz_games_count',
+  BEST_STREAK: 'songquiz_best_streak'
+};
+
+export class GameLogic {
+  /**
+   * @param {import('./gameState.js').GameState} gameState
+   * @param {import('../audio/audioEngine.js').AudioEngine} audioEngine
+   * @param {import('../ui/visualizer.js').AudioVisualizer} visualizer
+   */
+  constructor(gameState, audioEngine, visualizer) {
+    this.gameState = gameState;
+    this.audioEngine = audioEngine;
+    this.visualizer = visualizer;
+
+    this.allSongs = [];
+    this.timerInterval = null;
+    this.roundStartTime = 0;
+
+    // Vincular finalización natural de la pista de audio
+    this.audioEngine.onEnded(() => {
+      // Si el audio termina antes de responder, se agota el tiempo
+      if (this.gameState.status === GameStates.PLAYING) {
+        this.handleTimeout();
+      }
+    });
+  }
+
+  /**
+   * Carga el catálogo maestro de canciones e inicia una nueva partida.
+   * @param {Array<Object>} songs
+   */
+  startNewGame(songs) {
+    this.allSongs = [...songs];
+    const shuffledSongs = shuffle(this.allSongs);
+    this.gameState.initGame(shuffledSongs);
+    this.startRound();
+  }
+
+  /**
+   * Inicia una ronda de adivinanza cargando audio y generando opciones.
+   */
+  async startRound() {
+    this._clearTimer();
+
+    const track = this.gameState.currentTrack;
+    if (!track) {
+      this.finishGame();
+      return;
+    }
+
+    this.gameState.currentSong = track;
+    const { options, correctAnswer } = generateOptions(track, this.allSongs);
+    this.gameState.currentOptions = options;
+    this.gameState.correctAnswer = correctAnswer;
+    this.gameState.timeRemaining = this.gameState.maxRoundTime;
+
+    // Notificar transición a PLAYING
+    this.gameState.transition(GameStates.PLAYING, {
+      song: track,
+      options,
+      correctAnswer,
+      roundNumber: this.gameState.currentIndex + 1,
+      totalRounds: this.gameState.totalRounds
+    });
+
+    // Iniciar visualizador y audio
+    this.visualizer.start();
+    try {
+      await this.audioEngine.load(track.audioSrc);
+      await this.audioEngine.play();
+    } catch (e) {
+      console.warn('Reproducción diferida a primer toque:', e);
+    }
+
+    this.roundStartTime = performance.now();
+    this._startTimer();
+  }
+
+  /**
+   * Inicia el bucle de temporizador de 1 segundo con ticks sonoros en el tramo final.
+   * @private
+   */
+  _startTimer() {
+    this.timerInterval = setInterval(() => {
+      const remaining = this.gameState.timeRemaining - 1;
+      this.gameState.setTimeRemaining(remaining);
+
+      // Alerta de sonido al restar los últimos 5 segundos
+      if (remaining <= 5 && remaining > 0) {
+        sfx.playTick();
+      }
+
+      if (remaining <= 0) {
+        this.handleTimeout();
+      }
+    }, 1000);
+  }
+
+  /**
+   * Limpia el temporizador activo para prevenir fugas de memoria.
+   * @private
+   */
+  _clearTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  /**
+   * Procesa la respuesta seleccionada por el jugador.
+   * @param {string} selectedOption - Cadena seleccionada por el usuario.
+   * @returns {{ isCorrect: boolean, correctAnswer: string, pointsEarned: number }}
+   */
+  submitAnswer(selectedOption) {
+    if (this.gameState.status !== GameStates.PLAYING) {
+      return { isCorrect: false, correctAnswer: this.gameState.correctAnswer, pointsEarned: 0 };
+    }
+
+    this._clearTimer();
+    const timeSpent = Math.max(0, (performance.now() - this.roundStartTime) / 1000);
+    const isCorrect = selectedOption === this.gameState.correctAnswer;
+
+    let pointsEarned = 0;
+    if (isCorrect) {
+      // Fórmula de puntuación: Base (100) + Bono por velocidad (10 pts por seg) * Multiplicador de racha
+      const basePoints = 100;
+      const speedBonus = Math.round(this.gameState.timeRemaining * 10);
+      let multiplier = 1.0;
+
+      if (this.gameState.streak >= 4) {
+        multiplier = 2.0;
+      } else if (this.gameState.streak >= 2) {
+        multiplier = 1.5;
+      }
+
+      pointsEarned = Math.round((basePoints + speedBonus) * multiplier);
+      sfx.playCorrect();
+
+      if (this.gameState.streak + 1 >= 3) {
+        setTimeout(() => sfx.playStreak(), 250);
+      }
+    } else {
+      sfx.playWrong();
+    }
+
+    this.gameState.recordAnswer(isCorrect, pointsEarned, timeSpent);
+
+    // Transición a ROUND_OVER para exhibir las letras y notas pedagógicas
+    this.gameState.transition(GameStates.ROUND_OVER, {
+      selectedOption,
+      isCorrect,
+      correctAnswer: this.gameState.correctAnswer,
+      song: this.gameState.currentSong,
+      pointsEarned
+    });
+
+    return {
+      isCorrect,
+      correctAnswer: this.gameState.correctAnswer,
+      pointsEarned
+    };
+  }
+
+  /**
+   * Ejecuta la penalización cuando el tiempo de la ronda llega a cero.
+   */
+  handleTimeout() {
+    this._clearTimer();
+    sfx.playWrong();
+    this.gameState.recordAnswer(false, 0, this.gameState.maxRoundTime);
+
+    this.gameState.transition(GameStates.ROUND_OVER, {
+      selectedOption: null,
+      isCorrect: false,
+      isTimeout: true,
+      correctAnswer: this.gameState.correctAnswer,
+      song: this.gameState.currentSong,
+      pointsEarned: 0
+    });
+  }
+
+  /**
+   * Pasa a la siguiente canción de la lista o culmina la sesión.
+   */
+  nextRound() {
+    this.audioEngine.stop();
+    const hasMore = this.gameState.advanceRound();
+    if (hasMore) {
+      this.startRound();
+    } else {
+      this.finishGame();
+    }
+  }
+
+  /**
+   * Culmina la partida, calcula el récord y almacena métricas locales.
+   */
+  finishGame() {
+    this._clearTimer();
+    this.audioEngine.stop();
+    sfx.playGameOver();
+
+    const previousHighScore = this.getHighScore();
+    const isNewRecord = this.gameState.score > previousHighScore;
+
+    if (isNewRecord) {
+      this.saveHighScore(this.gameState.score);
+    }
+
+    // Actualizar racha récord y conteo de partidas
+    const bestStreakRecorded = parseInt(localStorage.getItem(STORAGE_KEYS.BEST_STREAK) || '0', 10);
+    if (this.gameState.maxStreak > bestStreakRecorded) {
+      localStorage.setItem(STORAGE_KEYS.BEST_STREAK, String(this.gameState.maxStreak));
+    }
+
+    const gamesPlayed = parseInt(localStorage.getItem(STORAGE_KEYS.GAMES_PLAYED) || '0', 10) + 1;
+    localStorage.setItem(STORAGE_KEYS.GAMES_PLAYED, String(gamesPlayed));
+
+    const totalRounds = this.gameState.history.length;
+    const correctCount = this.gameState.history.filter(h => h.correct).length;
+    const accuracy = totalRounds > 0 ? Math.round((correctCount / totalRounds) * 100) : 0;
+    const avgTime = totalRounds > 0 
+      ? (this.gameState.history.reduce((acc, h) => acc + h.timeSpent, 0) / totalRounds).toFixed(1)
+      : 0;
+
+    this.gameState.transition(GameStates.GAME_OVER, {
+      finalScore: this.gameState.score,
+      previousHighScore,
+      isNewRecord,
+      accuracy,
+      correctCount,
+      totalRounds,
+      maxStreak: this.gameState.maxStreak,
+      avgTime
+    });
+  }
+
+  /**
+   * Obtiene la máxima puntuación almacenada en localStorage.
+   * @returns {number}
+   */
+  getHighScore() {
+    try {
+      return parseInt(localStorage.getItem(STORAGE_KEYS.HIGH_SCORE) || '0', 10);
+    } catch {
+      return 0;
+    }
+  }
+
+  /**
+   * Guarda un nuevo récord en localStorage.
+   * @param {number} score
+   */
+  saveHighScore(score) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.HIGH_SCORE, String(score));
+    } catch {
+      // Ignorar fallos de modo incógnito
+    }
+  }
+}

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "blinding_lights",
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "genre": "Synthwave / Pop",
+    "year": 2019,
+    "audioSrc": "assets/audio/blinding_lights.wav",
+    "lyrics": {
+      "en": "I said, ooh, I'm blinded by the lights\nNo, I can't sleep until I feel your touch\nI said, ooh, I'm drowning in the night\nOh, when I'm like this, you're the one I trust",
+      "es": "Dije, ooh, estoy cegado por las luces\nNo, no puedo dormir hasta sentir tu caricia\nDije, ooh, me estoy ahogando en la noche\nOh, cuando estoy así, eres la única en quien confío"
+    },
+    "culturalTrivia": "Publicada a finales de 2019, 'Blinding Lights' se convirtió en la canción más exitosa de la historia de la lista Billboard Hot 100, permaneciendo 90 semanas en el ranking y catalizando el renacimiento moderno de los sintetizadores analógicos de los años 80."
+  },
+  {
+    "id": "shape_of_you",
+    "title": "Shape of You",
+    "artist": "Ed Sheeran",
+    "genre": "Pop / Dancehall",
+    "year": 2017,
+    "audioSrc": "assets/audio/shape_of_you.wav",
+    "lyrics": {
+      "en": "The club isn't the best place to find a lover\nSo the bar is where I go\nMe and my friends at the table doing shots\nDrinking fast and then we talk slow",
+      "es": "El club no es el mejor lugar para encontrar pareja\nAsí que al bar es a donde voy\nMis amigos y yo en la mesa tomando chupitos\nBebiendo rápido y luego hablando despacio"
+    },
+    "culturalTrivia": "Ed Sheeran compuso inicialmente el pegadizo riff de marimba pensando en cedérselo a Rihanna. Sin embargo, al completar las estrofas decidió conservarla; terminó siendo el sencillo más reproducido de la década de 2010 en plataformas digitales."
+  },
+  {
+    "id": "bohemian_rhapsody",
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "genre": "Progressive Rock / Opera",
+    "year": 1975,
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "lyrics": {
+      "en": "Is this the real life? Is this just fantasy?\nCaught in a landslide, no escape from reality\nOpen your eyes, look up to the skies and see\nI'm just a poor boy, I need no sympathy",
+      "es": "¿Es esta la vida real? ¿Es solo una fantasía?\nAtrapado en un derrumbe, sin escape de la realidad\nAbre tus ojos, mira a los cielos y observa\nSolo soy un chico pobre, no necesito compasión"
+    },
+    "culturalTrivia": "Freddie Mercury escribió la suite prescindiendo del estribillo tradicional. La sección operística requirió más de 180 sobregrabaciones vocales analógicas en cinta de 2 pulgadas, desgastando la cinta magnética original hasta hacerla casi transparente durante las sesiones de mezcla."
+  },
+  {
+    "id": "billie_jean",
+    "title": "Billie Jean",
+    "artist": "Michael Jackson",
+    "genre": "Post-Disco / Funk / Pop",
+    "year": 1982,
+    "audioSrc": "assets/audio/billie_jean.wav",
+    "lyrics": {
+      "en": "Billie Jean is not my lover\nShe's just a girl who claims that I am the one\nBut the kid is not my son\nShe says I am the one, but the kid is not my son",
+      "es": "Billie Jean no es mi amante\nElla solo es una chica que afirma que yo soy el indicado\nPero el niño no es mi hijo\nElla dice que yo soy el elegido, pero el niño no es mi hijo"
+    },
+    "culturalTrivia": "El productor Quincy Jones quería titularla 'Not My Lover' para evitar confusiones con la tenista Billie Jean King, y consideraba la icónica introducción de bajo demasiado larga. Michael Jackson insistió en mantenerla porque 'esa línea de bajo te obliga a bailar de inmediato'."
+  },
+  {
+    "id": "stayin_alive",
+    "title": "Stayin' Alive",
+    "artist": "Bee Gees",
+    "genre": "Disco / Funk",
+    "year": 1977,
+    "audioSrc": "assets/audio/stayin_alive.wav",
+    "lyrics": {
+      "en": "Well, you can tell by the way I use my walk\nI'm a woman's man, no time to talk\nMusic loud and women warm, I've been kicked around\nSince I was born",
+      "es": "Bueno, puedes notar por la forma en que camino\nQue soy un hombre de mujeres, sin tiempo para hablar\nMúsica alta y mujeres cálidas, me han tratado a golpes\nDesde que nací"
+    },
+    "culturalTrivia": "Con un ritmo constante y riguroso de 103 a 104 pulsaciones por minuto (BPM), la American Heart Association recomienda tararear 'Stayin Alive' al practicar reanimación cardiopulmonar (RCP) para mantener la cadencia ideal de compresiones torácicas."
+  },
+  {
+    "id": "take_on_me",
+    "title": "Take On Me",
+    "artist": "a-ha",
+    "genre": "Synth-pop / New Wave",
+    "year": 1985,
+    "audioSrc": "assets/audio/take_on_me.wav",
+    "lyrics": {
+      "en": "We're talking away, I don't know what I'm to say\nI'll say it anyway, today's another day to find you\nShying away, I'll be coming for your love, okay?\nTake on me, take me on",
+      "es": "Estamos conversando, no sé qué debería decir\nLo diré de todos modos, hoy es otro día para encontrarte\nEsquiva, iré a por tu amor, ¿de acuerdo?\nAcéptame, ponte a prueba conmigo"
+    },
+    "culturalTrivia": "El cantante noruego Morten Harket alcanza un registro vocal prodigioso de más de dos octavas y media durante la canción, culminando en un Mi agudo (E5) en falsete con voz de cabeza pura que se convirtió en una de las notas más memorables de la historia del pop."
+  }
+]
