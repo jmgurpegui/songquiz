@@ -1,6 +1,6 @@
 /**
- * @fileoverview Punto de entrada (bootstrap) de la aplicación SongQuiz con estética Spotify.
- * Coordina la inyección de dependencias, YouTube Player, Web Audio y gestor de playlists.
+ * @fileoverview Punto de entrada (bootstrap) de la aplicación SongQuiz.
+ * Coordina la inyección de dependencias, YouTube Player, Web Audio y gestor de listas.
  */
 
 import { GameState } from './core/gameState.js';
@@ -12,7 +12,7 @@ import { AudioVisualizer } from './ui/visualizer.js';
 import { DOMRenderer } from './ui/domRenderer.js';
 
 async function bootstrap() {
-  console.log('%c🟢 SongQuiz Spotify & YouTube Edition v2.5', 'color: #1db954; font-weight: bold; font-size: 14px;');
+  console.log('%c🎵 SongQuiz v2.9.0', 'color: #1db954; font-weight: bold; font-size: 14px;');
 
   const canvas = document.getElementById('visualizer-canvas');
   if (!canvas) {

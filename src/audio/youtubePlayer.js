@@ -74,6 +74,7 @@ export class YouTubePlayerEngine {
           autoplay: 1,
           playsinline: 1,
           controls: 1,
+          cc_load_policy: 1,
           rel: 0,
           modestbranding: 1,
           iv_load_policy: 3,
@@ -114,7 +115,7 @@ export class YouTubePlayerEngine {
   /**
    * Watcher de sincronización Pre-Roll que evalúa player.getCurrentTime() cada 250ms
    * tras recibir YT.PlayerState.PLAYING. Dispara onAudioActuallyPlaying únicamente
-   * cuando getCurrentTime() > 0.7 segundos y no hay un anuncio pre-roll activo.
+   * cuando getCurrentTime() > 0.8 segundos y no hay un anuncio pre-roll activo.
    * @private
    */
   _startPlaybackWatcher() {
@@ -138,7 +139,7 @@ export class YouTubePlayerEngine {
         // Si loadedVideoId difiere de currentVideoId, YouTube está reproduciendo un anuncio en el iframe
         const isAdActive = Boolean(loadedVideoId && this.currentVideoId && loadedVideoId !== this.currentVideoId);
 
-        if (!isAdActive && currentTime > 0.7) {
+        if (!isAdActive && currentTime > 0.8) {
           this._audioStartedForCurrentTrack = true;
           this._clearPlaybackWatcher();
           if (typeof this._onAudioActuallyPlayingCb === 'function') {

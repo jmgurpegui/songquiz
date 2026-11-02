@@ -1,14 +1,18 @@
 /**
- * @fileoverview Sistema de tokens de diseño con identidad visual estilo Spotify.
- * Colores oscuros profundos (#121212), verde Spotify (#1db954), tipografía moderna y radios característicos.
+ * @fileoverview Sistema de tokens de diseño para SongQuiz.
+ * Superficies oscuras profundas, acentos esmeralda vibrantes, tipografía geométrica y micro-interacciones.
  */
 
 :root {
-  /* Paleta Spotify Oficial */
+  /* Paleta de Acento Principal */
   --spotify-green: #1db954;
   --spotify-green-light: #1ed760;
   --spotify-green-dark: #169c46;
-  --spotify-green-glow: rgba(29, 185, 84, 0.4);
+  --spotify-green-glow: rgba(29, 185, 84, 0.35);
+
+  --color-accent: #1db954;
+  --color-accent-light: #1ed760;
+  --color-accent-glow: rgba(29, 185, 84, 0.35);
 
   --color-bg-base: #121212;
   --color-bg-dark: #000000;

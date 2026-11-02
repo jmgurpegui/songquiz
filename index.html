@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SongQuiz - Trivia musical interactiva y aprendizaje de inglés con letras y cultura musical.">
-  <meta name="theme-color" content="#121212">
+  <meta name="description" content="SongQuiz - Trivia musical interactiva y desafío de escucha en inglés.">
+  <meta name="theme-color" content="#0f1115">
 
-  <title>SongQuiz - Trivia Musical & Cultura Bilingüe</title>
+  <title>SongQuiz — Trivia Musical Interactiva</title>
 
   <!-- PWA Manifest e Iconos -->
   <link rel="manifest" href="./manifest.json">
@@ -28,18 +28,29 @@
   <div id="a11y-alert" class="visually-hidden" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <div class="app-container">
-    <!-- ENCABEZADO ESTILO SPOTIFY -->
+    <!-- CABECERA COMPACTA CON IDENTIDAD PROPIA -->
     <header class="app-header">
-      <a href="./" class="brand" aria-label="SongQuiz Inicio">
-        <!-- Icono de ondas de sonido estilo Spotify -->
-        <svg class="brand-icon" viewBox="0 0 24 24" fill="currentColor">
-          <circle cx="12" cy="12" r="10" fill="var(--spotify-green)"></circle>
-          <path d="M7 9.5c3.2-1 6.8-.7 10 .8" stroke="#121212" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
-          <path d="M7.8 12.2c2.6-.8 5.6-.6 8.2.7" stroke="#121212" stroke-width="1.6" stroke-linecap="round" fill="none"></path>
-          <path d="M8.5 14.8c2.1-.6 4.5-.4 6.6.6" stroke="#121212" stroke-width="1.4" stroke-linecap="round" fill="none"></path>
-        </svg>
-        <span class="brand-title">SongQuiz</span>
-      </a>
+      <div class="header-left">
+        <a href="./" class="brand" aria-label="SongQuiz Inicio">
+          <!-- Icono musical vectorial sobrio (nota doble / ecualizador) -->
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          <span class="brand-title">SongQuiz</span>
+        </a>
+
+        <!-- Selector de modo integrado en cabecera para ahorrar altura vertical -->
+        <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
+          <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Adivina el título y artista por el clip musical">
+            <span>🎵</span> Classic
+          </button>
+          <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Completa el hueco en el verso en inglés">
+            <span>📝</span> Lyrics
+          </button>
+        </div>
+      </div>
 
       <div class="header-status">
         <div class="stat-chip streak" id="streak-chip" title="Racha consecutiva de aciertos">
@@ -55,13 +66,13 @@
         <span class="brand-badge" id="round-indicator">Pista 1 / 10</span>
 
         <div class="header-actions">
-          <button id="btn-open-importer" class="btn-spotify-subtle" type="button" title="Explorar listas por temática o importar desde YouTube Music">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas por temática o importar desde YouTube">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
               <line x1="12" y1="11" x2="12" y2="17"></line>
               <line x1="9" y1="14" x2="15" y2="14"></line>
             </svg>
-            <span>Listas & Temáticas</span>
+            <span>Listas</span>
           </button>
 
           <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
@@ -74,41 +85,37 @@
       </div>
     </header>
 
-    <!-- BARRA DE MODO Y FILTROS TEMÁTICOS RÁPIDOS -->
-    <div class="top-controls-bar">
-      <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
-        <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Adivina el título y artista por el clip musical">
-          <span>🎵</span> Classic Trivia
-        </button>
-        <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Completa el hueco en el verso en inglés">
-          <span>📝</span> Lyrics Challenge
-        </button>
-      </div>
+    <!-- BARRA COMPACTA DE PÍLDORAS TEMÁTICAS -->
+    <nav class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas rápidas">
+      <button class="theme-pill active" data-theme-id="default" type="button">🌟 Mix General</button>
+      <button class="theme-pill" data-theme-id="pop_hits" type="button">🔥 Top Global Pop</button>
+      <button class="theme-pill" data-theme-id="rock_legends" type="button">🎸 Leyendas del Rock</button>
+      <button class="theme-pill" data-theme-id="retro_80s" type="button">🕺 Clásicos 80s & Disco</button>
+      <button class="theme-pill" data-theme-id="english_academy" type="button">🎓 Inglés Pedagógico</button>
+      <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">💿 Éxitos 90s & 2000s</button>
+    </nav>
 
-      <!-- Píldoras de Listas Temáticas de YouTube Music -->
-      <div class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas rápidas">
-        <button class="theme-pill active" data-theme-id="default" type="button">🌟 Mix General</button>
-        <button class="theme-pill" data-theme-id="pop_hits" type="button">🔥 Top Global Pop</button>
-        <button class="theme-pill" data-theme-id="rock_legends" type="button">🎸 Leyendas del Rock</button>
-        <button class="theme-pill" data-theme-id="retro_80s" type="button">🕺 Clásicos 80s & Disco</button>
-        <button class="theme-pill" data-theme-id="english_academy" type="button">🎓 Inglés Pedagógico</button>
-        <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">💿 Éxitos 90s & 2000s</button>
-      </div>
-    </div>
-
-    <!-- ÁREA PRINCIPAL DEL JUEGO -->
+    <!-- ESCENARIO CENTRAL DEL JUEGO (DISEÑO COMPACTO SIN SCROLL) -->
     <main class="game-viewport">
       <section class="game-card" aria-label="Ronda de adivinanza musical">
 
         <!-- Escenario de Audio y Vídeo Embebido con Espectrograma Canvas y Minimizado Antispoiler -->
         <div class="audio-stage" id="audio-stage">
-          <!-- Barra superior de control para Minimizar / Modo Antispoiler -->
+          <!-- Barra superior de control para Minimizar / Modo Antispoiler y Saltos de Tiempo -->
           <div class="audio-stage-toolbar">
+            <div class="stage-seek-group">
+              <button id="btn-seek-back" class="stage-mini-action" type="button" title="Retroceder 10 segundos en la canción">
+                ⏪ -10s
+              </button>
+              <button id="btn-seek-forward" class="stage-mini-action" type="button" title="Adelantar 15 segundos para saltar introducción">
+                ⏩ +15s
+              </button>
+            </div>
             <button id="btn-toggle-minimize" class="stage-minimize-btn" type="button" aria-label="Minimizar reproductor para ocultar vídeo y título" title="Minimizar reproductor (Ocultar vídeo / Modo Antispoiler) [V]">
-              <svg id="icon-minimize-svg" class="icon-minimize" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg id="icon-minimize-svg" class="icon-minimize" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="4" y1="12" x2="20" y2="12"></line>
               </svg>
-              <svg id="icon-expand-svg" class="icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+              <svg id="icon-expand-svg" class="icon-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <polyline points="9 21 3 21 3 15"></polyline>
                 <line x1="21" y1="3" x2="14" y2="10"></line>
@@ -121,7 +128,14 @@
           <!-- Visera Superior Anti-Spoiler: cubre el título de YouTube mientras permite pulsar "Saltar anuncio" en el vídeo -->
           <div class="anti-spoiler-top-shield" id="anti-spoiler-top-shield">
             <span class="shield-badge">🔒 Título oculto</span>
-            <span class="shield-hint" id="shield-hint-text">Salta el anuncio en el vídeo y pulsa «Iniciar Tiempo»</span>
+            <span class="shield-hint" id="shield-hint-text">Salta el anuncio en el vídeo si aparece</span>
+          </div>
+
+          <!-- Píldora flotante sobre el reproductor para sincronización de anuncios (Atajo tecla S) -->
+          <div class="floating-ad-pill-wrapper" id="ad-skip-control-bar">
+            <button id="btn-start-timer" class="floating-ad-pill" type="button" style="display: none;" title="Atajo: tecla [S] para forzar el inicio del cronómetro en 120s">
+              📢 Anuncio en curso / Pulsa si ya suena la música
+            </button>
           </div>
 
           <!-- Reproductor de YouTube Embebido -->
@@ -129,9 +143,9 @@
             <div id="ytplayer"></div>
           </div>
 
-          <!-- Barra compacta estilo Spotify visible cuando está minimizado -->
+          <!-- Barra compacta visible cuando el reproductor está minimizado -->
           <div class="minimized-audio-bar" id="minimized-audio-bar">
-            <div class="spotify-eq-bars" aria-hidden="true">
+            <div class="eq-bars" aria-hidden="true">
               <span class="eq-bar bar-1"></span>
               <span class="eq-bar bar-2"></span>
               <span class="eq-bar bar-3"></span>
@@ -145,132 +159,87 @@
 
           <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio en tiempo real"></canvas>
 
-          <!-- Overlay para fase de adivinanza (frosted glass) -->
+          <!-- Overlay para fase de adivinanza -->
           <div class="audio-overlay-label" id="stage-overlay">
             <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
             <p class="stage-subtitle" id="stage-subtitle">Escucha atentamente el audio...</p>
           </div>
         </div>
 
-        <!-- Barra de Control Anti-Publicidad, Salto de Intro (+15s) y Banner Manual de Arranque de Tiempo -->
-        <div class="ad-skip-control-bar" id="ad-skip-control-bar">
-          <button id="btn-start-timer" class="btn-timer-start" type="button" title="Pulsa aquí o presiona la tecla [S] para forzar el inicio del tiempo en 120s">
-            📢 Esperando fin de anuncio / Pulsa aquí si ya suena la música
-          </button>
-          <div class="ad-skip-buttons">
-            <span class="ad-status-dot paused" id="timer-status-dot"></span>
-            <span id="timer-status-label" class="ad-skip-status">Preparando canción... [Tecla S]</span>
-            <button id="btn-seek-back" class="btn-spotify-subtle" type="button" title="Retroceder 10 segundos en la canción">
-              ⏪ -10s
-            </button>
-            <button id="btn-seek-forward" class="btn-spotify-subtle" type="button" title="Adelantar 15 segundos para saltar introducción e ir a la letra">
-              ⏩ +15s (Ir a la letra)
-            </button>
+        <!-- FILA JERÁRQUICA INTEGRADA: TEMPORIZADOR + BOTÓN CTA PRINCIPAL (COMENZAR / SIGUIENTE) -->
+        <div class="timer-cta-row">
+          <div class="timer-container" aria-label="Tiempo restante">
+            <div class="timer-header">
+              <span class="timer-status-inline">
+                <span class="ad-status-dot paused" id="timer-status-dot"></span>
+                <span id="timer-status-label">Tiempo (Máx. 2:00)</span>
+              </span>
+              <span id="timer-text" class="stat-number">2:00</span>
+            </div>
+            <div class="timer-bar-track">
+              <div class="timer-bar-fill" id="timer-bar-fill"></div>
+            </div>
+          </div>
+
+          <!-- Botones de Acción Principal (CTA) integrados junto al temporizador -->
+          <div class="primary-cta-slot">
+            <div id="start-screen" class="cta-inline-wrapper">
+              <button id="btn-start" class="btn-primary btn-cta-inline" type="button" disabled>Cargando Audio...</button>
+            </div>
+            <button id="btn-next" class="btn-primary btn-cta-inline hidden" type="button">Siguiente Canción ➔</button>
           </div>
         </div>
 
-        <!-- Temporizador de 2 minutos estilo barra de reproducción -->
-        <div class="timer-container" aria-label="Tiempo restante">
-          <div class="timer-header">
-            <span>Tiempo para Adivinar (Máx. 2:00)</span>
-            <span id="timer-text" class="stat-number">2:00</span>
-          </div>
-          <div class="timer-bar-track">
-            <div class="timer-bar-fill" id="timer-bar-fill"></div>
-          </div>
-        </div>
-
-        <!-- Caja de Desafío Lyrics Challenge (Visible en Modo Lyrics) -->
+        <!-- Caja de Desafío Lyrics Challenge (Visible solo en Modo Lyrics) -->
         <div class="lyrics-challenge-box hidden" id="lyrics-challenge-box" aria-label="Desafío de completar la letra">
-          <div class="challenge-header-row">
-            <span class="challenge-type-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </svg>
-              Listen & Fill in the Blank (Completa el verso)
-            </span>
-          </div>
-
           <div class="verse-quote-box">
-            <p class="verse-english-text" id="verse-english-text"></p>
+            <div class="verse-english-row">
+              <span class="challenge-badge">Listen & Fill</span>
+              <p class="verse-english-text" id="verse-english-text"></p>
+            </div>
             <p class="verse-spanish-translation" id="verse-spanish-translation"></p>
           </div>
 
-          <!-- Entrada opcional de texto para mecanografía directa -->
           <div class="lyrics-input-row">
-            <input type="text" id="lyrics-input-field" class="lyrics-input-field" placeholder="Escribe la palabra que falta o pulsa una opción..." autocomplete="off">
-            <button id="btn-lyrics-submit" class="btn-spotify-subtle" type="button">Validar</button>
+            <input type="text" id="lyrics-input-field" class="lyrics-input-field" placeholder="Escribe la palabra que falta o elige una opción..." autocomplete="off">
+            <button id="btn-lyrics-submit" class="btn-subtle" type="button">Validar</button>
           </div>
         </div>
 
-        <!-- Botón de Inicio Inicial -->
-        <div id="start-screen" class="controls-centered">
-          <button id="btn-start" class="btn-primary" type="button" disabled>Cargando Motor de Audio...</button>
-        </div>
-
-        <!-- Grilla de Opciones estilo pistas de lista de Spotify (WAI-ARIA radiogroup) -->
+        <!-- Cuadrícula 2x2 de Opciones (mínimo 56px, acabado translúcido blur 12px, foco en el título) -->
         <div class="options-grid" id="options-grid" role="radiogroup" aria-label="Opciones de respuesta disponibles">
           <!-- Inyectado dinámicamente por domRenderer.js -->
         </div>
 
-        <!-- Mensaje de Estado / Feedback de Acierto o Error -->
-        <div class="status-msg" id="status-msg" role="status" aria-live="polite" style="text-align: center; font-weight: 700; font-size: var(--text-lg); min-height: 2rem;"></div>
+        <!-- Mensaje de Estado y Tarjeta Plegable Horizontal "Curiosidad Musical" -->
+        <div class="bottom-feedback-row">
+          <div class="status-msg" id="status-msg" role="status" aria-live="polite"></div>
 
-      </section>
-
-      <!-- SECCIÓN PEDAGÓGICA: LETRAS & STORYLINE -->
-      <section class="discovery-panel" id="discovery-panel" aria-label="Letras y Cultura Musical">
-        <h2 class="discovery-title">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--spotify-green);">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z"/>
-          </svg>
-          Letras & Historia (Detrás de la Música)
-        </h2>
-
-        <div class="cards-split">
-          <!-- Tarjeta 1: Vista de Letras Oficial de Spotify -->
-          <article class="spotify-lyrics-card">
-            <header class="info-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18V5l12-2v13"></path>
-                <circle cx="6" cy="18" r="3"></circle>
-                <circle cx="18" cy="16" r="3"></circle>
-              </svg>
-              Letra Sincronizada y Traducción
-            </header>
-            <div class="lyrics-container">
-              <div class="lyric-stanza">
-                <p class="lyric-en" id="lyrics-en"></p>
-                <p class="lyric-es" id="lyrics-es"></p>
+          <!-- TARJETA ÚNICA HORIZONTAL, COMPACTA Y PLEGABLE: CURIOSIDAD MUSICAL -->
+          <section class="discovery-panel" id="discovery-panel" aria-label="Curiosidad Musical">
+            <div class="curiosity-bar">
+              <div class="curiosity-header-left">
+                <span class="curiosity-icon" aria-hidden="true">💡</span>
+                <span class="curiosity-label">Curiosidad Musical</span>
+                <span class="genre-pill" id="genre-badge">Género</span>
+                <span class="curiosity-preview" id="curiosity-preview"></span>
+              </div>
+              <div class="curiosity-header-actions">
+                <a id="btn-yt-external" class="btn-subtle btn-yt-mini" href="#" target="_blank" rel="noopener noreferrer" style="display: none;" title="Abrir vídeo oficial en YouTube">
+                  <span>▶ YouTube</span>
+                </a>
+                <button id="btn-toggle-curiosity" class="btn-curiosity-toggle" type="button" aria-expanded="false" aria-controls="curiosity-body">
+                  <span id="curiosity-toggle-text">Ver más</span>
+                  <span class="curiosity-chevron" id="curiosity-chevron">▾</span>
+                </button>
               </div>
             </div>
-          </article>
-
-          <!-- Tarjeta 2: Storyline / Curiosidades Culturales -->
-          <article class="spotify-storyline-card">
-            <header class="info-card-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              Detrás de la Música (Storyline)
-            </header>
-            <div class="genre-pill" id="genre-badge">Género</div>
-            <p class="trivia-body" id="culture-text"></p>
-          </article>
+            <div class="curiosity-body" id="curiosity-body" hidden>
+              <p class="trivia-body" id="culture-text"></p>
+            </div>
+          </section>
         </div>
 
-        <div class="controls-centered discovery-actions" style="gap: var(--space-sm); flex-wrap: wrap;">
-          <a id="btn-yt-external" class="btn-spotify-subtle" href="#" target="_blank" rel="noopener noreferrer" style="display: none; padding: 12px 20px; font-size: var(--text-sm);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="color: #ff0000;">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
-            <span>Ver en YouTube</span>
-          </a>
-          <button id="btn-next" class="btn-primary" type="button">Siguiente Canción 🎵</button>
-        </div>
       </section>
     </main>
   </div>
@@ -280,7 +249,7 @@
     <div class="modal-card wide">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-xs);">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <h2 class="modal-heading" id="importer-title" style="font-size: var(--text-xl);">Gestor de Playlists</h2>
+          <h2 class="modal-heading" id="importer-title" style="font-size: var(--text-xl);">Gestor de Listas Musicales</h2>
           <span class="brand-badge" id="playlist-count-badge">0 canciones</span>
         </div>
         <button id="btn-close-importer" class="icon-btn" type="button" aria-label="Cerrar modal">✕</button>
@@ -298,8 +267,8 @@
       <div class="playlist-tab-content" id="tab-link">
         <div class="thematic-playlists-section">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
-            <span style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--spotify-green-light);">
-              🌟 Listas Populares Sugeridas en YouTube Music (Carga Instantánea con Letras)
+            <span style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-accent-light);">
+              🌟 Listas Populares por Temática en YouTube Music (Carga Instantánea)
             </span>
           </div>
           <div class="thematic-grid" id="thematic-playlists-grid">
@@ -321,7 +290,7 @@
           </button>
         </div>
 
-        <div id="import-progress-status" style="min-height: 1.4rem; font-size: var(--text-xs); color: var(--spotify-green-light); font-weight: 600;"></div>
+        <div id="import-progress-status" style="min-height: 1.4rem; font-size: var(--text-xs); color: var(--color-accent-light); font-weight: 600;"></div>
       </div>
 
       <!-- Pestaña 2: Lista de Canciones Activas -->
@@ -345,10 +314,10 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-md); flex-wrap: wrap; gap: var(--space-xs);">
-          <button id="btn-export-json" class="btn-spotify-subtle" type="button">
+          <button id="btn-export-json" class="btn-subtle" type="button">
             ⬇️ Exportar 'songs.json'
           </button>
-          <button id="btn-reset-default-songs" class="btn-spotify-subtle" type="button" style="color: var(--color-error);">
+          <button id="btn-reset-default-songs" class="btn-subtle" type="button" style="color: var(--color-error);">
             🔄 Restablecer Oficiales
           </button>
         </div>
@@ -359,7 +328,7 @@
         <p style="font-size: var(--text-xs); color: var(--color-secondary); margin-bottom: var(--space-xs);">
           Pega un catálogo JSON completo o una lista simple de canciones (ej: <code>Artista - Título</code> en cada línea):
         </p>
-        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder="[ { 'id': '...', 'title': '...', 'lyrics': {...} } ]&#10;o pega texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights" style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
+        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder="[ { 'id': '...', 'title': '...' } ]&#10;o pega texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights" style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
 
         <div class="controls-centered" style="margin-top: var(--space-sm);">
           <button id="btn-apply-custom-json" class="btn-primary" type="button">
@@ -368,20 +337,20 @@
         </div>
       </div>
 
-      <!-- Pestaña 3: Guía de Importador CLI YouTube -->
+      <!-- Pestaña 4: Guía de Importador CLI YouTube -->
       <div class="playlist-tab-content" id="tab-youtube" style="display: none;">
         <div style="background: rgba(0,0,0,0.5); padding: var(--space-md); border-radius: var(--radius-md); font-size: var(--text-sm); line-height: 1.6;">
-          <p style="font-weight: 700; color: var(--spotify-green-light); margin-bottom: 6px;">
+          <p style="font-weight: 700; color: var(--color-accent-light); margin-bottom: 6px;">
             🚀 Importador Automático de Listas de Reproducción de YouTube
           </p>
           <p style="color: var(--color-secondary); margin-bottom: var(--space-xs);">
-            Puedes volcar automáticamente cualquier lista de reproducción pública de YouTube hacia tu catálogo <code style="color: var(--spotify-green); font-family: var(--font-mono);">src/data/songs.json</code> ejecutando el script incluido:
+            Puedes volcar automáticamente cualquier lista pública de YouTube hacia <code style="color: var(--color-accent-light); font-family: var(--font-mono);">src/data/songs.json</code> ejecutando el script incluido:
           </p>
           <pre style="background: #000; padding: 10px; border-radius: 6px; font-family: var(--font-mono); color: #fff; font-size: 0.8rem; overflow-x: auto; margin-bottom: var(--space-xs);">python3 scripts/import_playlist.py "https://www.youtube.com/playlist?list=ID_DE_TU_PLAYLIST"</pre>
           <p style="font-size: var(--text-xs); color: var(--color-text-dim);">
-            ✓ Extrae títulos limpios sin "Official Video"<br>
-            ✓ Genera las plantillas para letras bilingües y trivia cultural<br>
-            ✓ Sin claves de Google Cloud ni APIs externas (100% Zero-API)
+            ✓ Extrae títulos limpios sin etiquetas superfluas<br>
+            ✓ Genera plantillas para curiosidades culturales<br>
+            ✓ Sin claves de API externas (100% Zero-API)
           </p>
         </div>
       </div>
@@ -391,7 +360,7 @@
   <!-- MODAL DE FINAL DE PARTIDA -->
   <div class="modal-overlay" id="game-over-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
-      <div id="record-badge" class="brand-badge" style="display: none; align-self: center; background: rgba(29, 185, 84, 0.2); color: var(--spotify-green-light); border-color: var(--spotify-green); font-size: 0.85rem; padding: 4px 14px;">
+      <div id="record-badge" class="brand-badge" style="display: none; align-self: center; font-size: 0.85rem; padding: 4px 14px;">
         🏆 ¡Nuevo Récord Personal!
       </div>
 
@@ -401,7 +370,7 @@
       <div class="summary-stats-grid">
         <div class="summary-stat-box">
           <span class="summary-stat-label">Puntuación Total</span>
-          <span class="summary-stat-val" id="final-score" style="color: var(--spotify-green-light);">0</span>
+          <span class="summary-stat-val" id="final-score" style="color: var(--color-accent-light);">0</span>
         </div>
         <div class="summary-stat-box">
           <span class="summary-stat-label">Precisión</span>

@@ -101,10 +101,13 @@ export class DOMRenderer {
       btnStart: document.getElementById('btn-start'),
 
       discoveryPanel: document.getElementById('discovery-panel'),
-      lyricsEn: document.getElementById('lyrics-en'),
-      lyricsEs: document.getElementById('lyrics-es'),
       cultureText: document.getElementById('culture-text'),
       genreBadge: document.getElementById('genre-badge'),
+      curiosityPreview: document.getElementById('curiosity-preview'),
+      btnToggleCuriosity: document.getElementById('btn-toggle-curiosity'),
+      curiosityToggleText: document.getElementById('curiosity-toggle-text'),
+      curiosityChevron: document.getElementById('curiosity-chevron'),
+      curiosityBody: document.getElementById('curiosity-body'),
       btnNext: document.getElementById('btn-next'),
       btnYtExternal: document.getElementById('btn-yt-external'),
 
@@ -179,6 +182,10 @@ export class DOMRenderer {
 
     this.dom.btnNext?.addEventListener('click', () => {
       this.gameLogic.nextRound();
+    });
+
+    this.dom.btnToggleCuriosity?.addEventListener('click', () => {
+      this._setCuriosityExpanded(!this._isCuriosityExpanded);
     });
 
     this.dom.btnRestart?.addEventListener('click', () => {
@@ -661,10 +668,30 @@ export class DOMRenderer {
   }
 
   /**
+   * Alterna la expansión del acordeón compacto "Curiosidad Musical".
+   * @param {boolean} expanded
+   * @private
+   */
+  _setCuriosityExpanded(expanded) {
+    this._isCuriosityExpanded = Boolean(expanded);
+    if (this.dom.curiosityBody) {
+      this.dom.curiosityBody.hidden = !this._isCuriosityExpanded;
+    }
+    if (this.dom.btnToggleCuriosity) {
+      this.dom.btnToggleCuriosity.setAttribute('aria-expanded', String(this._isCuriosityExpanded));
+    }
+    if (this.dom.curiosityToggleText) {
+      this.dom.curiosityToggleText.textContent = this._isCuriosityExpanded ? 'Ocultar' : 'Ver más';
+    }
+    if (this.dom.curiosityChevron) {
+      this.dom.curiosityChevron.textContent = this._isCuriosityExpanded ? '▴' : '▾';
+    }
+  }
+
+  /**
    * Actualiza los controles visuales de pre-roll / pausa anti-anuncio y estado del cronómetro.
-   * Mientras está en AWAITING_AUDIO (!isTimerRunning), el reproductor de YouTube permite pulsar "Saltar anuncio"
-   * manteniendo oculta la franja superior del título. Una vez empieza la música real (isTimerRunning),
-   * vuelve a aplicar el modo anti-spoilers seleccionado.
+   * Mientras está en AWAITING_AUDIO (!isTimerRunning), muestra la píldora flotante sobre el reproductor
+   * y permite pulsar "Saltar anuncio" manteniendo oculta la franja superior del título.
    * @param {boolean} isTimerRunning
    * @private
    */
@@ -677,21 +704,21 @@ export class DOMRenderer {
     }
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = isTimerRunning
-        ? '⏱️ Tiempo en marcha • Adivina la canción'
-        : 'Preparando canción... [Tecla S]';
+        ? '⏱️ Tiempo en marcha (Máx. 2:00)'
+        : '⏸️ Pausado por anuncio / carga [Tecla S]';
     }
     if (this.dom.btnStartTimer) {
       this.dom.btnStartTimer.style.display = 'inline-flex';
       this.dom.btnStartTimer.classList.toggle('running', isTimerRunning);
       this.dom.btnStartTimer.textContent = isTimerRunning
-        ? '⏸️ Pausar por Anuncio'
-        : '📢 Esperando fin de anuncio / Pulsa aquí si ya suena la música';
+        ? '⏸️ Pausar por anuncio'
+        : '📢 Anuncio en curso / Pulsa si ya suena la música';
     }
 
     if (this.dom.stageTitle && this.dom.stageSubtitle && this.gameState.status !== GameStates.ROUND_OVER) {
       if (!isTimerRunning) {
         this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Esperando fin de anuncio de YouTube o sincronizando audio...';
+        this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
       } else if (this.gameState.gameMode === GameModes.LYRICS) {
         this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
         this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
@@ -724,7 +751,11 @@ export class DOMRenderer {
    * @private
    */
   _renderPlayingState({ options, roundNumber, totalRounds, gameMode, lyricsData, song }) {
-    this.dom.discoveryPanel.classList.remove('active');
+    this.dom.discoveryPanel?.classList.remove('active');
+    this._setCuriosityExpanded(false);
+    this.dom.btnNext?.classList.add('hidden');
+    this.dom.startScreen?.classList.add('visually-hidden');
+
     this.dom.statusMsg.textContent = '';
     this.dom.statusMsg.className = 'status-msg';
 
@@ -756,7 +787,7 @@ export class DOMRenderer {
         this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
       } else {
         this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Esperando fin de anuncio de YouTube o sincronizando audio...';
+        this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
       }
 
       if (this.dom.lyricsChallengeBox) {
@@ -787,7 +818,7 @@ export class DOMRenderer {
         this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
       } else {
         this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Esperando fin de anuncio de YouTube o sincronizando audio...';
+        this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
       }
 
       if (this.dom.lyricsChallengeBox) {
@@ -799,7 +830,7 @@ export class DOMRenderer {
 
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
 
-    // Inyectar opciones de respuesta con patrón WAI-ARIA radiogroup y Roving Tabindex
+    // Inyectar las 4 opciones de respuesta en cuadrícula 2x2 con foco visual directo en el título de la canción
     this.dom.optionsGrid.innerHTML = '';
     options.forEach((optText, index) => {
       const btn = document.createElement('button');
@@ -811,9 +842,20 @@ export class DOMRenderer {
       btn.dataset.index = String(index);
       btn.dataset.option = optText;
 
+      let labelHtml = `<span class="option-title-main">${optText}</span>`;
+      if (gameMode !== GameModes.LYRICS && optText.includes(' - ')) {
+        const sepIdx = optText.lastIndexOf(' - ');
+        const songTitle = optText.slice(0, sepIdx).trim();
+        const songArtist = optText.slice(sepIdx + 3).trim();
+        labelHtml = `
+          <span class="option-title-main">${songTitle}</span>
+          <span class="option-artist-sub">${songArtist}</span>
+        `;
+      }
+
       btn.innerHTML = `
         <span class="option-key">0${index + 1}</span>
-        <span class="option-text">${optText}</span>
+        <span class="option-text">${labelHtml}</span>
       `;
 
       btn.addEventListener('click', () => {
@@ -854,7 +896,8 @@ export class DOMRenderer {
   }
 
   /**
-   * Revela la información pedagógica y anuncia la evaluación con ARIA Live.
+   * Revela la información de la ronda, habilita el botón CTA "Siguiente Canción" junto al temporizador
+   * y muestra la tarjeta horizontal plegable "Curiosidad Musical".
    * @private
    */
   _renderRoundOverState({ selectedOption, isCorrect, correctAnswer, song, pointsEarned, speedBonus = 0, speedBadge = '', multiplier = 1, isTimeout, gameMode, lyricsData }) {
@@ -885,7 +928,7 @@ export class DOMRenderer {
     if (isTimeout) {
       this.dom.statusMsg.innerHTML = `
         <div class="score-feedback-card wrong">
-          <span>⏰ ¡Tiempo agotado! La respuesta correcta era <strong>"${correctAnswer}"</strong></span>
+          <span>⏰ ¡Tiempo agotado! Respuesta: <strong>"${correctAnswer}"</strong></span>
         </div>
       `;
       this.announce(`Tiempo agotado. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para pasar a la siguiente pista.`, true);
@@ -906,7 +949,7 @@ export class DOMRenderer {
     } else {
       this.dom.statusMsg.innerHTML = `
         <div class="score-feedback-card wrong">
-          <span>¡Incorrecto! La respuesta correcta era <strong>"${correctAnswer}"</strong> 🎶</span>
+          <span>¡Incorrecto! Era <strong>"${correctAnswer}"</strong> 🎶</span>
         </div>
       `;
       this.announce(`Incorrecto. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para continuar.`);
@@ -920,7 +963,7 @@ export class DOMRenderer {
       this.dom.minimizedSubtitle.textContent = 'Audio en reproducción • Pulsa "Expandir vídeo" para ver el videoclip';
     }
 
-    // Revelar el vídeo interactivo de YouTube para escuchar la canción completa
+    // Revelar el vídeo interactivo de YouTube y el botón CTA "Siguiente Canción" junto al temporizador
     if (this.dom.audioStage) {
       this.dom.audioStage.classList.remove('ad-skip-mode');
       this.dom.audioStage.classList.add('revealed');
@@ -928,11 +971,13 @@ export class DOMRenderer {
     if (this.dom.btnStartTimer) {
       this.dom.btnStartTimer.style.display = 'none';
     }
+    this.dom.btnNext?.classList.remove('hidden');
+
     if (this.dom.timerStatusDot) {
       this.dom.timerStatusDot.classList.remove('paused');
     }
     if (this.dom.timerStatusLabel) {
-      this.dom.timerStatusLabel.textContent = `🎵 Escuchando: ${song.title} - ${song.artist}`;
+      this.dom.timerStatusLabel.textContent = `🎵 ${song.title} — ${song.artist}`;
     }
 
     if (this.dom.btnYtExternal) {
@@ -944,18 +989,19 @@ export class DOMRenderer {
       }
     }
 
+    const triviaText = song.culturalTrivia || `${song.title} es un tema destacado de ${song.artist}.`;
     if (this.dom.genreBadge) {
       this.dom.genreBadge.textContent = song.genre || 'Música';
     }
-    this.dom.lyricsEn.textContent = song.lyrics?.en || 'Letra no disponible';
-    this.dom.lyricsEs.textContent = song.lyrics?.es || '';
-    this.dom.cultureText.textContent = song.culturalTrivia || 'Sin información adicional.';
+    if (this.dom.curiosityPreview) {
+      this.dom.curiosityPreview.textContent = triviaText;
+    }
+    if (this.dom.cultureText) {
+      this.dom.cultureText.textContent = triviaText;
+    }
 
-    this.dom.discoveryPanel.classList.add('active');
-
-    setTimeout(() => {
-      this.dom.discoveryPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 250);
+    this._setCuriosityExpanded(false);
+    this.dom.discoveryPanel?.classList.add('active');
   }
 
   _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime }) {
