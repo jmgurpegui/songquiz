@@ -1,42 +1,53 @@
 /**
- * @fileoverview Variables de diseño y tokens semánticos del sistema de diseño SongQuiz.
- * Proporciona soporte para tokens de color cyberpunk-glassmorphism, tipografía fluida y radios.
+ * @fileoverview Sistema de tokens de diseño con identidad visual estilo Spotify.
+ * Colores oscuros profundos (#121212), verde Spotify (#1db954), tipografía moderna y radios característicos.
  */
 
 :root {
-  /* Paleta semántica y acentos */
-  --color-bg-base: #0a0b0e;
-  --color-bg-alt: #12151c;
-  --color-surface: rgba(22, 27, 34, 0.75);
-  --color-surface-hover: rgba(35, 43, 54, 0.85);
-  --color-surface-active: rgba(45, 55, 72, 0.9);
-  
-  --color-border: rgba(102, 252, 241, 0.18);
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-glow: rgba(102, 252, 241, 0.5);
+  /* Paleta Spotify Oficial */
+  --spotify-green: #1db954;
+  --spotify-green-light: #1ed760;
+  --spotify-green-dark: #169c46;
+  --spotify-green-glow: rgba(29, 185, 84, 0.4);
 
-  --color-primary: #66fcf1;
-  --color-primary-dim: #45a29e;
-  --color-secondary: #c5c6c7;
-  --color-accent: #ff007a;
-  --color-accent-glow: rgba(255, 0, 122, 0.4);
-  
-  --color-success: #00e676;
-  --color-success-bg: rgba(0, 230, 118, 0.15);
-  --color-success-border: rgba(0, 230, 118, 0.6);
-  --color-error: #ff3d00;
-  --color-error-bg: rgba(255, 61, 0, 0.15);
-  --color-error-border: rgba(255, 61, 0, 0.6);
-  --color-warning: #ffb703;
+  --color-bg-base: #121212;
+  --color-bg-dark: #000000;
+  --color-surface: #181818;
+  --color-surface-hover: #282828;
+  --color-surface-active: #333333;
+  --color-surface-elevated: #242424;
 
-  --color-text-main: #f8fafc;
-  --color-text-muted: #94a3b8;
-  --color-text-dim: #64748b;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-border-focus: var(--spotify-green);
 
-  /* Tipografía fluida con clamp() */
+  --color-primary: var(--spotify-green);
+  --color-primary-dim: var(--spotify-green-light);
+  --color-secondary: #b3b3b3;
+  --color-accent: #1ed760;
+
+  --color-success: #1db954;
+  --color-success-bg: rgba(29, 185, 84, 0.18);
+  --color-success-border: #1db954;
+
+  --color-error: #e91429;
+  --color-error-bg: rgba(233, 20, 41, 0.18);
+  --color-error-border: #e91429;
+
+  --color-warning: #ffa42b;
+
+  --color-text-main: #ffffff;
+  --color-text-muted: #b3b3b3;
+  --color-text-dim: #6a6a6a;
+
+  /* Gradiente insignia de la vista de letras de Spotify */
+  --lyrics-gradient: linear-gradient(135deg, #1b3d2f 0%, #0d1e16 100%);
+  --trivia-gradient: linear-gradient(135deg, #242424 0%, #161616 100%);
+
+  /* Tipografía */
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: 'JetBrains Mono', monospace;
 
   --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.85rem);
   --text-sm: clamp(0.85rem, 0.8rem + 0.35vw, 0.95rem);
@@ -46,7 +57,7 @@
   --text-2xl: clamp(1.75rem, 1.5rem + 1.4vw, 2.35rem);
   --text-3xl: clamp(2.2rem, 1.8rem + 2vw, 3.2rem);
 
-  /* Espaciado sistemático */
+  /* Espaciado */
   --space-2xs: 0.25rem;
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
@@ -55,21 +66,21 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
 
-  /* Radios de borde y elevaciones */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-  --radius-full: 9999px;
+  /* Radios Spotify: redondeados y píldoras */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 500px;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
-  --shadow-glow: 0 0 24px rgba(102, 252, 241, 0.25);
-  --shadow-accent-glow: 0 0 24px rgba(255, 0, 122, 0.3);
+  /* Sombras */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.8);
+  --shadow-spotify: 0 8px 24px var(--spotify-green-glow);
 
-  /* Transiciones estándar */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Transiciones */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-bounce: 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }

@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SongQuiz - Juego de trivia musical interactivo con Web Audio y análisis de espectro en tiempo real. 100% Client-Side.">
-  <meta name="theme-color" content="#0a0b0e">
+  <meta name="description" content="SongQuiz - Trivia musical y aprendizaje de letras estilo Spotify. 100% Client-Side.">
+  <meta name="theme-color" content="#121212">
 
-  <title>SongQuiz Pro - Trivia Musical y Aprendizaje Activo</title>
+  <title>SongQuiz - Trivia Musical & Letras (Spotify Edition)</title>
 
   <!-- PWA Manifest e Iconos -->
   <link rel="manifest" href="./manifest.json">
@@ -16,7 +16,7 @@
   <!-- Tipografías de Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Estilos del Sistema Modular -->
   <link rel="stylesheet" href="./src/styles/main.css">
@@ -24,16 +24,18 @@
 <body>
 
   <div class="app-container">
-    <!-- ENCABEZADO Y MARCADOR GLOBAL -->
+    <!-- ENCABEZADO ESTILO SPOTIFY -->
     <header class="app-header">
       <a href="./" class="brand" aria-label="SongQuiz Inicio">
-        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18V5l12-2v13"></path>
-          <circle cx="6" cy="18" r="3"></circle>
-          <circle cx="18" cy="16" r="3"></circle>
+        <!-- Icono de ondas de sonido estilo Spotify -->
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10" fill="var(--spotify-green)"></circle>
+          <path d="M7 9.5c3.2-1 6.8-.7 10 .8" stroke="#121212" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
+          <path d="M7.8 12.2c2.6-.8 5.6-.6 8.2.7" stroke="#121212" stroke-width="1.6" stroke-linecap="round" fill="none"></path>
+          <path d="M8.5 14.8c2.1-.6 4.5-.4 6.6.6" stroke="#121212" stroke-width="1.4" stroke-linecap="round" fill="none"></path>
         </svg>
         <span class="brand-title">SongQuiz</span>
-        <span class="brand-badge">PRO</span>
+        <span class="brand-badge">SPOTIFY UI</span>
       </a>
 
       <div class="header-status">
@@ -49,9 +51,18 @@
 
         <span class="brand-badge" id="round-indicator">Pista 1 / 6</span>
 
-        <div class="audio-controls">
+        <div class="header-actions">
+          <button id="btn-open-importer" class="btn-spotify-subtle" type="button" title="Gestionar e importar playlists">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              <line x1="12" y1="11" x2="12" y2="17"></line>
+              <line x1="9" y1="14" x2="15" y2="14"></line>
+            </svg>
+            <span>Playlist</span>
+          </button>
+
           <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             </svg>
@@ -64,16 +75,16 @@
     <main class="game-viewport">
       <section class="game-card" aria-label="Ronda de adivinanza musical">
 
-        <!-- Escenario de Audio con Espectrograma en Canvas -->
+        <!-- Escenario de Audio con Espectrograma Canvas estilo ecualizador de Spotify -->
         <div class="audio-stage">
           <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio en tiempo real"></canvas>
           <div class="audio-overlay-label" id="stage-overlay">
             <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
-            <p class="stage-subtitle" id="stage-subtitle">Escucha con atención las frecuencias...</p>
+            <p class="stage-subtitle" id="stage-subtitle">Escucha atentamente el audio...</p>
           </div>
         </div>
 
-        <!-- Temporizador de ronda -->
+        <!-- Temporizador estilo barra de reproducción Spotify -->
         <div class="timer-container" aria-label="Tiempo restante">
           <div class="timer-header">
             <span>Tiempo de Respuesta</span>
@@ -89,7 +100,7 @@
           <button id="btn-start" class="btn-primary" type="button" disabled>Cargando Motor de Audio...</button>
         </div>
 
-        <!-- Grilla de Opciones (4 Respuestas) -->
+        <!-- Grilla de Opciones estilo pistas de lista de Spotify -->
         <div class="options-grid" id="options-grid" role="group" aria-label="Opciones de respuesta disponibles">
           <!-- Inyectado dinámicamente por domRenderer.js -->
         </div>
@@ -99,42 +110,43 @@
 
       </section>
 
-      <!-- SECCIÓN PEDAGÓGICA Y CULTURAL (LETRAS Y DATOS CURIOSOS) -->
-      <section class="discovery-panel" id="discovery-panel" aria-label="Información cultural y letra de la canción">
+      <!-- SECCIÓN PEDAGÓGICA ESTILO "SPOTIFY LYRICS & STORYLINE" -->
+      <section class="discovery-panel" id="discovery-panel" aria-label="Letras y Cultura Musical">
         <h2 class="discovery-title">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color: var(--spotify-green);">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z"/>
           </svg>
-          Aprende y Descubre
+          Letras & Historia (Spotify Behind the Lyrics)
         </h2>
 
         <div class="cards-split">
-          <!-- Tarjeta 1: Letras en Inglés y Español -->
-          <article class="info-card">
+          <!-- Tarjeta 1: Vista de Letras Oficial de Spotify -->
+          <article class="spotify-lyrics-card">
             <header class="info-card-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 18V5l12-2v13"></path>
                 <circle cx="6" cy="18" r="3"></circle>
                 <circle cx="18" cy="16" r="3"></circle>
               </svg>
-              Letra Original y Traducción
+              Letra Sincronizada y Traducción
             </header>
             <div class="lyrics-container">
-              <p class="lyric-en" id="lyrics-en"></p>
-              <p class="lyric-es" id="lyrics-es"></p>
+              <div class="lyric-stanza">
+                <p class="lyric-en" id="lyrics-en"></p>
+                <p class="lyric-es" id="lyrics-es"></p>
+              </div>
             </div>
           </article>
 
-          <!-- Tarjeta 2: Cultura Musical e Historia -->
-          <article class="info-card">
+          <!-- Tarjeta 2: Storyline / Curiosidades Culturales -->
+          <article class="spotify-storyline-card">
             <header class="info-card-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="16" x2="12" y2="12"></line>
                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
               </svg>
-              Cultura Musical e Historia
+              Detrás de la Música (Storyline)
             </header>
             <div class="genre-pill" id="genre-badge">Género</div>
             <p class="trivia-body" id="culture-text"></p>
@@ -148,24 +160,106 @@
     </main>
   </div>
 
-  <!-- MODAL DE FINAL DE PARTIDA (ESTADÍSTICAS Y MÉTRICAS) -->
+  <!-- MODAL GESTOR E IMPORTADOR DE PLAYLISTS -->
+  <div class="modal-overlay" id="playlist-modal" role="dialog" aria-modal="true" aria-labelledby="importer-title">
+    <div class="modal-card wide">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-xs);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h2 class="modal-heading" id="importer-title" style="font-size: var(--text-xl);">Gestor de Playlists</h2>
+          <span class="brand-badge" id="playlist-count-badge">0 canciones</span>
+        </div>
+        <button id="btn-close-importer" class="icon-btn" type="button" aria-label="Cerrar modal">✕</button>
+      </div>
+
+      <!-- Pestañas del Gestor -->
+      <div class="playlist-tabs">
+        <button class="playlist-tab-btn active" data-tab="tab-list">📋 Lista Activa</button>
+        <button class="playlist-tab-btn" data-tab="tab-json">📥 Importar / Editar JSON</button>
+        <button class="playlist-tab-btn" data-tab="tab-youtube">⚡ Importador YouTube (CLI)</button>
+      </div>
+
+      <!-- Pestaña 1: Lista de Canciones Activas -->
+      <div class="playlist-tab-content" id="tab-list">
+        <div class="playlist-table-container">
+          <table class="playlist-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;">#</th>
+                <th>Título</th>
+                <th>Artista</th>
+                <th>Género</th>
+                <th style="text-align: center; width: 60px;">Letra</th>
+                <th style="text-align: center; width: 60px;">Trivia</th>
+              </tr>
+            </thead>
+            <tbody id="playlist-table-body">
+              <!-- Renderizado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-md); flex-wrap: wrap; gap: var(--space-xs);">
+          <button id="btn-export-json" class="btn-spotify-subtle" type="button">
+            ⬇️ Exportar 'songs.json'
+          </button>
+          <button id="btn-reset-default-songs" class="btn-spotify-subtle" type="button" style="color: var(--color-error);">
+            🔄 Restablecer Oficiales
+          </button>
+        </div>
+      </div>
+
+      <!-- Pestaña 2: Importador / Editor JSON -->
+      <div class="playlist-tab-content" id="tab-json" style="display: none;">
+        <p style="font-size: var(--text-xs); color: var(--color-secondary); margin-bottom: var(--space-xs);">
+          Pega aquí tu catálogo JSON estructurado con letras bilingües y cultura musical para jugar de inmediato sin tocar código:
+        </p>
+        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder="[ { 'id': '...', 'title': '...', 'lyrics': {...} } ]" style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
+
+        <div class="controls-centered" style="margin-top: var(--space-sm);">
+          <button id="btn-apply-custom-json" class="btn-primary" type="button">
+            ✓ Guardar y Activar Lista
+          </button>
+        </div>
+      </div>
+
+      <!-- Pestaña 3: Guía de Importador CLI YouTube -->
+      <div class="playlist-tab-content" id="tab-youtube" style="display: none;">
+        <div style="background: rgba(0,0,0,0.5); padding: var(--space-md); border-radius: var(--radius-md); font-size: var(--text-sm); line-height: 1.6;">
+          <p style="font-weight: 700; color: var(--spotify-green-light); margin-bottom: 6px;">
+            🚀 Importador Automático de Listas de Reproducción de YouTube
+          </p>
+          <p style="color: var(--color-secondary); margin-bottom: var(--space-xs);">
+            Puedes volcar automáticamente cualquier lista de reproducción pública de YouTube hacia tu catálogo <code style="color: var(--spotify-green); font-family: var(--font-mono);">src/data/songs.json</code> ejecutando el script incluido:
+          </p>
+          <pre style="background: #000; padding: 10px; border-radius: 6px; font-family: var(--font-mono); color: #fff; font-size: 0.8rem; overflow-x: auto; margin-bottom: var(--space-xs);">python3 scripts/import_playlist.py "https://www.youtube.com/playlist?list=ID_DE_TU_PLAYLIST"</pre>
+          <p style="font-size: var(--text-xs); color: var(--color-text-dim);">
+            ✓ Extrae títulos limpios sin "Official Video"<br>
+            ✓ Genera las plantillas para letras bilingües y trivia cultural<br>
+            ✓ Sin claves de Google Cloud ni APIs externas (100% Zero-API)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE FINAL DE PARTIDA -->
   <div class="modal-overlay" id="game-over-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
-      <div id="record-badge" class="brand-badge" style="display: none; align-self: center; background: rgba(0, 230, 118, 0.2); color: var(--color-success); border-color: var(--color-success); font-size: 0.85rem; padding: 4px 12px;">
+      <div id="record-badge" class="brand-badge" style="display: none; align-self: center; background: rgba(29, 185, 84, 0.2); color: var(--spotify-green-light); border-color: var(--spotify-green); font-size: 0.85rem; padding: 4px 14px;">
         🏆 ¡Nuevo Récord Personal!
       </div>
 
       <h2 class="modal-heading" id="modal-title">¡Sesión Completada!</h2>
-      <p style="color: var(--color-secondary);">Has finalizado la lista de canciones. Aquí tienes tu rendimiento:</p>
+      <p style="color: var(--color-secondary); font-size: var(--text-sm);">Has finalizado la lista de reproducción. Aquí tienes tus estadísticas:</p>
 
       <div class="summary-stats-grid">
         <div class="summary-stat-box">
           <span class="summary-stat-label">Puntuación Total</span>
-          <span class="summary-stat-val" id="final-score" style="color: var(--color-primary);">0</span>
+          <span class="summary-stat-val" id="final-score" style="color: var(--spotify-green-light);">0</span>
         </div>
         <div class="summary-stat-box">
           <span class="summary-stat-label">Precisión</span>
-          <span class="summary-stat-val" id="final-accuracy" style="color: var(--color-success);">0%</span>
+          <span class="summary-stat-val" id="final-accuracy" style="color: #ffffff;">0%</span>
         </div>
         <div class="summary-stat-box">
           <span class="summary-stat-label">Mejor Racha</span>

@@ -1,16 +1,17 @@
 /**
  * @fileoverview Lógica de negocio, reglas de puntuación, cálculo de combos y temporizador.
- * Gestiona el bucle de rondas y la persistencia local de estadísticas en localStorage.
+ * Gestiona el bucle de rondas, la persistencia local y el soporte para listas personalizadas importadas.
  */
 
 import { GameStates } from './gameState.js';
 import { shuffle, generateOptions } from '../utils/random.js';
 import { sfx } from '../audio/soundFX.js';
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   HIGH_SCORE: 'songquiz_high_score',
   GAMES_PLAYED: 'songquiz_games_count',
-  BEST_STREAK: 'songquiz_best_streak'
+  BEST_STREAK: 'songquiz_best_streak',
+  CUSTOM_PLAYLIST: 'songquiz_custom_playlist'
 };
 
 export class GameLogic {
@@ -30,7 +31,6 @@ export class GameLogic {
 
     // Vincular finalización natural de la pista de audio
     this.audioEngine.onEnded(() => {
-      // Si el audio termina antes de responder, se agota el tiempo
       if (this.gameState.status === GameStates.PLAYING) {
         this.handleTimeout();
       }
@@ -38,14 +38,62 @@ export class GameLogic {
   }
 
   /**
-   * Carga el catálogo maestro de canciones e inicia una nueva partida.
-   * @param {Array<Object>} songs
+   * Carga el catálogo maestro e inicia una nueva partida.
+   * Si existe una lista personalizada guardada en localStorage, la utiliza con prioridad.
+   * @param {Array<Object>} defaultSongs
    */
-  startNewGame(songs) {
-    this.allSongs = [...songs];
+  startNewGame(defaultSongs) {
+    const savedCustom = this.getCustomPlaylist();
+    if (savedCustom && Array.isArray(savedCustom) && savedCustom.length > 0) {
+      this.allSongs = [...savedCustom];
+    } else {
+      this.allSongs = [...defaultSongs];
+    }
+
     const shuffledSongs = shuffle(this.allSongs);
     this.gameState.initGame(shuffledSongs);
     this.startRound();
+  }
+
+  /**
+   * Reemplaza la lista activa por una lista importada por el usuario y reinicia el juego.
+   * @param {Array<Object>} importedSongs
+   */
+  setCustomPlaylist(importedSongs) {
+    if (!Array.isArray(importedSongs) || importedSongs.length === 0) {
+      throw new Error('La lista de canciones no es válida.');
+    }
+    this.allSongs = [...importedSongs];
+    try {
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_PLAYLIST, JSON.stringify(importedSongs));
+    } catch {
+      // Ignorar fallos de cuota o incógnito
+    }
+    this.startNewGame(this.allSongs);
+  }
+
+  /**
+   * Restablece la lista por defecto y borra cualquier lista personalizada local.
+   * @param {Array<Object>} defaultSongs
+   */
+  resetToDefaultPlaylist(defaultSongs) {
+    try {
+      localStorage.removeItem(STORAGE_KEYS.CUSTOM_PLAYLIST);
+    } catch {}
+    this.startNewGame(defaultSongs);
+  }
+
+  /**
+   * Obtiene la lista personalizada almacenada en localStorage, si existe.
+   * @returns {Array<Object>|null}
+   */
+  getCustomPlaylist() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.CUSTOM_PLAYLIST);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -78,10 +126,12 @@ export class GameLogic {
     // Iniciar visualizador y audio
     this.visualizer.start();
     try {
-      await this.audioEngine.load(track.audioSrc);
-      await this.audioEngine.play();
+      if (track.audioSrc) {
+        await this.audioEngine.load(track.audioSrc);
+        await this.audioEngine.play();
+      }
     } catch (e) {
-      console.warn('Reproducción diferida a primer toque:', e);
+      console.warn('Reproducción diferida a primer toque del usuario:', e);
     }
 
     this.roundStartTime = performance.now();
@@ -89,7 +139,7 @@ export class GameLogic {
   }
 
   /**
-   * Inicia el bucle de temporizador de 1 segundo con ticks sonoros en el tramo final.
+   * Inicia el bucle de temporizador con ticks sonoros.
    * @private
    */
   _startTimer() {
@@ -97,7 +147,6 @@ export class GameLogic {
       const remaining = this.gameState.timeRemaining - 1;
       this.gameState.setTimeRemaining(remaining);
 
-      // Alerta de sonido al restar los últimos 5 segundos
       if (remaining <= 5 && remaining > 0) {
         sfx.playTick();
       }
@@ -109,7 +158,7 @@ export class GameLogic {
   }
 
   /**
-   * Limpia el temporizador activo para prevenir fugas de memoria.
+   * Limpia el temporizador activo.
    * @private
    */
   _clearTimer() {
@@ -121,7 +170,7 @@ export class GameLogic {
 
   /**
    * Procesa la respuesta seleccionada por el jugador.
-   * @param {string} selectedOption - Cadena seleccionada por el usuario.
+   * @param {string} selectedOption
    * @returns {{ isCorrect: boolean, correctAnswer: string, pointsEarned: number }}
    */
   submitAnswer(selectedOption) {
@@ -135,7 +184,6 @@ export class GameLogic {
 
     let pointsEarned = 0;
     if (isCorrect) {
-      // Fórmula de puntuación: Base (100) + Bono por velocidad (10 pts por seg) * Multiplicador de racha
       const basePoints = 100;
       const speedBonus = Math.round(this.gameState.timeRemaining * 10);
       let multiplier = 1.0;
@@ -158,7 +206,6 @@ export class GameLogic {
 
     this.gameState.recordAnswer(isCorrect, pointsEarned, timeSpent);
 
-    // Transición a ROUND_OVER para exhibir las letras y notas pedagógicas
     this.gameState.transition(GameStates.ROUND_OVER, {
       selectedOption,
       isCorrect,
@@ -175,7 +222,7 @@ export class GameLogic {
   }
 
   /**
-   * Ejecuta la penalización cuando el tiempo de la ronda llega a cero.
+   * Penalización cuando el tiempo de la ronda llega a cero.
    */
   handleTimeout() {
     this._clearTimer();
@@ -193,7 +240,7 @@ export class GameLogic {
   }
 
   /**
-   * Pasa a la siguiente canción de la lista o culmina la sesión.
+   * Pasa a la siguiente canción de la lista o finaliza.
    */
   nextRound() {
     this.audioEngine.stop();
@@ -220,7 +267,6 @@ export class GameLogic {
       this.saveHighScore(this.gameState.score);
     }
 
-    // Actualizar racha récord y conteo de partidas
     const bestStreakRecorded = parseInt(localStorage.getItem(STORAGE_KEYS.BEST_STREAK) || '0', 10);
     if (this.gameState.maxStreak > bestStreakRecorded) {
       localStorage.setItem(STORAGE_KEYS.BEST_STREAK, String(this.gameState.maxStreak));
@@ -248,10 +294,6 @@ export class GameLogic {
     });
   }
 
-  /**
-   * Obtiene la máxima puntuación almacenada en localStorage.
-   * @returns {number}
-   */
   getHighScore() {
     try {
       return parseInt(localStorage.getItem(STORAGE_KEYS.HIGH_SCORE) || '0', 10);
@@ -260,15 +302,9 @@ export class GameLogic {
     }
   }
 
-  /**
-   * Guarda un nuevo récord en localStorage.
-   * @param {number} score
-   */
   saveHighScore(score) {
     try {
       localStorage.setItem(STORAGE_KEYS.HIGH_SCORE, String(score));
-    } catch {
-      // Ignorar fallos de modo incógnito
-    }
+    } catch {}
   }
 }
