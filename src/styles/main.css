@@ -894,3 +894,24 @@ body {
   white-space: nowrap;
   border: 0;
 }
+
+/* ACCESIBILIDAD UNIVERSAL: FOCO VISIBLE (WCAG 2.1 AA) */
+:focus-visible {
+  outline: 3px solid var(--spotify-green) !important;
+  outline-offset: 3px !important;
+}
+
+.option-btn:focus-visible {
+  outline: 3px solid #ffffff !important;
+  outline-offset: 2px !important;
+  border-color: var(--spotify-green) !important;
+}
+
+.mode-btn:focus-visible,
+.btn-primary:focus-visible,
+.icon-btn:focus-visible,
+.btn-spotify-subtle:focus-visible,
+.playlist-tab-btn:focus-visible {
+  outline: 3px solid #ffffff !important;
+  outline-offset: 3px !important;
+}

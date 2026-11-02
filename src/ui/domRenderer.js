@@ -1,7 +1,7 @@
 /**
  * @fileoverview Renderizador de interfaz reactivo con diseño estilo Spotify,
- * gestión de eventos del DOM, atajos de teclado, modal de importación de playlists
- * y soporte integral para el modo pedagógico "Lyrics Challenge".
+ * gestión completa de accesibilidad WCAG 2.1 AA, navegación por teclado,
+ * control de foco (focus trap), lector de pantalla (ARIA live) y gestor de playlists.
  */
 
 import { GameStates, GameModes } from '../core/gameState.js';
@@ -20,6 +20,11 @@ export class DOMRenderer {
     this.audioEngine = audioEngine;
     this.soundFX = soundFX;
     this.defaultSongs = defaultSongs;
+
+    // Estado interno para accesibilidad y modales
+    this._activeModal = null;
+    this._previousFocusedElement = null;
+    this._modalKeyHandler = null;
 
     this._cacheDOMElements();
     this._bindDOMEvents();
@@ -41,6 +46,10 @@ export class DOMRenderer {
       roundIndicator: document.getElementById('round-indicator'),
       btnMute: document.getElementById('btn-mute'),
       btnOpenImporter: document.getElementById('btn-open-importer'),
+
+      // Regiones de anuncios accesibles ARIA Live
+      a11yAnnouncer: document.getElementById('a11y-announcer'),
+      a11yAlert: document.getElementById('a11y-alert'),
 
       // Selector de modo
       btnModeClassic: document.getElementById('btn-mode-classic'),
@@ -94,6 +103,22 @@ export class DOMRenderer {
   }
 
   /**
+   * Comunica mensajes a lectores de pantalla (NVDA, JAWS, VoiceOver) mediante ARIA Live.
+   * @param {string} message - Texto descriptivo.
+   * @param {boolean} [isAlert=false] - Si es true, usa aria-live="assertive" (interrumpe la lectura para alertas críticas).
+   */
+  announce(message, isAlert = false) {
+    const region = isAlert ? this.dom.a11yAlert : this.dom.a11yAnnouncer;
+    if (!region) return;
+
+    // Limpiar brevemente para garantizar que el lector perciba el cambio de texto
+    region.textContent = '';
+    setTimeout(() => {
+      region.textContent = message;
+    }, 60);
+  }
+
+  /**
    * Enlaza eventos de clic de los botones principales y selector de modos.
    * @private
    */
@@ -108,6 +133,7 @@ export class DOMRenderer {
     });
 
     this.dom.btnRestart?.addEventListener('click', () => {
+      this._releaseFocusTrap(this.dom.gameOverModal);
       this.dom.gameOverModal.classList.remove('open');
       this.gameLogic.startNewGame(this.gameLogic.allSongs);
     });
@@ -116,6 +142,7 @@ export class DOMRenderer {
       const isMuted = this.audioEngine.toggleMute();
       this.soundFX.toggleMute();
       this._updateMuteIcon(isMuted);
+      this.announce(isMuted ? 'Sonido silenciado' : 'Sonido activado');
     });
 
     this.dom.btnOpenImporter?.addEventListener('click', () => {
@@ -123,7 +150,7 @@ export class DOMRenderer {
     });
 
     this.dom.btnCloseImporter?.addEventListener('click', () => {
-      this.dom.playlistModal?.classList.remove('open');
+      this._closePlaylistModal();
     });
 
     // Selector de modo de juego (Classic vs Lyrics Challenge)
@@ -131,6 +158,7 @@ export class DOMRenderer {
       if (this.gameState.gameMode !== GameModes.CLASSIC) {
         this.gameState.setGameMode(GameModes.CLASSIC);
         this._updateModeButtons();
+        this.announce('Modo cambiado a Classic Trivia');
         this._handleModeSwitched();
       }
     });
@@ -139,6 +167,7 @@ export class DOMRenderer {
       if (this.gameState.gameMode !== GameModes.LYRICS) {
         this.gameState.setGameMode(GameModes.LYRICS);
         this._updateModeButtons();
+        this.announce('Modo cambiado a Lyrics Challenge');
         this._handleModeSwitched();
       }
     });
@@ -166,8 +195,14 @@ export class DOMRenderer {
    */
   _updateModeButtons() {
     const isClassic = this.gameState.gameMode === GameModes.CLASSIC;
-    this.dom.btnModeClassic?.classList.toggle('active', isClassic);
-    this.dom.btnModeLyrics?.classList.toggle('active', !isClassic);
+    if (this.dom.btnModeClassic) {
+      this.dom.btnModeClassic.classList.toggle('active', isClassic);
+      this.dom.btnModeClassic.setAttribute('aria-checked', String(isClassic));
+    }
+    if (this.dom.btnModeLyrics) {
+      this.dom.btnModeLyrics.classList.toggle('active', !isClassic);
+      this.dom.btnModeLyrics.setAttribute('aria-checked', String(!isClassic));
+    }
   }
 
   /**
@@ -181,7 +216,7 @@ export class DOMRenderer {
   }
 
   /**
-   * Gestión del modal importador de playlist.
+   * Gestión del modal importador de playlist con Focus Trap.
    * @private
    */
   _bindPlaylistManagerEvents() {
@@ -194,6 +229,7 @@ export class DOMRenderer {
       a.download = 'songs.json';
       a.click();
       URL.revokeObjectURL(url);
+      this.announce('Archivo songs.json descargado.');
     });
 
     this.dom.btnApplyCustomJson?.addEventListener('click', () => {
@@ -206,9 +242,9 @@ export class DOMRenderer {
           return;
         }
         this.gameLogic.setCustomPlaylist(parsed);
-        this.dom.playlistModal?.classList.remove('open');
+        this._closePlaylistModal();
         this.dom.startScreen.classList.remove('visually-hidden');
-        alert(`¡Lista actualizada con éxito! (${parsed.length} canciones activas)`);
+        this.announce(`Lista personalizada activada con ${parsed.length} canciones.`);
       } catch (err) {
         alert('Error al procesar el JSON: ' + err.message);
       }
@@ -218,7 +254,7 @@ export class DOMRenderer {
       if (confirm('¿Restablecer el catálogo a las canciones oficiales por defecto?')) {
         this.gameLogic.resetToDefaultPlaylist(this.defaultSongs);
         this._renderPlaylistTable();
-        alert('Catálogo restablecido.');
+        this.announce('Catálogo restablecido al oficial por defecto.');
       }
     });
 
@@ -241,6 +277,95 @@ export class DOMRenderer {
       this.dom.playlistJsonInput.value = JSON.stringify(this.gameLogic.allSongs, null, 2);
     }
     this.dom.playlistModal?.classList.add('open');
+    this._trapFocusInModal(this.dom.playlistModal);
+    this.announce('Gestor de playlists abierto. Usa Tab para navegar o Escape para cerrar.');
+  }
+
+  _closePlaylistModal() {
+    if (this.dom.playlistModal?.classList.contains('open')) {
+      this.dom.playlistModal.classList.remove('open');
+      this._releaseFocusTrap(this.dom.playlistModal);
+      this.announce('Gestor de playlists cerrado.');
+    }
+  }
+
+  _closeCurrentModal() {
+    if (this.dom.playlistModal?.classList.contains('open')) {
+      this._closePlaylistModal();
+    } else if (this.dom.gameOverModal?.classList.contains('open')) {
+      this.dom.gameOverModal.classList.remove('open');
+      this._releaseFocusTrap(this.dom.gameOverModal);
+      this.announce('Ventana de resultados cerrada.');
+    }
+  }
+
+  /**
+   * Implementa el atrapamiento accesible de foco (Focus Trap) dentro de modales (WCAG 2.1 AA).
+   * @private
+   * @param {HTMLElement} modalElement
+   */
+  _trapFocusInModal(modalElement) {
+    if (!modalElement) return;
+    this._activeModal = modalElement;
+    this._previousFocusedElement = document.activeElement;
+
+    const getFocusables = () => {
+      return Array.from(modalElement.querySelectorAll(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )).filter(el => el.offsetParent !== null);
+    };
+
+    const focusables = getFocusables();
+    if (focusables.length > 0) {
+      setTimeout(() => focusables[0].focus(), 50);
+    }
+
+    this._modalKeyHandler = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this._closeCurrentModal();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const currentFocusables = getFocusables();
+        if (currentFocusables.length === 0) return;
+
+        const first = currentFocusables[0];
+        const last = currentFocusables[currentFocusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first || !modalElement.contains(document.activeElement)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last || !modalElement.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+
+    modalElement.addEventListener('keydown', this._modalKeyHandler);
+  }
+
+  /**
+   * Libera el atrapamiento de foco y devuelve el foco al elemento disparador.
+   * @private
+   * @param {HTMLElement} modalElement
+   */
+  _releaseFocusTrap(modalElement) {
+    if (this._modalKeyHandler && modalElement) {
+      modalElement.removeEventListener('keydown', this._modalKeyHandler);
+      this._modalKeyHandler = null;
+    }
+    if (this._previousFocusedElement && typeof this._previousFocusedElement.focus === 'function') {
+      this._previousFocusedElement.focus();
+      this._previousFocusedElement = null;
+    }
+    this._activeModal = null;
   }
 
   _renderPlaylistTable() {
@@ -279,13 +404,18 @@ export class DOMRenderer {
       this._onStateChange(currentState, payload);
     });
 
-    this.gameState.addEventListener('modeChange', (e) => {
+    this.gameState.addEventListener('modeChange', () => {
       this._updateModeButtons();
     });
 
     this.gameState.addEventListener('timeTick', (e) => {
       const { timeRemaining, maxTime } = e.detail;
       this._updateTimer(timeRemaining, maxTime);
+
+      // Alerta sonora y textual a lectores de pantalla cuando restan exactamente 5 segundos
+      if (timeRemaining === 5) {
+        this.announce('Atención: quedan 5 segundos', true);
+      }
     });
 
     this.gameState.addEventListener('scoreUpdate', (e) => {
@@ -311,7 +441,7 @@ export class DOMRenderer {
   }
 
   /**
-   * Configura la interfaz al iniciar una ronda activa adaptándose al modo Classic o Lyrics Challenge.
+   * Configura la interfaz al iniciar una ronda activa con accesibilidad WAI-ARIA (radiogroup) y Roving Tabindex.
    * @private
    */
   _renderPlayingState({ options, roundNumber, totalRounds, gameMode, lyricsData, song }) {
@@ -327,15 +457,12 @@ export class DOMRenderer {
     this.dom.stageOverlay.classList.remove('hidden');
 
     if (gameMode === GameModes.LYRICS && lyricsData) {
-      // MODO LYRICS CHALLENGE
       this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
       this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
 
-      // Mostrar caja pedagógica de desafío
       if (this.dom.lyricsChallengeBox) {
         this.dom.lyricsChallengeBox.classList.remove('hidden');
 
-        // Formatear verso con el hueco [ ? ]
         const regex = new RegExp(`\\b${lyricsData.targetWord}\\b`, 'i');
         const parts = lyricsData.fullLine.split(regex);
         if (parts.length >= 2) {
@@ -353,24 +480,31 @@ export class DOMRenderer {
           this.dom.lyricsInputField.disabled = false;
         }
       }
+
+      this.announce(`Pista ${roundNumber} de ${totalRounds}. Modo Lyrics Challenge. Completa el verso: ${lyricsData.blankedLine}. Cuatro opciones disponibles. Usa las teclas 1 a 4 o escribe tu respuesta.`);
     } else {
-      // MODO CLASSIC TRIVIA
       this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
       this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
 
       if (this.dom.lyricsChallengeBox) {
         this.dom.lyricsChallengeBox.classList.add('hidden');
       }
+
+      this.announce(`Pista ${roundNumber} de ${totalRounds}. Modo Classic Trivia. ¿Qué canción está sonando? Cuatro opciones disponibles. Usa las teclas 1 a 4 o las flechas para responder. Barra espaciadora para pausar el audio.`);
     }
 
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
 
-    // Inyectar opciones de respuesta tipo píldora
+    // Inyectar opciones de respuesta con patrón WAI-ARIA radiogroup y Roving Tabindex
     this.dom.optionsGrid.innerHTML = '';
     options.forEach((optText, index) => {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.setAttribute('type', 'button');
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', 'false');
+      btn.setAttribute('tabindex', index === 0 ? '0' : '-1');
+      btn.dataset.index = String(index);
       btn.dataset.option = optText;
 
       btn.innerHTML = `
@@ -379,19 +513,47 @@ export class DOMRenderer {
       `;
 
       btn.addEventListener('click', () => {
-        this.gameLogic.submitAnswer(optText);
+        this._selectOption(btn, optText);
+      });
+
+      // Navegación accesible por flechas (ArrowUp/Down/Left/Right)
+      btn.addEventListener('keydown', (e) => {
+        const buttons = Array.from(this.dom.optionsGrid.querySelectorAll('.option-btn'));
+        let nextIndex = index;
+
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          nextIndex = (index + 1) % buttons.length;
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          nextIndex = (index - 1 + buttons.length) % buttons.length;
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          this._selectOption(btn, optText);
+          return;
+        } else {
+          return;
+        }
+
+        buttons.forEach((b, i) => b.setAttribute('tabindex', i === nextIndex ? '0' : '-1'));
+        buttons[nextIndex].focus();
       });
 
       this.dom.optionsGrid.appendChild(btn);
     });
   }
 
+  _selectOption(btn, optText) {
+    const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
+    buttons.forEach(b => b.setAttribute('aria-checked', b === btn ? 'true' : 'false'));
+    this.gameLogic.submitAnswer(optText);
+  }
+
   /**
-   * Revela la información pedagógica y resalta respuestas correctas/erróneas.
+   * Revela la información pedagógica y anuncia la evaluación con ARIA Live.
    * @private
    */
   _renderRoundOverState({ selectedOption, isCorrect, correctAnswer, song, pointsEarned, isTimeout, gameMode, lyricsData }) {
-    // 1. Desactivar todos los botones de opciones
     const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
     const clean = (s) => (s || '').replace(/^[^\w]+|[^\w]+$/g, '').toLowerCase();
 
@@ -400,6 +562,7 @@ export class DOMRenderer {
       const opt = clean(btn.dataset.option);
       if (opt === clean(correctAnswer)) {
         btn.classList.add('correct');
+        btn.setAttribute('aria-checked', 'true');
       } else if (opt === clean(selectedOption) && !isCorrect) {
         btn.classList.add('wrong');
       }
@@ -409,27 +572,27 @@ export class DOMRenderer {
       this.dom.lyricsInputField.disabled = true;
     }
 
-    // 2. Si estamos en Lyrics Challenge, actualizar el hueco del verso en tiempo real
     const blankEl = document.getElementById('lyrics-blank-token');
     if (blankEl) {
       blankEl.textContent = correctAnswer;
       blankEl.className = isCorrect ? 'lyrics-blank-token revealed-correct' : 'lyrics-blank-token revealed-wrong';
     }
 
-    // 3. Actualizar mensaje de estado
     if (isTimeout) {
       this.dom.statusMsg.textContent = '⏰ ¡Tiempo agotado!';
       this.dom.statusMsg.style.color = 'var(--color-warning)';
+      this.announce(`Tiempo agotado. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para pasar a la siguiente pista.`, true);
     } else if (isCorrect) {
       const extra = gameMode === GameModes.LYRICS ? `"${correctAnswer}"` : '';
       this.dom.statusMsg.textContent = `¡Correcto! ${extra} +${pointsEarned} pts 🎉`;
       this.dom.statusMsg.style.color = 'var(--spotify-green-light)';
+      this.announce(`¡Correcto! Respuesta acertada: ${correctAnswer}. Has obtenido ${pointsEarned} puntos. Pulsa Enter para continuar.`);
     } else {
       this.dom.statusMsg.textContent = `¡Incorrecto! La respuesta correcta era "${correctAnswer}" 🎶`;
       this.dom.statusMsg.style.color = 'var(--color-error)';
+      this.announce(`Incorrecto. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para continuar.`);
     }
 
-    // 4. Mostrar datos del tema en el escenario
     this.dom.stageTitle.textContent = `${song.title}`;
     this.dom.stageSubtitle.textContent = `${song.artist} • ${song.year || ''}`;
 
@@ -440,7 +603,6 @@ export class DOMRenderer {
     this.dom.lyricsEs.textContent = song.lyrics?.es || '';
     this.dom.cultureText.textContent = song.culturalTrivia || 'Sin información adicional.';
 
-    // 5. Desplegar panel pedagógico
     this.dom.discoveryPanel.classList.add('active');
 
     setTimeout(() => {
@@ -448,7 +610,7 @@ export class DOMRenderer {
     }, 250);
   }
 
-  _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime, gameMode }) {
+  _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime }) {
     this.dom.finalScore.textContent = finalScore;
     this.dom.finalAccuracy.textContent = `${accuracy}%`;
     this.dom.finalStreak.textContent = `🔥 ${maxStreak}`;
@@ -459,6 +621,8 @@ export class DOMRenderer {
     }
 
     this.dom.gameOverModal.classList.add('open');
+    this._trapFocusInModal(this.dom.gameOverModal);
+    this.announce(`Fin de la sesión. Puntuación final: ${finalScore} puntos. Precisión del ${accuracy} por ciento. Pulsa Enter para jugar otra partida.`);
   }
 
   _updateTimer(remaining, maxTime) {
@@ -501,32 +665,85 @@ export class DOMRenderer {
       : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
   }
 
+  /**
+   * Sistema integral de atajos de teclado accesibles:
+   * 1-4 (normal y numpad): Selección directa de opciones.
+   * Espacio: Alternar reproducción/pausa de audio.
+   * Enter / N: Siguiente pista o reiniciar.
+   * Escape: Cerrar modales activos y devolver el foco.
+   * M: Silenciar/activar audio.
+   * @private
+   */
   _bindKeyboardShortcuts() {
-    window.addEventListener('keydown', (e) => {
-      // No interferir con escritura en inputs
-      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-
-      const key = e.key;
-
-      if (['1', '2', '3', '4'].includes(key) && this.gameState.status === GameStates.PLAYING) {
-        const index = parseInt(key, 10) - 1;
-        const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
-        if (buttons[index] && !buttons[index].disabled) {
-          buttons[index].click();
+    window.addEventListener('keydown', async (e) => {
+      // Si hay un modal abierto, Escape y Tab tienen prioridad en el modal
+      if (this._activeModal) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          this._closeCurrentModal();
         }
+        return;
       }
 
-      if (key === 'Enter' || key.toLowerCase() === 'n') {
+      const isInput = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+
+      // Escape general
+      if (e.key === 'Escape') {
+        this._closeCurrentModal();
+        return;
+      }
+
+      // Tecla Espacio: Reproducir / Pausar audio (previniendo scroll vertical)
+      if ((e.code === 'Space' || e.key === ' ') && !isInput) {
+        e.preventDefault();
+        if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.ROUND_OVER) {
+          const isPlaying = await this.audioEngine.togglePlayPause();
+          this.announce(isPlaying ? 'Audio reanudado' : 'Audio pausado');
+        }
+        return;
+      }
+
+      // Si el usuario escribe en el input de lyrics, no interceptar números ni texto
+      if (isInput) return;
+
+      // Teclas 1, 2, 3, 4 (teclado alfanumérico estándar y numpad)
+      const numKeys = {
+        '1': 0, 'Digit1': 0, 'Numpad1': 0,
+        '2': 1, 'Digit2': 1, 'Numpad2': 1,
+        '3': 2, 'Digit3': 2, 'Numpad3': 2,
+        '4': 3, 'Digit4': 3, 'Numpad4': 3
+      };
+
+      if (numKeys.hasOwnProperty(e.code) || numKeys.hasOwnProperty(e.key)) {
+        if (this.gameState.status === GameStates.PLAYING) {
+          e.preventDefault();
+          const optionIndex = numKeys[e.code] !== undefined ? numKeys[e.code] : numKeys[e.key];
+          const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
+          if (buttons[optionIndex] && !buttons[optionIndex].disabled) {
+            buttons[optionIndex].click();
+          }
+        }
+        return;
+      }
+
+      // Tecla Enter o N: Siguiente canción o Reiniciar
+      if (e.key === 'Enter' || e.key.toLowerCase() === 'n') {
         if (this.gameState.status === GameStates.ROUND_OVER) {
+          e.preventDefault();
           this.gameLogic.nextRound();
         } else if (this.gameState.status === GameStates.GAME_OVER) {
+          e.preventDefault();
           this.dom.btnRestart?.click();
         } else if (this.gameState.status === GameStates.IDLE) {
+          e.preventDefault();
           this.dom.btnStart?.click();
         }
+        return;
       }
 
-      if (key.toLowerCase() === 'm') {
+      // Tecla M: Alternar silencio
+      if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
         this.dom.btnMute?.click();
       }
     });

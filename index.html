@@ -23,6 +23,10 @@
 </head>
 <body>
 
+  <!-- Regiones accesibles para lectores de pantalla (ARIA Live) -->
+  <div id="a11y-announcer" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="a11y-alert" class="visually-hidden" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
   <div class="app-container">
     <!-- ENCABEZADO ESTILO SPOTIFY -->
     <header class="app-header">
@@ -136,8 +140,8 @@
           <button id="btn-start" class="btn-primary" type="button" disabled>Cargando Motor de Audio...</button>
         </div>
 
-        <!-- Grilla de Opciones estilo pistas de lista de Spotify -->
-        <div class="options-grid" id="options-grid" role="group" aria-label="Opciones de respuesta disponibles">
+        <!-- Grilla de Opciones estilo pistas de lista de Spotify (WAI-ARIA radiogroup) -->
+        <div class="options-grid" id="options-grid" role="radiogroup" aria-label="Opciones de respuesta disponibles">
           <!-- Inyectado dinámicamente por domRenderer.js -->
         </div>
 

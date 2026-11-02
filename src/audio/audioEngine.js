@@ -109,6 +109,28 @@ export class AudioEngine {
   }
 
   /**
+   * Indica si la pista está reproduciéndose actualmente.
+   * @returns {boolean}
+   */
+  get isPlaying() {
+    return !this.audio.paused && !this.audio.ended && this.audio.currentTime > 0;
+  }
+
+  /**
+   * Alterna entre reproducción y pausa.
+   * @returns {Promise<boolean>} Devuelve true si quedó reproduciéndose, false si se pausó.
+   */
+  async togglePlayPause() {
+    if (this.isPlaying) {
+      this.pause();
+      return false;
+    } else {
+      await this.play();
+      return true;
+    }
+  }
+
+  /**
    * Inicia o reanuda la reproducción asegurando el contexto de audio.
    * @returns {Promise<void>}
    */
