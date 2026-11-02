@@ -3,7 +3,7 @@
  * Proporciona almacenamiento en caché local para funcionamiento sin conexión y baja latencia.
  */
 
-const CACHE_NAME = 'songquiz-v2.3.0';
+const CACHE_NAME = 'songquiz-v2.4.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -13,6 +13,7 @@ const PRECACHE_ASSETS = [
   './src/styles/main.css',
   './src/data/songs.json',
   './src/utils/random.js',
+  './src/utils/playlistParser.js',
   './src/audio/soundFX.js',
   './src/audio/audioEngine.js',
   './src/ui/visualizer.js',

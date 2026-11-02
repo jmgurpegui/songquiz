@@ -5,6 +5,7 @@
  */
 
 import { GameStates, GameModes } from '../core/gameState.js';
+import { fetchPlaylistFromYouTube, parseTextPlaylist } from '../utils/playlistParser.js';
 
 export class DOMRenderer {
   /**
@@ -93,6 +94,9 @@ export class DOMRenderer {
       // Modal de gestión de playlist
       playlistModal: document.getElementById('playlist-modal'),
       btnCloseImporter: document.getElementById('btn-close-importer'),
+      youtubePlaylistUrlInput: document.getElementById('youtube-playlist-url-input'),
+      btnFetchYoutubePlaylist: document.getElementById('btn-fetch-youtube-playlist'),
+      importProgressStatus: document.getElementById('import-progress-status'),
       playlistTableBody: document.getElementById('playlist-table-body'),
       playlistJsonInput: document.getElementById('playlist-json-input'),
       btnApplyCustomJson: document.getElementById('btn-apply-custom-json'),
@@ -220,6 +224,58 @@ export class DOMRenderer {
    * @private
    */
   _bindPlaylistManagerEvents() {
+    // Importación directa desde enlace de YouTube
+    this.dom.btnFetchYoutubePlaylist?.addEventListener('click', async () => {
+      const url = this.dom.youtubePlaylistUrlInput?.value.trim();
+      if (!url) {
+        if (this.dom.importProgressStatus) {
+          this.dom.importProgressStatus.textContent = '⚠️ Por favor, introduce una URL o ID de lista de YouTube.';
+          this.dom.importProgressStatus.style.color = 'var(--color-warning)';
+        }
+        return;
+      }
+
+      this.dom.btnFetchYoutubePlaylist.disabled = true;
+      this.dom.btnFetchYoutubePlaylist.textContent = '⏳ Extrayendo canciones...';
+
+      try {
+        const songs = await fetchPlaylistFromYouTube(url, (msg) => {
+          if (this.dom.importProgressStatus) {
+            this.dom.importProgressStatus.textContent = msg;
+            this.dom.importProgressStatus.style.color = 'var(--spotify-green-light)';
+          }
+        });
+
+        if (songs.length === 0) {
+          throw new Error('No se encontraron canciones en la lista.');
+        }
+
+        this.gameLogic.setCustomPlaylist(songs);
+        this._renderPlaylistTable();
+        this.announce(`Lista importada con éxito: ${songs.length} pistas activadas.`);
+
+        if (this.dom.importProgressStatus) {
+          this.dom.importProgressStatus.textContent = `✅ ¡Éxito! ${songs.length} pistas extraídas y activadas en el juego.`;
+          this.dom.importProgressStatus.style.color = 'var(--spotify-green)';
+        }
+
+        setTimeout(() => {
+          this._closePlaylistModal();
+          this.dom.startScreen.classList.remove('visually-hidden');
+        }, 1200);
+      } catch (err) {
+        console.error('Error al importar playlist:', err);
+        if (this.dom.importProgressStatus) {
+          this.dom.importProgressStatus.textContent = `❌ ${err.message}`;
+          this.dom.importProgressStatus.style.color = 'var(--color-error)';
+        }
+        this.announce(`Error al importar: ${err.message}`, true);
+      } finally {
+        this.dom.btnFetchYoutubePlaylist.disabled = false;
+        this.dom.btnFetchYoutubePlaylist.textContent = '⬇️ Extraer Canciones y Activar';
+      }
+    });
+
     this.dom.btnExportJson?.addEventListener('click', () => {
       const jsonStr = JSON.stringify(this.gameLogic.allSongs, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -236,17 +292,25 @@ export class DOMRenderer {
       try {
         const text = this.dom.playlistJsonInput.value.trim();
         if (!text) return;
-        const parsed = JSON.parse(text);
+
+        let parsed = [];
+        if (text.startsWith('[')) {
+          parsed = JSON.parse(text);
+        } else {
+          parsed = parseTextPlaylist(text);
+        }
+
         if (!Array.isArray(parsed) || parsed.length === 0) {
-          alert('El formato debe ser un array de canciones JSON válido.');
+          alert('No se detectaron canciones válidas en el texto o JSON introducido.');
           return;
         }
+
         this.gameLogic.setCustomPlaylist(parsed);
         this._closePlaylistModal();
         this.dom.startScreen.classList.remove('visually-hidden');
         this.announce(`Lista personalizada activada con ${parsed.length} canciones.`);
       } catch (err) {
-        alert('Error al procesar el JSON: ' + err.message);
+        alert('Error al procesar el catálogo: ' + err.message);
       }
     });
 
@@ -273,6 +337,9 @@ export class DOMRenderer {
 
   _openPlaylistModal() {
     this._renderPlaylistTable();
+    if (this.dom.importProgressStatus) {
+      this.dom.importProgressStatus.textContent = '';
+    }
     if (this.dom.playlistJsonInput) {
       this.dom.playlistJsonInput.value = JSON.stringify(this.gameLogic.allSongs, null, 2);
     }

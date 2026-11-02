@@ -213,13 +213,40 @@
 
       <!-- Pestañas del Gestor -->
       <div class="playlist-tabs">
-        <button class="playlist-tab-btn active" data-tab="tab-list">📋 Lista Activa</button>
-        <button class="playlist-tab-btn" data-tab="tab-json">📥 Importar / Editar JSON</button>
-        <button class="playlist-tab-btn" data-tab="tab-youtube">⚡ Importador YouTube (CLI)</button>
+        <button class="playlist-tab-btn active" data-tab="tab-link">🔗 Importar desde Enlace</button>
+        <button class="playlist-tab-btn" data-tab="tab-list">📋 Lista Activa</button>
+        <button class="playlist-tab-btn" data-tab="tab-json">📥 Pegar Texto / JSON</button>
+        <button class="playlist-tab-btn" data-tab="tab-youtube">⚡ Script CLI</button>
       </div>
 
-      <!-- Pestaña 1: Lista de Canciones Activas -->
-      <div class="playlist-tab-content" id="tab-list">
+      <!-- Pestaña 1: Importar directamente desde enlace YouTube -->
+      <div class="playlist-tab-content" id="tab-link">
+        <p style="font-size: var(--text-sm); color: var(--color-secondary); margin-bottom: var(--space-sm);">
+          Introduce la URL de cualquier lista de reproducción pública de <strong>YouTube</strong> o <strong>YouTube Music</strong>:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: var(--space-xs); margin-bottom: var(--space-sm);">
+          <label for="youtube-playlist-url-input" class="visually-hidden">URL o ID de la playlist de YouTube</label>
+          <input type="text" id="youtube-playlist-url-input" class="playlist-input" placeholder="https://www.youtube.com/playlist?list=... o ID directo de la lista">
+        </div>
+
+        <div id="import-progress-status" style="min-height: 1.5rem; font-size: var(--text-xs); color: var(--spotify-green-light); margin-bottom: var(--space-sm); font-weight: 600;"></div>
+
+        <div class="controls-centered">
+          <button id="btn-fetch-youtube-playlist" class="btn-primary" type="button">
+            ⬇️ Extraer Canciones y Activar
+          </button>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm); margin-top: var(--space-md); font-size: var(--text-xs); color: var(--color-text-dim); line-height: 1.6;">
+          <p>✓ <strong>Cero APIs requeridas:</strong> Procesa el feed público oficial sin necesidad de credenciales de Google Cloud.</p>
+          <p>✓ <strong>Limpieza inteligente:</strong> Extrae y separa artista y título eliminando <em>(Official Video)</em>, <em>[HD]</em>, <em>(Remastered)</em>, etc.</p>
+          <p>✓ <strong>Persistencia local:</strong> Se almacena en tu navegador (<code>localStorage</code>) para jugar de inmediato con opción de revertir.</p>
+        </div>
+      </div>
+
+      <!-- Pestaña 2: Lista de Canciones Activas -->
+      <div class="playlist-tab-content" id="tab-list" style="display: none;">
         <div class="playlist-table-container">
           <table class="playlist-table">
             <thead>
@@ -248,12 +275,12 @@
         </div>
       </div>
 
-      <!-- Pestaña 2: Importador / Editor JSON -->
+      <!-- Pestaña 3: Pegar Texto o JSON -->
       <div class="playlist-tab-content" id="tab-json" style="display: none;">
         <p style="font-size: var(--text-xs); color: var(--color-secondary); margin-bottom: var(--space-xs);">
-          Pega aquí tu catálogo JSON estructurado con letras bilingües y cultura musical para jugar de inmediato sin tocar código:
+          Pega un catálogo JSON completo o una lista simple de canciones (ej: <code>Artista - Título</code> en cada línea):
         </p>
-        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder="[ { 'id': '...', 'title': '...', 'lyrics': {...} } ]" style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
+        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder="[ { 'id': '...', 'title': '...', 'lyrics': {...} } ]&#10;o pega texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights" style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
 
         <div class="controls-centered" style="margin-top: var(--space-sm);">
           <button id="btn-apply-custom-json" class="btn-primary" type="button">
