@@ -1,7 +1,7 @@
 /**
  * @fileoverview Motor de integración oficial con YouTube IFrame API para SongQuiz.
  * Permite reproducir vídeos y audios oficiales de YouTube con controles completos,
- * soporte de escucha continua y eventos de sincronización.
+ * salto de anuncios e intros (+15s / -10s), soporte de escucha continua y eventos de sincronización.
  */
 
 export class YouTubePlayerEngine {
@@ -19,6 +19,14 @@ export class YouTubePlayerEngine {
   }
 
   /**
+   * Indica si el reproductor está listo y cargado.
+   * @returns {boolean}
+   */
+  get isLoaded() {
+    return Boolean(this.isReady && this.player);
+  }
+
+  /**
    * Carga la API de YouTube de forma asíncrona e inicializa el reproductor en el DOM.
    * @param {string} containerId - ID del contenedor div (ej. 'ytplayer').
    * @returns {Promise<void>}
@@ -27,7 +35,6 @@ export class YouTubePlayerEngine {
     if (this._readyPromise) return this._readyPromise;
 
     this._readyPromise = new Promise((resolve, reject) => {
-      // 1. Inyectar script de la API si no existe
       if (!window.YT || !window.YT.Player) {
         const existingTag = document.querySelector('script[src*="youtube.com/iframe_api"]');
         if (!existingTag) {
@@ -37,7 +44,6 @@ export class YouTubePlayerEngine {
           firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         }
 
-        // Definir callback global requerido por YouTube
         const prevApiReady = window.onYouTubeIframeAPIReady;
         window.onYouTubeIframeAPIReady = () => {
           if (typeof prevApiReady === 'function') prevApiReady();
@@ -64,9 +70,10 @@ export class YouTubePlayerEngine {
         playerVars: {
           autoplay: 1,
           playsinline: 1,
-          controls: 1, // Controles habilitados para permitir escucha completa
+          controls: 1,
           rel: 0,
           modestbranding: 1,
+          iv_load_policy: 3,
           fs: 1,
           origin: window.location.origin
         },
@@ -112,10 +119,30 @@ export class YouTubePlayerEngine {
           videoId: videoId,
           startSeconds: startSeconds
         });
-        this.player.unMute();
+        if (!this.isMuted && typeof this.player.unMute === 'function') {
+          this.player.unMute();
+        }
       }
     } catch (e) {
       console.warn('Error al cargar vídeo en YT.Player:', e);
+    }
+  }
+
+  /**
+   * Adelanta o retrocede la reproducción un número determinado de segundos.
+   * Ideal para saltar introducciones largas y llegar a la letra de la canción.
+   * @param {number} deltaSeconds - Segundos a desplazar (ej. +15 o -10).
+   */
+  seekBy(deltaSeconds) {
+    if (!this.player || !this.isReady) return;
+    try {
+      const current = typeof this.player.getCurrentTime === 'function' ? this.player.getCurrentTime() : 0;
+      const target = Math.max(0, current + deltaSeconds);
+      if (typeof this.player.seekTo === 'function') {
+        this.player.seekTo(target, true);
+      }
+    } catch (e) {
+      console.warn('Error al desplazar tiempo en YouTube:', e);
     }
   }
 
@@ -144,7 +171,7 @@ export class YouTubePlayerEngine {
   }
 
   /**
-   * Detiene el vídeo y lo reinicia al segundo 0.
+   * Detiene el vídeo.
    */
   stop() {
     if (this.player && typeof this.player.stopVideo === 'function') {
@@ -156,7 +183,7 @@ export class YouTubePlayerEngine {
 
   /**
    * Alterna entre reproducir y pausar.
-   * @returns {boolean} True si está reproduciendo.
+   * @returns {boolean} True si pasa a estar reproduciendo.
    */
   togglePlayPause() {
     if (this.isPlaying) {
@@ -173,7 +200,7 @@ export class YouTubePlayerEngine {
    * @returns {boolean}
    */
   get isPlaying() {
-    if (this.player && typeof this.player.getPlayerState === 'function') {
+    if (this.player && typeof this.player.getPlayerState === 'function' && window.YT?.PlayerState) {
       return this.player.getPlayerState() === window.YT.PlayerState.PLAYING;
     }
     return false;
@@ -191,20 +218,27 @@ export class YouTubePlayerEngine {
   }
 
   /**
+   * Establece explícitamente el estado de silencio.
+   * @param {boolean} muted
+   */
+  setMuted(muted) {
+    this.isMuted = Boolean(muted);
+    if (!this.player) return;
+    try {
+      if (this.isMuted && typeof this.player.mute === 'function') {
+        this.player.mute();
+      } else if (!this.isMuted && typeof this.player.unMute === 'function') {
+        this.player.unMute();
+      }
+    } catch {}
+  }
+
+  /**
    * Alterna el modo silenciado en YouTube.
    * @returns {boolean}
    */
   toggleMute() {
-    if (!this.player) return false;
-    if (typeof this.player.isMuted === 'function' && typeof this.player.mute === 'function') {
-      if (this.player.isMuted()) {
-        this.player.unMute();
-        this.isMuted = false;
-      } else {
-        this.player.mute();
-        this.isMuted = true;
-      }
-    }
+    this.setMuted(!this.isMuted);
     return this.isMuted;
   }
 

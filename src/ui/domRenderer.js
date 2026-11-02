@@ -76,6 +76,13 @@ export class DOMRenderer {
       minimizedAudioBar: document.getElementById('minimized-audio-bar'),
       minimizedTitle: document.getElementById('minimized-title'),
       minimizedSubtitle: document.getElementById('minimized-subtitle'),
+      antiSpoilerTopShield: document.getElementById('anti-spoiler-top-shield'),
+      adSkipControlBar: document.getElementById('ad-skip-control-bar'),
+      timerStatusDot: document.getElementById('timer-status-dot'),
+      timerStatusLabel: document.getElementById('timer-status-label'),
+      btnSeekBack: document.getElementById('btn-seek-back'),
+      btnSeekForward: document.getElementById('btn-seek-forward'),
+      btnStartTimer: document.getElementById('btn-start-timer'),
 
       timerBar: document.getElementById('timer-bar-fill'),
       timerText: document.getElementById('timer-text'),
@@ -197,6 +204,21 @@ export class DOMRenderer {
         localStorage.setItem('songquiz_player_minimized', String(this.isPlayerMinimized));
       } catch {}
       this.announce(this.isPlayerMinimized ? 'Reproductor minimizado (modo audio puro sin spoilers)' : 'Reproductor expandido (vídeo visible)');
+    });
+
+    this.dom.btnSeekBack?.addEventListener('click', () => {
+      this.gameLogic.seekAudio(-10);
+      this.announce('Retrocediendo 10 segundos en la canción');
+    });
+
+    this.dom.btnSeekForward?.addEventListener('click', () => {
+      this.gameLogic.seekAudio(15);
+      this.announce('Adelantando 15 segundos para escuchar la letra');
+    });
+
+    this.dom.btnStartTimer?.addEventListener('click', () => {
+      const running = this.gameLogic.toggleRoundTimer();
+      this.announce(running ? 'Cronómetro iniciado. ¡Adivina la canción!' : 'Cronómetro en pausa para saltar anuncio o intro');
     });
 
     this.dom.btnOpenImporter?.addEventListener('click', () => {
@@ -622,6 +644,39 @@ export class DOMRenderer {
       const { score, streak } = e.detail;
       this._updateScoreAndStreak(score, streak);
     });
+
+    this.gameState.addEventListener('timerStateChange', (e) => {
+      const { isTimerRunning } = e.detail;
+      this._updateTimerControlState(isTimerRunning);
+    });
+  }
+
+  /**
+   * Actualiza los controles visuales de pausa anti-anuncio y estado del cronómetro.
+   * Mientras el reloj está en espera, el reproductor de YouTube permite pulsar "Saltar anuncio"
+   * manteniendo oculta la franja superior del título.
+   * @param {boolean} isTimerRunning
+   * @private
+   */
+  _updateTimerControlState(isTimerRunning) {
+    if (this.dom.audioStage) {
+      this.dom.audioStage.classList.toggle('ad-skip-mode', !isTimerRunning);
+    }
+    if (this.dom.timerStatusDot) {
+      this.dom.timerStatusDot.classList.toggle('paused', !isTimerRunning);
+    }
+    if (this.dom.timerStatusLabel) {
+      this.dom.timerStatusLabel.textContent = isTimerRunning
+        ? '⏱️ Tiempo en marcha • Adivina la canción cuanto antes'
+        : '⏸️ Reloj detenido: salta el anuncio en el vídeo o usa «+15s» antes de iniciar el tiempo';
+    }
+    if (this.dom.btnStartTimer) {
+      this.dom.btnStartTimer.style.display = 'inline-flex';
+      this.dom.btnStartTimer.classList.toggle('running', isTimerRunning);
+      this.dom.btnStartTimer.textContent = isTimerRunning
+        ? '⏸️ Pausar por Anuncio'
+        : '▶️ ¡Ya suena! Iniciar Tiempo';
+    }
   }
 
   _onStateChange(state, payload) {
@@ -649,10 +704,12 @@ export class DOMRenderer {
     this.dom.statusMsg.textContent = '';
     this.dom.statusMsg.className = 'status-msg';
 
-    // Ocultar vídeo de YouTube durante la fase de adivinanza
+    // Iniciar en modo espera anti-anuncio para poder saltar la publicidad de YouTube antes de que corra el tiempo
     if (this.dom.audioStage) {
       this.dom.audioStage.classList.remove('revealed');
     }
+    this._updateTimerControlState(false);
+
     if (this.dom.btnYtExternal) {
       this.dom.btnYtExternal.style.display = 'none';
     }
@@ -831,7 +888,17 @@ export class DOMRenderer {
 
     // Revelar el vídeo interactivo de YouTube para escuchar la canción completa
     if (this.dom.audioStage) {
+      this.dom.audioStage.classList.remove('ad-skip-mode');
       this.dom.audioStage.classList.add('revealed');
+    }
+    if (this.dom.btnStartTimer) {
+      this.dom.btnStartTimer.style.display = 'none';
+    }
+    if (this.dom.timerStatusDot) {
+      this.dom.timerStatusDot.classList.remove('paused');
+    }
+    if (this.dom.timerStatusLabel) {
+      this.dom.timerStatusLabel.textContent = `🎵 Escuchando: ${song.title} - ${song.artist}`;
     }
 
     if (this.dom.btnYtExternal) {

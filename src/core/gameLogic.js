@@ -32,6 +32,7 @@ export class GameLogic {
     this.allSongs = [];
     this.timerInterval = null;
     this.roundStartTime = 0;
+    this.isTimerRunning = false;
 
     // Vincular finalización natural de la pista de audio local
     this.audioEngine.onEnded(() => {
@@ -187,8 +188,76 @@ export class GameLogic {
       }
     }
 
+    // El temporizador permanece en espera inicial para permitir saltar anuncios o intros de YouTube
+    this.isTimerRunning = false;
+    this.roundStartTime = performance.now();
+    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
+      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
+    }));
+  }
+
+  /**
+   * Inicia o reanuda el cronómetro de la ronda una vez superado el anuncio de YouTube.
+   */
+  startRoundTimer() {
+    if (this.gameState.status !== GameStates.PLAYING) return;
+    if (this.isTimerRunning) return;
+
+    this.isTimerRunning = true;
     this.roundStartTime = performance.now();
     this._startTimer();
+    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
+      detail: { isTimerRunning: true, timeRemaining: this.gameState.timeRemaining }
+    }));
+  }
+
+  /**
+   * Pausa el cronómetro de la ronda (por ejemplo, si aparece un anuncio o se quiere ver el reproductor).
+   */
+  pauseRoundTimer() {
+    if (this.gameState.status !== GameStates.PLAYING) return;
+    this._clearTimer();
+    this.isTimerRunning = false;
+    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
+      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
+    }));
+  }
+
+  /**
+   * Alterna entre iniciar/reanudar y pausar el cronómetro de la ronda.
+   * @returns {boolean} True si el cronómetro queda corriendo.
+   */
+  toggleRoundTimer() {
+    if (this.isTimerRunning) {
+      this.pauseRoundTimer();
+    } else {
+      this.startRoundTimer();
+    }
+    return this.isTimerRunning;
+  }
+
+  /**
+   * Reinicia el reloj de la ronda a los 2:00 completos (120s) y lo deja listo.
+   */
+  resetRoundTimer() {
+    if (this.gameState.status !== GameStates.PLAYING) return;
+    this._clearTimer();
+    this.isTimerRunning = false;
+    this.gameState.setTimeRemaining(this.gameState.maxRoundTime);
+    this.roundStartTime = performance.now();
+    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
+      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
+    }));
+  }
+
+  /**
+   * Adelanta o retrocede la canción actual en YouTube para saltar introducciones largas y oír la letra.
+   * @param {number} deltaSeconds - Ej: +15 o -10.
+   */
+  seekAudio(deltaSeconds) {
+    if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
+      this.youtubePlayer.seekBy(deltaSeconds);
+    }
   }
 
   /**
@@ -196,6 +265,7 @@ export class GameLogic {
    * @private
    */
   _startTimer() {
+    this._clearTimer();
     this.timerInterval = setInterval(() => {
       const remaining = this.gameState.timeRemaining - 1;
       this.gameState.setTimeRemaining(remaining);
@@ -219,6 +289,7 @@ export class GameLogic {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
     }
+    this.isTimerRunning = false;
   }
 
   /**

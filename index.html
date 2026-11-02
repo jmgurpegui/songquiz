@@ -118,6 +118,12 @@
             </button>
           </div>
 
+          <!-- Visera Superior Anti-Spoiler: cubre el título de YouTube mientras permite pulsar "Saltar anuncio" en el vídeo -->
+          <div class="anti-spoiler-top-shield" id="anti-spoiler-top-shield">
+            <span class="shield-badge">🔒 Título oculto</span>
+            <span class="shield-hint" id="shield-hint-text">Salta el anuncio en el vídeo y pulsa «Iniciar Tiempo»</span>
+          </div>
+
           <!-- Reproductor de YouTube Embebido -->
           <div id="ytplayer-container" class="yt-player-container">
             <div id="ytplayer"></div>
@@ -143,6 +149,25 @@
           <div class="audio-overlay-label" id="stage-overlay">
             <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
             <p class="stage-subtitle" id="stage-subtitle">Escucha atentamente el audio...</p>
+          </div>
+        </div>
+
+        <!-- Barra de Control Anti-Publicidad, Salto de Intro (+15s) y Arranque Manual de Tiempo -->
+        <div class="ad-skip-control-bar" id="ad-skip-control-bar">
+          <div class="ad-skip-status">
+            <span class="ad-status-dot paused" id="timer-status-dot"></span>
+            <span id="timer-status-label">⏸️ Reloj en espera: salta el anuncio en el vídeo antes de iniciar el tiempo</span>
+          </div>
+          <div class="ad-skip-buttons">
+            <button id="btn-seek-back" class="btn-spotify-subtle" type="button" title="Retroceder 10 segundos en la canción">
+              ⏪ -10s
+            </button>
+            <button id="btn-seek-forward" class="btn-spotify-subtle" type="button" title="Adelantar 15 segundos para saltar introducción e ir a la letra">
+              ⏩ +15s (Ir a la letra)
+            </button>
+            <button id="btn-start-timer" class="btn-timer-start" type="button" title="Iniciar o pausar el cronómetro de 2:00 cuando empiece a sonar la canción">
+              ▶️ ¡Ya suena! Iniciar Tiempo
+            </button>
           </div>
         </div>
 
