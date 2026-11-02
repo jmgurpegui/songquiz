@@ -152,21 +152,19 @@
           </div>
         </div>
 
-        <!-- Barra de Control Anti-Publicidad, Salto de Intro (+15s) y Arranque Manual de Tiempo -->
+        <!-- Barra de Control Anti-Publicidad, Salto de Intro (+15s) y Banner Manual de Arranque de Tiempo -->
         <div class="ad-skip-control-bar" id="ad-skip-control-bar">
-          <div class="ad-skip-status">
-            <span class="ad-status-dot paused" id="timer-status-dot"></span>
-            <span id="timer-status-label">⏸️ Reloj en espera: salta el anuncio en el vídeo antes de iniciar el tiempo</span>
-          </div>
+          <button id="btn-start-timer" class="btn-timer-start" type="button" title="Pulsa aquí o presiona la tecla [S] para forzar el inicio del tiempo en 120s">
+            📢 Esperando fin de anuncio / Pulsa aquí si ya suena la música
+          </button>
           <div class="ad-skip-buttons">
+            <span class="ad-status-dot paused" id="timer-status-dot"></span>
+            <span id="timer-status-label" class="ad-skip-status">Preparando canción... [Tecla S]</span>
             <button id="btn-seek-back" class="btn-spotify-subtle" type="button" title="Retroceder 10 segundos en la canción">
               ⏪ -10s
             </button>
             <button id="btn-seek-forward" class="btn-spotify-subtle" type="button" title="Adelantar 15 segundos para saltar introducción e ir a la letra">
               ⏩ +15s (Ir a la letra)
-            </button>
-            <button id="btn-start-timer" class="btn-timer-start" type="button" title="Iniciar o pausar el cronómetro de 2:00 cuando empiece a sonar la canción">
-              ▶️ ¡Ya suena! Iniciar Tiempo
             </button>
           </div>
         </div>

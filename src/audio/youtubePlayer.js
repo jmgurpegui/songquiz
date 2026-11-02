@@ -16,6 +16,9 @@ export class YouTubePlayerEngine {
     this._readyPromise = null;
     this._onStateChangeCb = null;
     this._onErrorCb = null;
+    this._onAudioActuallyPlayingCb = null;
+    this._playbackWatcherInterval = null;
+    this._audioStartedForCurrentTrack = false;
   }
 
   /**
@@ -85,12 +88,18 @@ export class YouTubePlayerEngine {
             resolve();
           },
           onStateChange: (event) => {
+            if (event.data === window.YT?.PlayerState?.PLAYING || event.data === 1) {
+              if (!this._audioStartedForCurrentTrack) {
+                this._startPlaybackWatcher();
+              }
+            }
             if (typeof this._onStateChangeCb === 'function') {
               this._onStateChangeCb(event);
             }
           },
           onError: (event) => {
             console.warn('YouTube Player error code:', event.data);
+            this._clearPlaybackWatcher();
             if (typeof this._onErrorCb === 'function') {
               this._onErrorCb(event.data);
             }
@@ -103,6 +112,57 @@ export class YouTubePlayerEngine {
   }
 
   /**
+   * Watcher de sincronización Pre-Roll que evalúa player.getCurrentTime() cada 250ms
+   * tras recibir YT.PlayerState.PLAYING. Dispara onAudioActuallyPlaying únicamente
+   * cuando getCurrentTime() > 0.7 segundos y no hay un anuncio pre-roll activo.
+   * @private
+   */
+  _startPlaybackWatcher() {
+    this._clearPlaybackWatcher();
+    this._playbackWatcherInterval = setInterval(() => {
+      if (!this.player || !this.isReady || this._audioStartedForCurrentTrack) {
+        this._clearPlaybackWatcher();
+        return;
+      }
+
+      try {
+        const state = typeof this.player.getPlayerState === 'function' ? this.player.getPlayerState() : -1;
+        if (state !== window.YT?.PlayerState?.PLAYING && state !== 1) {
+          return;
+        }
+
+        const currentTime = typeof this.player.getCurrentTime === 'function' ? this.player.getCurrentTime() : 0;
+        const videoData = typeof this.player.getVideoData === 'function' ? this.player.getVideoData() : null;
+        const loadedVideoId = videoData?.video_id || '';
+
+        // Si loadedVideoId difiere de currentVideoId, YouTube está reproduciendo un anuncio en el iframe
+        const isAdActive = Boolean(loadedVideoId && this.currentVideoId && loadedVideoId !== this.currentVideoId);
+
+        if (!isAdActive && currentTime > 0.7) {
+          this._audioStartedForCurrentTrack = true;
+          this._clearPlaybackWatcher();
+          if (typeof this._onAudioActuallyPlayingCb === 'function') {
+            this._onAudioActuallyPlayingCb(currentTime);
+          }
+        }
+      } catch (e) {
+        console.warn('Error en watcher de sincronización YouTube:', e);
+      }
+    }, 250);
+  }
+
+  /**
+   * Limpia el watcher de sincronización activo.
+   * @private
+   */
+  _clearPlaybackWatcher() {
+    if (this._playbackWatcherInterval) {
+      clearInterval(this._playbackWatcherInterval);
+      this._playbackWatcherInterval = null;
+    }
+  }
+
+  /**
    * Carga y comienza a reproducir un vídeo por su ID de YouTube.
    * @param {string} videoId
    * @param {number} [startSeconds=0]
@@ -111,6 +171,8 @@ export class YouTubePlayerEngine {
     await this.init();
     if (!this.player || !videoId) return;
 
+    this._clearPlaybackWatcher();
+    this._audioStartedForCurrentTrack = false;
     this.currentVideoId = videoId;
 
     try {
@@ -174,6 +236,7 @@ export class YouTubePlayerEngine {
    * Detiene el vídeo.
    */
   stop() {
+    this._clearPlaybackWatcher();
     if (this.player && typeof this.player.stopVideo === 'function') {
       try {
         this.player.stopVideo();
@@ -256,6 +319,14 @@ export class YouTubePlayerEngine {
    */
   onError(cb) {
     this._onErrorCb = cb;
+  }
+
+  /**
+   * Asigna callback para cuando el audio real de la canción supera 0.7s tras posibles anuncios pre-roll.
+   * @param {function(number): void} cb
+   */
+  onAudioActuallyPlaying(cb) {
+    this._onAudioActuallyPlayingCb = cb;
   }
 }
 

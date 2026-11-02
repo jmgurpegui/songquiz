@@ -41,13 +41,29 @@ export class GameLogic {
       }
     });
 
-    // Fallback si YouTube devuelve un error de reproducción
+    // Vincular evento startTimer de GameState
+    this.gameState.addEventListener('startTimer', () => {
+      this.startRoundTimer(true);
+    });
+
+    // Sincronización Pre-Roll: iniciar temporizador automáticamente cuando la canción real supere 0.7s sin anuncios
     if (this.youtubePlayer) {
+      this.youtubePlayer.onAudioActuallyPlaying(() => {
+        if (this.gameState.status === GameStates.AWAITING_AUDIO) {
+          this.gameState.startTimer();
+        }
+      });
+
       this.youtubePlayer.onError((errCode) => {
         console.warn(`Error en YouTube embebido (${errCode}). Activando fallback local.`);
         if (this.gameState.currentSong?.audioSrc) {
           this.audioEngine.load(this.gameState.currentSong.audioSrc)
             .then(() => this.audioEngine.play())
+            .then(() => {
+              if (this.gameState.status === GameStates.AWAITING_AUDIO) {
+                this.gameState.startTimer();
+              }
+            })
             .catch(() => {});
         }
       });
@@ -158,8 +174,13 @@ export class GameLogic {
       };
     }
 
-    // Transición a PLAYING
-    this.gameState.transition(GameStates.PLAYING, roundPayload);
+    // Transición a AWAITING_AUDIO ("Preparando canción...") sin iniciar aún la cuenta atrás de 120s
+    this.isTimerRunning = false;
+    this.roundStartTime = performance.now();
+    this.gameState.transition(GameStates.AWAITING_AUDIO, roundPayload);
+    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
+      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
+    }));
 
     // Iniciar visualizador
     this.visualizer.start();
@@ -176,6 +197,7 @@ export class GameLogic {
           try {
             await this.audioEngine.load(track.audioSrc);
             await this.audioEngine.play();
+            this.gameState.startTimer();
           } catch {}
         }
       }
@@ -183,25 +205,28 @@ export class GameLogic {
       try {
         await this.audioEngine.load(track.audioSrc);
         await this.audioEngine.play();
+        this.gameState.startTimer();
       } catch (e) {
         console.warn('Reproducción de audio local diferida a gesto del usuario:', e);
       }
     }
-
-    // El temporizador permanece en espera inicial para permitir saltar anuncios o intros de YouTube
-    this.isTimerRunning = false;
-    this.roundStartTime = performance.now();
-    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
-      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
-    }));
   }
 
   /**
-   * Inicia o reanuda el cronómetro de la ronda una vez superado el anuncio de YouTube.
+   * Inicia o reanuda el cronómetro de la ronda una vez superado el anuncio de YouTube
+   * o cuando el usuario pulsa el botón manual / tecla S.
+   * @param {boolean} [resetFullTime=false] - Si es true, asegura los 120s exactos al arrancar.
    */
-  startRoundTimer() {
-    if (this.gameState.status !== GameStates.PLAYING) return;
+  startRoundTimer(resetFullTime = false) {
+    if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
     if (this.isTimerRunning) return;
+
+    this.youtubePlayer?._clearPlaybackWatcher();
+
+    if (resetFullTime || this.gameState.status === GameStates.AWAITING_AUDIO) {
+      this.gameState.status = GameStates.PLAYING;
+      this.gameState.setTimeRemaining(this.gameState.maxRoundTime);
+    }
 
     this.isTimerRunning = true;
     this.roundStartTime = performance.now();
@@ -212,11 +237,12 @@ export class GameLogic {
   }
 
   /**
-   * Pausa el cronómetro de la ronda (por ejemplo, si aparece un anuncio o se quiere ver el reproductor).
+   * Pausa el cronómetro de la ronda (por ejemplo, si aparece un anuncio a mitad o se quiere saltar publicidad).
    */
   pauseRoundTimer() {
-    if (this.gameState.status !== GameStates.PLAYING) return;
+    if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
     this._clearTimer();
+    this.gameState.status = GameStates.AWAITING_AUDIO;
     this.isTimerRunning = false;
     this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
       detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
@@ -231,7 +257,7 @@ export class GameLogic {
     if (this.isTimerRunning) {
       this.pauseRoundTimer();
     } else {
-      this.startRoundTimer();
+      this.gameState.startTimer();
     }
     return this.isTimerRunning;
   }
@@ -240,9 +266,10 @@ export class GameLogic {
    * Reinicia el reloj de la ronda a los 2:00 completos (120s) y lo deja listo.
    */
   resetRoundTimer() {
-    if (this.gameState.status !== GameStates.PLAYING) return;
+    if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
     this._clearTimer();
     this.isTimerRunning = false;
+    this.gameState.status = GameStates.AWAITING_AUDIO;
     this.gameState.setTimeRemaining(this.gameState.maxRoundTime);
     this.roundStartTime = performance.now();
     this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
@@ -299,11 +326,12 @@ export class GameLogic {
    * @returns {{ isCorrect: boolean, correctAnswer: string, pointsEarned: number }}
    */
   submitAnswer(rawSelectedOption) {
-    if (this.gameState.status !== GameStates.PLAYING) {
+    if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) {
       return { isCorrect: false, correctAnswer: this.gameState.correctAnswer, pointsEarned: 0 };
     }
 
     this._clearTimer();
+    this.youtubePlayer?._clearPlaybackWatcher();
     const timeSpent = Math.max(0, (performance.now() - this.roundStartTime) / 1000);
 
     const selected = (rawSelectedOption || '').trim().toLowerCase();

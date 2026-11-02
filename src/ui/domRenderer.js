@@ -217,8 +217,13 @@ export class DOMRenderer {
     });
 
     this.dom.btnStartTimer?.addEventListener('click', () => {
-      const running = this.gameLogic.toggleRoundTimer();
-      this.announce(running ? 'Cronómetro iniciado. ¡Adivina la canción!' : 'Cronómetro en pausa para saltar anuncio o intro');
+      if (!this.gameLogic.isTimerRunning) {
+        this.gameState.startTimer();
+        this.announce('Cronómetro iniciado en 2 minutos exactos. ¡Adivina la canción!');
+      } else {
+        this.gameLogic.pauseRoundTimer();
+        this.announce('Cronómetro en pausa para saltar anuncio de YouTube');
+      }
     });
 
     this.dom.btnOpenImporter?.addEventListener('click', () => {
@@ -251,7 +256,7 @@ export class DOMRenderer {
     // Envío por teclado en Lyrics Challenge
     const submitTypedAnswer = () => {
       const val = this.dom.lyricsInputField?.value.trim();
-      if (val && this.gameState.status === GameStates.PLAYING) {
+      if (val && (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO)) {
         this.gameLogic.submitAnswer(val);
       }
     };
@@ -286,7 +291,11 @@ export class DOMRenderer {
    * @private
    */
   _handleModeSwitched() {
-    if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.ROUND_OVER) {
+    if (
+      this.gameState.status === GameStates.PLAYING ||
+      this.gameState.status === GameStates.AWAITING_AUDIO ||
+      this.gameState.status === GameStates.ROUND_OVER
+    ) {
       this.gameLogic.startRound();
     }
   }
@@ -652,9 +661,10 @@ export class DOMRenderer {
   }
 
   /**
-   * Actualiza los controles visuales de pausa anti-anuncio y estado del cronómetro.
-   * Mientras el reloj está en espera, el reproductor de YouTube permite pulsar "Saltar anuncio"
-   * manteniendo oculta la franja superior del título.
+   * Actualiza los controles visuales de pre-roll / pausa anti-anuncio y estado del cronómetro.
+   * Mientras está en AWAITING_AUDIO (!isTimerRunning), el reproductor de YouTube permite pulsar "Saltar anuncio"
+   * manteniendo oculta la franja superior del título. Una vez empieza la música real (isTimerRunning),
+   * vuelve a aplicar el modo anti-spoilers seleccionado.
    * @param {boolean} isTimerRunning
    * @private
    */
@@ -667,20 +677,34 @@ export class DOMRenderer {
     }
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = isTimerRunning
-        ? '⏱️ Tiempo en marcha • Adivina la canción cuanto antes'
-        : '⏸️ Reloj detenido: salta el anuncio en el vídeo o usa «+15s» antes de iniciar el tiempo';
+        ? '⏱️ Tiempo en marcha • Adivina la canción'
+        : 'Preparando canción... [Tecla S]';
     }
     if (this.dom.btnStartTimer) {
       this.dom.btnStartTimer.style.display = 'inline-flex';
       this.dom.btnStartTimer.classList.toggle('running', isTimerRunning);
       this.dom.btnStartTimer.textContent = isTimerRunning
         ? '⏸️ Pausar por Anuncio'
-        : '▶️ ¡Ya suena! Iniciar Tiempo';
+        : '📢 Esperando fin de anuncio / Pulsa aquí si ya suena la música';
+    }
+
+    if (this.dom.stageTitle && this.dom.stageSubtitle && this.gameState.status !== GameStates.ROUND_OVER) {
+      if (!isTimerRunning) {
+        this.dom.stageTitle.textContent = 'Preparando canción...';
+        this.dom.stageSubtitle.textContent = 'Esperando fin de anuncio de YouTube o sincronizando audio...';
+      } else if (this.gameState.gameMode === GameModes.LYRICS) {
+        this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
+        this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
+      } else {
+        this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
+        this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
+      }
     }
   }
 
   _onStateChange(state, payload) {
     switch (state) {
+      case GameStates.AWAITING_AUDIO:
       case GameStates.PLAYING:
         this._renderPlayingState(payload);
         break;
@@ -727,8 +751,13 @@ export class DOMRenderer {
     this.dom.stageOverlay.classList.remove('hidden');
 
     if (gameMode === GameModes.LYRICS && lyricsData) {
-      this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
-      this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
+      if (this.gameLogic.isTimerRunning) {
+        this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
+        this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
+      } else {
+        this.dom.stageTitle.textContent = 'Preparando canción...';
+        this.dom.stageSubtitle.textContent = 'Esperando fin de anuncio de YouTube o sincronizando audio...';
+      }
 
       if (this.dom.lyricsChallengeBox) {
         this.dom.lyricsChallengeBox.classList.remove('hidden');
@@ -751,16 +780,21 @@ export class DOMRenderer {
         }
       }
 
-      this.announce(`Pista ${roundNumber} de ${totalRounds}. Modo Lyrics Challenge. Completa el verso: ${lyricsData.blankedLine}. Cuatro opciones disponibles. Usa las teclas 1 a 4 o escribe tu respuesta.`);
+      this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción en Modo Lyrics Challenge. Pulsa S si ya suena la música.`);
     } else {
-      this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
-      this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
+      if (this.gameLogic.isTimerRunning) {
+        this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
+        this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
+      } else {
+        this.dom.stageTitle.textContent = 'Preparando canción...';
+        this.dom.stageSubtitle.textContent = 'Esperando fin de anuncio de YouTube o sincronizando audio...';
+      }
 
       if (this.dom.lyricsChallengeBox) {
         this.dom.lyricsChallengeBox.classList.add('hidden');
       }
 
-      this.announce(`Pista ${roundNumber} de ${totalRounds}. Modo Classic Trivia. ¿Qué canción está sonando? Cuatro opciones disponibles. Usa las teclas 1 a 4 o las flechas para responder. Barra espaciadora para pausar el audio.`);
+      this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción en Modo Classic Trivia. Pulsa S si ya suena la música.`);
     }
 
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
@@ -1012,7 +1046,11 @@ export class DOMRenderer {
       // Tecla Espacio: Reproducir / Pausar audio (previniendo scroll vertical)
       if ((e.code === 'Space' || e.key === ' ') && !isInput) {
         e.preventDefault();
-        if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.ROUND_OVER) {
+        if (
+          this.gameState.status === GameStates.PLAYING ||
+          this.gameState.status === GameStates.AWAITING_AUDIO ||
+          this.gameState.status === GameStates.ROUND_OVER
+        ) {
           let isPlaying = false;
           if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
             isPlaying = this.youtubePlayer.togglePlayPause();
@@ -1027,6 +1065,19 @@ export class DOMRenderer {
       // Si el usuario escribe en el input de lyrics, no interceptar números ni texto
       if (isInput) return;
 
+      // Tecla S: Forzar el arranque inmediato del temporizador en 120s exactos cancelando la espera de anuncio
+      if (e.key.toLowerCase() === 's') {
+        if (
+          this.gameState.status === GameStates.AWAITING_AUDIO ||
+          (this.gameState.status === GameStates.PLAYING && !this.gameLogic.isTimerRunning)
+        ) {
+          e.preventDefault();
+          this.gameState.startTimer();
+          this.announce('Cronómetro iniciado manualmente en 120 segundos exactos.');
+        }
+        return;
+      }
+
       // Teclas 1, 2, 3, 4 (teclado alfanumérico estándar y numpad)
       const numKeys = {
         '1': 0, 'Digit1': 0, 'Numpad1': 0,
@@ -1036,7 +1087,7 @@ export class DOMRenderer {
       };
 
       if (numKeys.hasOwnProperty(e.code) || numKeys.hasOwnProperty(e.key)) {
-        if (this.gameState.status === GameStates.PLAYING) {
+        if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO) {
           e.preventDefault();
           const optionIndex = numKeys[e.code] !== undefined ? numKeys[e.code] : numKeys[e.key];
           const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');

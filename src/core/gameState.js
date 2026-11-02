@@ -6,6 +6,7 @@
 
 export const GameStates = Object.freeze({
   IDLE: 'IDLE',
+  AWAITING_AUDIO: 'AWAITING_AUDIO',
   PLAYING: 'PLAYING',
   ROUND_OVER: 'ROUND_OVER',
   GAME_OVER: 'GAME_OVER'
@@ -102,10 +103,11 @@ export class GameState extends EventTarget {
    */
   transition(nextState, payload = {}) {
     const validTransitions = {
-      [GameStates.IDLE]: [GameStates.PLAYING],
-      [GameStates.PLAYING]: [GameStates.ROUND_OVER, GameStates.GAME_OVER],
-      [GameStates.ROUND_OVER]: [GameStates.PLAYING, GameStates.GAME_OVER],
-      [GameStates.GAME_OVER]: [GameStates.IDLE, GameStates.PLAYING]
+      [GameStates.IDLE]: [GameStates.AWAITING_AUDIO, GameStates.PLAYING],
+      [GameStates.AWAITING_AUDIO]: [GameStates.PLAYING, GameStates.ROUND_OVER, GameStates.GAME_OVER, GameStates.AWAITING_AUDIO],
+      [GameStates.PLAYING]: [GameStates.AWAITING_AUDIO, GameStates.ROUND_OVER, GameStates.GAME_OVER, GameStates.PLAYING],
+      [GameStates.ROUND_OVER]: [GameStates.AWAITING_AUDIO, GameStates.PLAYING, GameStates.GAME_OVER],
+      [GameStates.GAME_OVER]: [GameStates.IDLE, GameStates.AWAITING_AUDIO, GameStates.PLAYING]
     };
 
     if (!validTransitions[this.status]?.includes(nextState)) {
@@ -121,6 +123,23 @@ export class GameState extends EventTarget {
         currentState: this.status,
         gameMode: this.gameMode,
         ...payload
+      }
+    }));
+  }
+
+  /**
+   * Inicia oficialmente la cuenta atrás de la ronda una vez sincronizado el audio real
+   * o tras pulsar el botón manual de salto de anuncio.
+   */
+  startTimer() {
+    this.timeRemaining = this.maxRoundTime;
+    if (this.status === GameStates.AWAITING_AUDIO) {
+      this.status = GameStates.PLAYING;
+    }
+    this.dispatchEvent(new CustomEvent('startTimer', {
+      detail: {
+        timeRemaining: this.timeRemaining,
+        maxTime: this.maxRoundTime
       }
     }));
   }
