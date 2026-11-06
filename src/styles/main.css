@@ -23,6 +23,7 @@ body {
   background-color: var(--color-bg-base);
   color: var(--color-text-main);
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background-image:
@@ -32,14 +33,20 @@ body {
   line-height: 1.4;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* ENVOLTORIO PRINCIPAL OPTIMIZADO PARA CABER EN UNA SOLA PANTALLA */
+button, a, input, textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ENVOLTORIO PRINCIPAL OPTIMIZADO PARA CABER EN UNA SOLA PANTALLA (DESKTOP, TABLET Y MÓVIL) */
 .app-container {
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  padding: 8px 16px 12px;
+  padding: max(8px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1438,4 +1445,406 @@ body {
   outline: 2px solid #ffffff !important;
   outline-offset: 2px !important;
   border-color: var(--color-accent) !important;
+}
+
+/* ==========================================================================
+   INTEGRACIÓN CHROMECAST / SEGUNDA PANTALLA EN MISMA RED WI-FI
+   ========================================================================== */
+.btn-cast-header {
+  border-color: rgba(29, 185, 84, 0.35);
+  color: var(--color-accent-light);
+}
+
+.btn-cast-header.connected {
+  background: var(--color-accent);
+  color: #000000;
+  border-color: var(--color-accent-light);
+  box-shadow: 0 0 12px rgba(29, 185, 84, 0.45);
+}
+
+.stage-play-btn {
+  color: var(--color-accent-light);
+  border-color: rgba(29, 185, 84, 0.38);
+}
+
+.cast-modal-card {
+  max-width: 500px;
+  text-align: left;
+  gap: 14px;
+}
+
+.cast-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+}
+
+.cast-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(29, 185, 84, 0.14);
+  border: 1px solid rgba(29, 185, 84, 0.35);
+  color: var(--color-accent-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cast-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-surface-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+.cast-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cast-main-btn {
+  width: 100%;
+  min-height: 48px;
+  font-size: 0.92rem;
+}
+
+.cast-secondary-btn {
+  width: 100%;
+  min-height: 44px;
+  justify-content: center;
+  font-size: 0.82rem;
+  padding: 10px 14px;
+}
+
+.cast-instructions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 10px;
+}
+
+.cast-instruction-item {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 0.76rem;
+  color: var(--color-secondary);
+  line-height: 1.45;
+}
+
+.cast-instruction-item strong {
+  display: block;
+  color: #ffffff;
+  margin-bottom: 3px;
+}
+
+/* MODO PANTALLA TV (SALÓN / DUPLICAR PESTAÑA A CHROMECAST) */
+body.tv-cast-mode .app-container {
+  max-width: 1180px;
+}
+
+body.tv-cast-mode .audio-stage {
+  height: clamp(220px, 34dvh, 340px);
+}
+
+body.tv-cast-mode .option-btn {
+  min-height: 68px;
+}
+
+body.tv-cast-mode .option-title-main {
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   OPTIMIZACIÓN TÁCTIL Y RESPONSIVE PARA TABLETS (641px – 1024px)
+   ========================================================================== */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .app-container {
+    max-width: 920px;
+    padding: 10px 18px;
+    gap: 10px;
+  }
+
+  .audio-stage {
+    height: clamp(180px, 26dvh, 250px);
+  }
+
+  .stage-mini-action,
+  .stage-minimize-btn {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    min-height: 36px;
+  }
+
+  .option-btn {
+    min-height: 64px;
+    padding: 12px 16px;
+  }
+
+  .option-title-main {
+    font-size: 1rem;
+  }
+
+  .theme-pill {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+  }
+}
+
+/* ==========================================================================
+   OPTIMIZACIÓN TÁCTIL Y RESPONSIVE PARA MÓVILES (<= 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .app-container {
+    padding: max(6px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)) 10px;
+    gap: 6px;
+  }
+
+  .app-header {
+    padding: 2px 0 6px;
+    gap: 6px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  /* Ocultar badge secundario largo en cabecera móvil para priorizar controles y marcador */
+  .header-left > .brand-badge {
+    display: none !important;
+  }
+
+  .brand-title {
+    font-size: 1.15rem;
+  }
+
+  .brand-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-status {
+    gap: 5px;
+    justify-content: flex-end;
+    flex: 1;
+  }
+
+  .stat-chip {
+    padding: 3px 8px;
+    font-size: 0.74rem;
+  }
+
+  #round-indicator {
+    font-size: 0.64rem;
+    padding: 3px 7px;
+  }
+
+  .btn-subtle {
+    padding: 5px 9px;
+    font-size: 0.72rem;
+    min-height: 34px;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .theme-pills-bar {
+    gap: 5px;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .theme-pill {
+    padding: 5px 11px;
+    font-size: 0.72rem;
+    min-height: 30px;
+  }
+
+  .game-card {
+    padding: 10px;
+    gap: 8px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* Altura compacta del escenario en móvil para que quepan vídeo + temporizador + 4 opciones sin scroll */
+  .audio-stage {
+    height: clamp(136px, 21dvh, 172px);
+  }
+
+  .audio-stage-toolbar {
+    top: 6px;
+    right: 6px;
+    gap: 4px;
+  }
+
+  .stage-mini-action,
+  .stage-minimize-btn {
+    padding: 4px 8px;
+    font-size: 0.68rem;
+    min-height: 30px;
+  }
+
+  /* Evitar colisión de texto en la barra superior anti-spoiler y barra minimizada en pantallas estrechas */
+  .anti-spoiler-top-shield {
+    height: 42px;
+    padding: 0 12px;
+  }
+
+  .shield-hint {
+    display: none;
+  }
+
+  .minimized-audio-bar {
+    padding-right: 130px;
+  }
+
+  .floating-ad-pill-wrapper {
+    bottom: 8px;
+    max-width: calc(100% - 16px);
+  }
+
+  .floating-ad-pill {
+    white-space: normal;
+    text-align: center;
+    font-size: 0.71rem;
+    padding: 6px 12px;
+    line-height: 1.25;
+  }
+
+  .stage-title {
+    font-size: 0.98rem;
+  }
+
+  .stage-subtitle {
+    font-size: 0.72rem;
+  }
+
+  /* Temporizador y botón CTA principal adaptados a pulgar móvil */
+  .timer-cta-row {
+    padding: 6px 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .timer-header {
+    font-size: 0.68rem;
+  }
+
+  .btn-cta-inline {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    min-height: 38px;
+  }
+
+  /* Opciones de respuesta táctiles y compactas en móvil */
+  .options-grid {
+    gap: 6px;
+  }
+
+  .option-btn {
+    min-height: 52px;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .option-btn:active:not(:disabled) {
+    transform: scale(0.985);
+    background: rgba(29, 185, 84, 0.14);
+  }
+
+  .option-key {
+    width: 26px;
+    height: 26px;
+    font-size: 0.7rem;
+  }
+
+  .option-title-main {
+    font-size: 0.88rem;
+  }
+
+  .option-artist-sub {
+    font-size: 0.72rem;
+  }
+
+  /* Barra plegable Curiosidad Musical en móvil */
+  .curiosity-bar {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .curiosity-label {
+    font-size: 0.72rem;
+  }
+
+  .curiosity-preview {
+    display: none;
+  }
+
+  /* Modales tipo Bottom-Sheet ergonómicos en móvil */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-card,
+  .modal-card.wide {
+    max-width: 100%;
+    max-height: 90dvh;
+    overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+    padding: 16px 14px max(16px, env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ajustes adicionales para móviles muy compactos (<= 400px de ancho) */
+@media (max-width: 400px) {
+  .btn-label-text,
+  .stage-btn-label,
+  #label-toggle-minimize {
+    display: none;
+  }
+
+  .minimized-audio-bar {
+    padding-right: 110px;
+  }
+}
+
+/* Modo horizontal (Landscape) en móviles y phablets */
+@media (max-height: 540px) and (orientation: landscape) {
+  .app-header {
+    padding: 2px 0 4px;
+  }
+
+  .theme-pills-bar {
+    display: none;
+  }
+
+  .audio-stage {
+    height: 105px;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .option-btn {
+    min-height: 44px;
+    padding: 6px 10px;
+  }
 }

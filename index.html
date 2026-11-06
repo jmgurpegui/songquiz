@@ -2,9 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SongQuiz - Trivia musical interactiva y desafío de escucha en inglés.">
-  <meta name="theme-color" content="#0f1115">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="SongQuiz - Trivia musical interactiva con 500 canciones, Top 100 YouTube, diseño móvil/tablet y soporte Chromecast.">
+  <meta name="theme-color" content="#121212">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>SongQuiz — Trivia Musical Interactiva</title>
 
@@ -62,13 +65,21 @@
         <span class="brand-badge" id="round-indicator">Pista 1 / 10</span>
 
         <div class="header-actions">
+          <button id="btn-cast" class="btn-subtle btn-cast-header" type="button" aria-label="Enviar a Chromecast en la misma red Wi-Fi" title="Enviar a Chromecast / TV en la misma red Wi-Fi (C)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+              <line x1="2" y1="20" x2="2.01" y2="20"></line>
+            </svg>
+            <span id="cast-btn-label">Cast</span>
+          </button>
+
           <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas por temática o importar desde YouTube">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
               <line x1="12" y1="11" x2="12" y2="17"></line>
               <line x1="9" y1="14" x2="15" y2="14"></line>
             </svg>
-            <span>Listas</span>
+            <span class="btn-label-text">Listas</span>
           </button>
 
           <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
@@ -98,9 +109,13 @@
 
         <!-- Escenario de Audio y Vídeo Embebido con Espectrograma Canvas y Minimizado Antispoiler -->
         <div class="audio-stage" id="audio-stage">
-          <!-- Barra superior de control para Minimizar / Modo Antispoiler y Saltos de Tiempo -->
+          <!-- Barra superior de control táctil para Reproducir/Pausar, Saltos de Tiempo y Minimizar -->
           <div class="audio-stage-toolbar">
             <div class="stage-seek-group">
+              <button id="btn-play-pause" class="stage-mini-action stage-play-btn" type="button" aria-label="Reproducir o pausar canción" title="Reproducir / Pausar audio (Espacio)">
+                <span id="play-pause-icon">⏯</span>
+                <span class="stage-btn-label" id="play-pause-label">Audio</span>
+              </button>
               <button id="btn-seek-back" class="stage-mini-action" type="button" title="Retroceder 10 segundos en la canción">
                 ⏪ -10s
               </button>
@@ -369,6 +384,60 @@
 
       <div class="controls-centered">
         <button id="btn-restart" class="btn-primary" type="button">Jugar Otra Partida 🔄</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONEXIÓN A CHROMECAST Y PANTALLA TV (MISMA RED WI-FI) -->
+  <div class="modal-overlay" id="cast-modal" role="dialog" aria-modal="true" aria-labelledby="cast-modal-title">
+    <div class="modal-card cast-modal-card">
+      <div class="cast-modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="cast-header-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+              <line x1="2" y1="20" x2="2.01" y2="20"></line>
+            </svg>
+          </span>
+          <h2 class="modal-heading" id="cast-modal-title" style="font-size: var(--text-lg);">Enviar a Chromecast / TV</h2>
+        </div>
+        <button id="btn-close-cast" class="icon-btn" type="button" aria-label="Cerrar panel de Chromecast">✕</button>
+      </div>
+
+      <div class="cast-status-banner" id="cast-status-banner">
+        <span class="ad-status-dot" id="cast-status-dot"></span>
+        <span id="cast-status-text">Asegúrate de que tu móvil/tablet y el Chromecast estén en la misma red Wi-Fi.</span>
+      </div>
+
+      <div class="cast-actions-stack">
+        <button id="btn-connect-chromecast" class="btn-primary cast-main-btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+            <line x1="2" y1="20" x2="2.01" y2="20"></line>
+          </svg>
+          <span id="btn-connect-chromecast-text">Buscar Chromecast en mi red Wi-Fi</span>
+        </button>
+
+        <button id="btn-toggle-tv-mode" class="btn-subtle cast-secondary-btn" type="button">
+          <span>📺</span>
+          <span id="btn-toggle-tv-mode-text">Activar Modo Pantalla TV (Salón / Duplicar Pestaña)</span>
+        </button>
+
+        <a id="btn-open-yt-cast-app" class="btn-subtle cast-secondary-btn" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
+          <span>▶</span>
+          <span>Abrir canción actual en app YouTube para Cast directo</span>
+        </a>
+      </div>
+
+      <div class="cast-instructions-grid">
+        <div class="cast-instruction-item">
+          <strong>📱 En Móvil o Tablet (Android / Chrome):</strong>
+          <p>Pulsa <em>«Buscar Chromecast»</em> arriba o abre el menú de Chrome <strong>(⋮ ➔ Enviar / Transmitir)</strong> para proyectar el juego y el sonido en tu TV.</p>
+        </div>
+        <div class="cast-instruction-item">
+          <strong>🍎 En iPad / iPhone (AirPlay o YouTube):</strong>
+          <p>Usa el botón <em>«Abrir en app YouTube»</em> y toca el icono de Chromecast dentro de YouTube, o comparte audio por AirPlay desde el Centro de Control.</p>
+        </div>
       </div>
     </div>
   </div>

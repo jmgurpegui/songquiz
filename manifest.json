@@ -1,12 +1,12 @@
 {
-  "name": "SongQuiz - Aprende con Música",
+  "name": "SongQuiz — Trivia Musical & Chromecast",
   "short_name": "SongQuiz",
-  "description": "Juego de trivia musical interactivo con Web Audio y análisis espectral en tiempo real.",
+  "description": "Juego de trivia musical con 500 canciones, Top 100 YouTube en orden, soporte táctil móvil/tablet y envío a Chromecast en la misma red Wi-Fi.",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0a0b0e",
-  "theme_color": "#0a0b0e",
+  "orientation": "any",
+  "background_color": "#121212",
+  "theme_color": "#121212",
   "icons": [
     {
       "src": "./assets/icons/icon-192.svg",

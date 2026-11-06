@@ -1,9 +1,9 @@
 /**
- * @fileoverview Service Worker para SongQuiz (PWA Offline First).
- * Proporciona almacenamiento en caché local para funcionamiento sin conexión y baja latencia.
+ * @fileoverview Service Worker para SongQuiz (PWA Mobile, Tablet & Chromecast).
+ * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios estáticos.
  */
 
-const CACHE_NAME = 'songquiz-v3.0.0';
+const CACHE_NAME = 'songquiz-v3.1.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -18,6 +18,7 @@ const PRECACHE_ASSETS = [
   './src/audio/soundFX.js',
   './src/audio/audioEngine.js',
   './src/audio/youtubePlayer.js',
+  './src/audio/castManager.js',
   './src/ui/visualizer.js',
   './src/core/gameState.js',
   './src/core/gameLogic.js',
@@ -57,8 +58,27 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignorar peticiones no HTTP/HTTPS o esquemas chrome-extension
   if (!event.request.url.startsWith('http')) return;
+
+  const url = new URL(event.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isCodeOrData = isSameOrigin && /\.(html|js|css|json)$/i.test(url.pathname) || url.pathname.endsWith('/');
+
+  if (isCodeOrData) {
+    // Network-First para garantizar que móvil, tablet y escritorio carguen siempre la última versión
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
@@ -66,7 +86,6 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
       return fetch(event.request).then((networkResponse) => {
-        // Almacenar en caché dinámico si es válida
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {

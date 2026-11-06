@@ -8,11 +8,12 @@ import { GameLogic } from './core/gameLogic.js';
 import { audioEngine } from './audio/audioEngine.js';
 import { sfx } from './audio/soundFX.js';
 import { youtubePlayer } from './audio/youtubePlayer.js';
+import { CastManager } from './audio/castManager.js';
 import { AudioVisualizer } from './ui/visualizer.js';
 import { DOMRenderer } from './ui/domRenderer.js';
 
 async function bootstrap() {
-  console.log('%c🎵 SongQuiz v2.9.0', 'color: #1db954; font-weight: bold; font-size: 14px;');
+  console.log('%c🎵 SongQuiz v3.1.0 (Mobile, Tablet & Chromecast)', 'color: #1db954; font-weight: bold; font-size: 14px;');
 
   const canvas = document.getElementById('visualizer-canvas');
   if (!canvas) {
@@ -28,6 +29,7 @@ async function bootstrap() {
   const visualizer = new AudioVisualizer(canvas, audioEngine);
   const gameState = new GameState();
   const gameLogic = new GameLogic(gameState, audioEngine, visualizer, youtubePlayer);
+  const castManager = new CastManager(audioEngine, youtubePlayer);
 
   try {
     const response = await fetch('./src/data/songs.json');
@@ -36,8 +38,8 @@ async function bootstrap() {
     }
     const defaultSongs = await response.json();
 
-    // Iniciar renderizador del DOM
-    new DOMRenderer(gameState, gameLogic, audioEngine, sfx, defaultSongs, youtubePlayer);
+    // Iniciar renderizador del DOM con soporte móvil/tablet y Chromecast
+    new DOMRenderer(gameState, gameLogic, audioEngine, sfx, defaultSongs, youtubePlayer, castManager);
 
     const startBtn = document.getElementById('btn-start');
     if (startBtn) {

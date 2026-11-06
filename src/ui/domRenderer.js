@@ -16,14 +16,16 @@ export class DOMRenderer {
    * @param {import('../audio/soundFX.js').SoundFX} soundFX
    * @param {Array<Object>} defaultSongs
    * @param {import('../audio/youtubePlayer.js').YouTubePlayerEngine} [youtubePlayer=null]
+   * @param {import('../audio/castManager.js').CastManager} [castManager=null]
    */
-  constructor(gameState, gameLogic, audioEngine, soundFX, defaultSongs = [], youtubePlayer = null) {
+  constructor(gameState, gameLogic, audioEngine, soundFX, defaultSongs = [], youtubePlayer = null, castManager = null) {
     this.gameState = gameState;
     this.gameLogic = gameLogic;
     this.audioEngine = audioEngine;
     this.soundFX = soundFX;
     this.defaultSongs = defaultSongs;
     this.youtubePlayer = youtubePlayer;
+    this.castManager = castManager;
 
     // Estado interno para accesibilidad y modales
     this._activeModal = null;
@@ -39,6 +41,7 @@ export class DOMRenderer {
     this._bindStateListeners();
     this._bindKeyboardShortcuts();
     this._bindPlaylistManagerEvents();
+    this._bindCastEvents();
     this._updateModeButtons();
   }
 
@@ -83,6 +86,23 @@ export class DOMRenderer {
       btnSeekBack: document.getElementById('btn-seek-back'),
       btnSeekForward: document.getElementById('btn-seek-forward'),
       btnStartTimer: document.getElementById('btn-start-timer'),
+      btnPlayPause: document.getElementById('btn-play-pause'),
+      playPauseIcon: document.getElementById('play-pause-icon'),
+      playPauseLabel: document.getElementById('play-pause-label'),
+
+      // Controles y modal de Chromecast / TV
+      btnCast: document.getElementById('btn-cast'),
+      castBtnLabel: document.getElementById('cast-btn-label'),
+      castModal: document.getElementById('cast-modal'),
+      btnCloseCast: document.getElementById('btn-close-cast'),
+      castStatusBanner: document.getElementById('cast-status-banner'),
+      castStatusDot: document.getElementById('cast-status-dot'),
+      castStatusText: document.getElementById('cast-status-text'),
+      btnConnectChromecast: document.getElementById('btn-connect-chromecast'),
+      btnConnectChromecastText: document.getElementById('btn-connect-chromecast-text'),
+      btnToggleTvMode: document.getElementById('btn-toggle-tv-mode'),
+      btnToggleTvModeText: document.getElementById('btn-toggle-tv-mode-text'),
+      btnOpenYtCastApp: document.getElementById('btn-open-yt-cast-app'),
 
       timerBar: document.getElementById('timer-bar-fill'),
       timerText: document.getElementById('timer-text'),
@@ -221,6 +241,23 @@ export class DOMRenderer {
     this.dom.btnSeekForward?.addEventListener('click', () => {
       this.gameLogic.seekAudio(15);
       this.announce('Adelantando 15 segundos para escuchar la letra');
+    });
+
+    this.dom.btnPlayPause?.addEventListener('click', async () => {
+      this.audioEngine.initContext();
+      let isPlaying = false;
+      if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
+        isPlaying = this.youtubePlayer.togglePlayPause();
+      } else {
+        isPlaying = await this.audioEngine.togglePlayPause();
+      }
+      if (this.dom.playPauseIcon) {
+        this.dom.playPauseIcon.textContent = isPlaying ? '⏸' : '▶';
+      }
+      if (this.dom.playPauseLabel) {
+        this.dom.playPauseLabel.textContent = isPlaying ? 'Pausar' : 'Sonar';
+      }
+      this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
     });
 
     this.dom.btnStartTimer?.addEventListener('click', () => {
@@ -532,10 +569,98 @@ export class DOMRenderer {
   _closeCurrentModal() {
     if (this.dom.playlistModal?.classList.contains('open')) {
       this._closePlaylistModal();
+    } else if (this.dom.castModal?.classList.contains('open')) {
+      this._closeCastModal();
     } else if (this.dom.gameOverModal?.classList.contains('open')) {
       this.dom.gameOverModal.classList.remove('open');
       this._releaseFocusTrap(this.dom.gameOverModal);
       this.announce('Ventana de resultados cerrada.');
+    }
+  }
+
+  /**
+   * Enlaza eventos para enviar a Chromecast en la misma red Wi-Fi y controlar el Modo Pantalla TV.
+   * @private
+   */
+  _bindCastEvents() {
+    this.dom.btnCast?.addEventListener('click', () => {
+      this._openCastModal();
+    });
+
+    this.dom.btnCloseCast?.addEventListener('click', () => {
+      this._closeCastModal();
+    });
+
+    this.dom.castModal?.addEventListener('click', (e) => {
+      if (e.target === this.dom.castModal) {
+        this._closeCastModal();
+      }
+    });
+
+    this.dom.playlistModal?.addEventListener('click', (e) => {
+      if (e.target === this.dom.playlistModal) {
+        this._closePlaylistModal();
+      }
+    });
+
+    this.dom.btnConnectChromecast?.addEventListener('click', async () => {
+      if (!this.castManager) return;
+      if (this.dom.castStatusText) {
+        this.dom.castStatusText.textContent = 'Buscando dispositivos Chromecast en tu red Wi-Fi...';
+      }
+      const res = await this.castManager.connectToChromecast();
+      if (this.dom.castStatusText && res?.message) {
+        this.dom.castStatusText.textContent = res.message;
+      }
+      this.announce(res?.message || 'Estado de Chromecast actualizado');
+    });
+
+    this.dom.btnToggleTvMode?.addEventListener('click', () => {
+      if (!this.castManager) return;
+      const active = this.castManager.toggleTvDisplayMode();
+      if (this.dom.btnToggleTvModeText) {
+        this.dom.btnToggleTvModeText.textContent = active
+          ? '✅ Modo Pantalla TV Activo (Pulsa para salir)'
+          : 'Activar Modo Pantalla TV (Salón / Duplicar Pestaña)';
+      }
+      this.announce(active ? 'Modo Pantalla TV activado' : 'Modo Pantalla TV desactivado');
+    });
+
+    if (this.castManager) {
+      this.castManager.addEventListener('connectionChange', (e) => {
+        const { isConnected, deviceName } = e.detail;
+        this.dom.btnCast?.classList.toggle('connected', isConnected);
+        if (this.dom.castBtnLabel) {
+          this.dom.castBtnLabel.textContent = isConnected ? 'TV ✓' : 'Cast';
+        }
+        if (this.dom.castStatusDot) {
+          this.dom.castStatusDot.classList.toggle('paused', !isConnected);
+        }
+        if (this.dom.castStatusText) {
+          this.dom.castStatusText.textContent = isConnected
+            ? `📡 Conectado a "${deviceName}" en la red Wi-Fi`
+            : 'Asegúrate de que tu móvil/tablet y el Chromecast estén en la misma red Wi-Fi.';
+        }
+        if (this.dom.btnConnectChromecastText) {
+          this.dom.btnConnectChromecastText.textContent = isConnected
+            ? `Desconectar (${deviceName})`
+            : 'Buscar Chromecast en mi red Wi-Fi';
+        }
+      });
+    }
+  }
+
+  _openCastModal() {
+    this.dom.castModal?.classList.add('open');
+    this._trapFocusInModal(this.dom.castModal);
+    this.announce('Panel de envío a Chromecast abierto.');
+  }
+
+  _closeCastModal() {
+    if (this.dom.castModal?.classList.contains('open')) {
+      this.dom.castModal.classList.remove('open');
+      this._releaseFocusTrap(this.dom.castModal);
+      this.announce('Panel de Chromecast cerrado.');
     }
   }
 
@@ -772,6 +897,27 @@ export class DOMRenderer {
       this.dom.btnYtExternal.style.display = 'none';
     }
 
+    if (this.dom.btnOpenYtCastApp && song?.youtubeId) {
+      this.dom.btnOpenYtCastApp.href = `https://www.youtube.com/watch?v=${song.youtubeId}`;
+    }
+
+    if (this.dom.playPauseIcon) {
+      this.dom.playPauseIcon.textContent = '⏯';
+    }
+    if (this.dom.playPauseLabel) {
+      this.dom.playPauseLabel.textContent = 'Audio';
+    }
+
+    // Sincronizar nueva ronda con Chromecast si está activo en la red Wi-Fi (modo sin spoilers en TV)
+    this.castManager?.syncRoundStart({
+      song,
+      roundNumber,
+      totalRounds,
+      score: this.gameState.score,
+      streak: this.gameState.streak,
+      options
+    });
+
     if (this.dom.minimizedTitle) {
       this.dom.minimizedTitle.textContent = '🎧 Modo Audio Puro (Adivinando...)';
       this.dom.minimizedSubtitle.textContent = 'Vídeo y título ocultos para evitar spoilers';
@@ -975,6 +1121,17 @@ export class DOMRenderer {
 
     this._setCuriosityExpanded(false);
     this.dom.discoveryPanel?.classList.add('active');
+
+    // Sincronizar revelación de canción, carátula y curiosidad musical en la TV / Chromecast
+    this.castManager?.syncRoundReveal({
+      song,
+      isCorrect,
+      pointsEarned,
+      speedBadge,
+      score: this.gameState.score,
+      streak: this.gameState.streak,
+      correctAnswer
+    });
   }
 
   _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime }) {
@@ -1143,6 +1300,13 @@ export class DOMRenderer {
       if (e.key.toLowerCase() === 'v') {
         e.preventDefault();
         this.dom.btnToggleMinimize?.click();
+        return;
+      }
+
+      // Tecla C: Abrir panel de envío a Chromecast / TV
+      if (e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        this._openCastModal();
         return;
       }
     });
