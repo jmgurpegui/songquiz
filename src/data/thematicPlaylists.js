@@ -2202,7 +2202,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Rock and Roll",
     "year": 1958,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "ZFo8-JqzSCM",
+    "youtubeId": "aKCt8ssC7cs",
     "culturalTrivia": "Incluida en el Disco de Oro de las sondas espaciales Voyager de la NASA como embajadora del rock and roll terrestre hacia el espacio interestelar."
   },
   {
@@ -2792,7 +2792,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Disco",
     "year": 1977,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "fNFzfwLM72c",
     "culturalTrivia": "Con un tempo de 103 BPM, se utiliza mundialmente en medicina de urgencias para marcar el ritmo de las compresiones cardíacas en la maniobra de RCP; su batería es un bucle de cinta de dos compases de 'Night Fever'."
   },
   {
@@ -2942,7 +2942,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "KNz01ty-kTQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Juan Atkins. Widely credited with not just inventing techno but also coining the name, Juan Atkins tells the story of his genre-defining record, 'No UFOs'."
   },
   {
@@ -2952,7 +2952,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "0sajngb0W6I",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Paul Hardcastle | Engineer: Alvin Clark | Released: 1985. Paul Hardcastle's iconic '19' owes more than a little to serendipity and the limitations of the Emulator II sampler..."
   },
   {
@@ -2962,7 +2962,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "lVL-zZnD3VU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Jyoti Mishra. Recorded completely at home, Jyoti Mishra's irresistibly catchy hit single 'Your Woman' inspired a generation of bedroom producers."
   },
   {
@@ -2972,7 +2972,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
+    "youtubeId": "k8Td_CCWhIk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Richie Hawtin. Richie Hawtin takes us through a seminal Plastikman album — and its unexpected sequel."
   },
   {
@@ -2982,7 +2982,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "TB54dZkzZOY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Jazzie B • Nellee Hooper. Soul II Soul's 'Back To Life' was a hit record with a sound all of its own."
   },
   {
@@ -3002,7 +3002,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "jrwNkcVZOs4",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Thorne • Studio: Advision. The three albums Mike Thorne produced for Wire showed that there was much, much more to punk than met the eye."
   },
   {
@@ -3656,7 +3656,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Pop Rock / R&B",
     "year": 2007,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "ZSM3w1v-A_Y",
+    "youtubeId": "hT_nvWreIhg",
     "culturalTrivia": "Timbaland añadió su inconfundible percusión R&B y el grito rítmico 'Hey!' a la balada original de Ryan Tedder, batiendo el récord de emisiones radiales en Norteamérica."
   },
   {
@@ -3756,7 +3756,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Rap Rock",
     "year": 2004,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JcOwJh4F40M",
+    "youtubeId": "DLlF2FMv968",
     "culturalTrivia": "Ganadora del Grammy a la Mejor Colaboración de Rap del álbum 'Collision Course', grabado en apenas cuatro días en Los Ángeles."
   },
   {

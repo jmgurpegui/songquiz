@@ -89,6 +89,8 @@ export class DOMRenderer {
       btnPlayPause: document.getElementById('btn-play-pause'),
       playPauseIcon: document.getElementById('play-pause-icon'),
       playPauseLabel: document.getElementById('play-pause-label'),
+      btnTapToPlay: document.getElementById('btn-tap-to-play'),
+      tapToPlaySub: document.getElementById('tap-to-play-sub'),
 
       // Controles y modal de Chromecast / TV
       btnCast: document.getElementById('btn-cast'),
@@ -260,6 +262,45 @@ export class DOMRenderer {
       this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
     });
 
+    // Desbloqueo de reproducción en Chrome móvil: el toque del usuario concede el permiso de autoplay
+    this._tapAttempts = 0;
+    this.dom.btnTapToPlay?.addEventListener('click', () => {
+      this._tapAttempts += 1;
+      this.audioEngine.initContext();
+      if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
+        this.youtubePlayer.forcePlay();
+      } else if (this.gameState.currentSong?.audioSrc) {
+        this.audioEngine.play().catch(() => {});
+      }
+      this._hideTapToPlay();
+    });
+
+    if (this.youtubePlayer) {
+      this.youtubePlayer.onPlaybackBlocked(() => {
+        const s = this.gameState.status;
+        if (s !== GameStates.PLAYING && s !== GameStates.AWAITING_AUDIO && s !== GameStates.ROUND_OVER) return;
+        if (this._tapAttempts >= 1) {
+          // Segundo intento: mostrar el vídeo para que el usuario pulse el ▶ nativo de YouTube
+          this.dom.audioStage?.classList.add('needs-native-tap');
+          if (this.isPlayerMinimized) {
+            this.isPlayerMinimized = false;
+            this._applyMinimizeState();
+          }
+          this.announce('Pulsa el botón de reproducción del vídeo de YouTube.', true);
+          return;
+        }
+        this._showTapToPlay();
+      });
+
+      this.youtubePlayer.onPlaying(() => {
+        this._tapAttempts = 0;
+        this._hideTapToPlay();
+        this.dom.audioStage?.classList.remove('needs-native-tap');
+        if (this.dom.playPauseIcon) this.dom.playPauseIcon.textContent = '⏸';
+        if (this.dom.playPauseLabel) this.dom.playPauseLabel.textContent = 'Pausar';
+      });
+    }
+
     this.dom.btnStartTimer?.addEventListener('click', () => {
       if (!this.gameLogic.isTimerRunning) {
         this.gameState.startTimer();
@@ -385,7 +426,7 @@ export class DOMRenderer {
           throw new Error('No se encontraron canciones en la lista.');
         }
 
-        this.gameLogic.setCustomPlaylist(songs);
+        this.gameLogic.setCustomPlaylist(songs, false, false);
         this._renderPlaylistTable();
         this.announce(`Lista importada con éxito: ${songs.length} pistas activadas.`);
 
@@ -440,7 +481,7 @@ export class DOMRenderer {
           return;
         }
 
-        this.gameLogic.setCustomPlaylist(parsed);
+        this.gameLogic.setCustomPlaylist(parsed, false, false);
         this._closePlaylistModal();
         this.dom.startScreen.classList.remove('visually-hidden');
         this.announce(`Lista personalizada activada con ${parsed.length} canciones.`);
@@ -451,7 +492,8 @@ export class DOMRenderer {
 
     this.dom.btnResetDefaultSongs?.addEventListener('click', () => {
       if (confirm('¿Restablecer el catálogo a las canciones oficiales por defecto?')) {
-        this.gameLogic.resetToDefaultPlaylist(this.defaultSongs);
+        this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, false);
+        this.dom.startScreen?.classList.remove('visually-hidden');
         this._renderPlaylistTable();
         this.announce('Catálogo restablecido al oficial por defecto.');
       }
@@ -522,12 +564,12 @@ export class DOMRenderer {
     });
 
     if (themeId === 'default') {
-      this.gameLogic.resetToDefaultPlaylist(this.defaultSongs);
+      this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, false);
       this.announce(`Catálogo Maestro de ${this.defaultSongs.length} canciones y curiosidades activado.`);
     } else {
       const found = THEMATIC_PLAYLISTS.find(p => p.id === themeId);
       if (!found) return;
-      this.gameLogic.setCustomPlaylist(found.songs, Boolean(found.ordered));
+      this.gameLogic.setCustomPlaylist(found.songs, Boolean(found.ordered), false);
       this.announce(`Lista ${found.name} activada con ${found.songs.length} canciones${found.ordered ? ' en orden estricto del #1 al #100' : ''}.`);
     }
 
@@ -615,6 +657,16 @@ export class DOMRenderer {
       this.announce(res?.message || 'Estado de Chromecast actualizado');
     });
 
+    const btnAndroid = document.getElementById('btn-android-screen-cast');
+    btnAndroid?.addEventListener('click', () => {
+      if (this.castManager?.isAndroid) {
+        this.castManager.openAndroidScreenCast();
+        this.announce('Abriendo Google Home para transmitir pantalla completa al TV.');
+      } else {
+        alert('En tu móvil, desliza el panel de ajustes rápidos superior y pulsa "Transmitir / Enviar pantalla" (o Smart View) para duplicar la pantalla completa con audio y vídeo en tu TV.');
+      }
+    });
+
     this.dom.btnToggleTvMode?.addEventListener('click', () => {
       if (!this.castManager) return;
       const active = this.castManager.toggleTvDisplayMode();
@@ -650,7 +702,19 @@ export class DOMRenderer {
     }
   }
 
+  _showTapToPlay() {
+    this.dom.btnTapToPlay?.classList.remove('hidden');
+    this.announce('El navegador ha pausado el audio. Toca el botón para escuchar la canción.', true);
+  }
+
+  _hideTapToPlay() {
+    this.dom.btnTapToPlay?.classList.add('hidden');
+  }
+
   _openCastModal() {
+    if (this.castManager && this.dom.castStatusText && !this.castManager.isConnected) {
+      this.dom.castStatusText.textContent = this.castManager.getSupportSummary();
+    }
     this.dom.castModal?.classList.add('open');
     this._trapFocusInModal(this.dom.castModal);
     this.announce('Panel de envío a Chromecast abierto.');
@@ -879,6 +943,8 @@ export class DOMRenderer {
    * @private
    */
   _renderPlayingState({ options, roundNumber, totalRounds, isOrderedMode, song }) {
+    this._hideTapToPlay();
+    this.dom.audioStage?.classList.remove('needs-native-tap');
     this.dom.discoveryPanel?.classList.remove('active');
     this._setCuriosityExpanded(false);
     this.dom.btnNext?.classList.add('hidden');

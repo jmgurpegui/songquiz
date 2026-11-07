@@ -77,8 +77,10 @@ export class GameLogic {
    * Carga el catálogo maestro e inicia una nueva partida.
    * @param {Array<Object>} defaultSongs
    * @param {boolean} [ordered=false] - Si es true, mantiene el orden exacto de la lista (ej. Top 100 YouTube #1 a #100).
+   * @param {boolean} [autoStart=true] - Si es false, deja la partida preparada (IDLE) hasta que el usuario pulse
+   *   "Comenzar". Imprescindible en Chrome móvil: el vídeo solo puede sonar tras un gesto del usuario.
    */
-  startNewGame(defaultSongs, ordered = false) {
+  startNewGame(defaultSongs, ordered = false, autoStart = true) {
     if (Array.isArray(defaultSongs) && defaultSongs.length >= 100 && this.masterCatalog.length === 0) {
       this.masterCatalog = [...defaultSongs];
     }
@@ -95,15 +97,18 @@ export class GameLogic {
 
     const gameSongs = this.isOrderedMode ? [...this.allSongs] : shuffle(this.allSongs);
     this.gameState.initGame(gameSongs);
-    this.startRound();
+    if (autoStart) {
+      this.startRound();
+    }
   }
 
   /**
    * Reemplaza la lista activa por una lista seleccionada o importada y reinicia el juego.
    * @param {Array<Object>} importedSongs
    * @param {boolean} [ordered=false] - Si es true, reproduce en orden estricto sin barajar.
+   * @param {boolean} [autoStart=true] - Si es true, arranca la primera ronda inmediatamente.
    */
-  setCustomPlaylist(importedSongs, ordered = false) {
+  setCustomPlaylist(importedSongs, ordered = false, autoStart = true) {
     if (!Array.isArray(importedSongs) || importedSongs.length === 0) {
       throw new Error('La lista de canciones no es válida.');
     }
@@ -116,21 +121,22 @@ export class GameLogic {
         localStorage.removeItem(STORAGE_KEYS.CUSTOM_PLAYLIST);
       }
     } catch {}
-    this.startNewGame(this.allSongs, this.isOrderedMode);
+    this.startNewGame(this.allSongs, this.isOrderedMode, autoStart);
   }
 
   /**
    * Restablece la lista por defecto y borra cualquier lista personalizada local.
    * @param {Array<Object>} defaultSongs
+   * @param {boolean} [autoStart=true]
    */
-  resetToDefaultPlaylist(defaultSongs) {
+  resetToDefaultPlaylist(defaultSongs, autoStart = true) {
     try {
       localStorage.removeItem(STORAGE_KEYS.CUSTOM_PLAYLIST);
     } catch {}
     const catalog = (Array.isArray(defaultSongs) && defaultSongs.length > 0)
       ? defaultSongs
       : this.masterCatalog;
-    this.startNewGame(catalog, false);
+    this.startNewGame(catalog, false, autoStart);
   }
 
   /**

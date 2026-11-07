@@ -19,6 +19,11 @@ export class YouTubePlayerEngine {
     this._onAudioActuallyPlayingCb = null;
     this._playbackWatcherInterval = null;
     this._audioStartedForCurrentTrack = false;
+
+    // Detección de reproducción bloqueada (política de autoplay de Chrome móvil / iOS)
+    this._onPlaybackBlockedCb = null;
+    this._onPlayingCb = null;
+    this._blockedCheckTimer = null;
   }
 
   /**
@@ -73,23 +78,37 @@ export class YouTubePlayerEngine {
         playerVars: {
           autoplay: 1,
           playsinline: 1,
+          enablejsapi: 1,
           controls: 1,
           cc_load_policy: 1,
           rel: 0,
           modestbranding: 1,
           iv_load_policy: 3,
           fs: 1,
-          origin: window.location.origin
+          origin: window.location.origin,
+          widget_referrer: window.location.href
         },
         events: {
           onReady: () => {
             this.isReady = true;
+            // Asegurar la delegación de autoplay/fullscreen al iframe (Chrome Android la exige)
+            try {
+              const iframe = typeof this.player.getIframe === 'function' ? this.player.getIframe() : null;
+              if (iframe) {
+                iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope; web-share');
+                iframe.setAttribute('playsinline', '1');
+              }
+            } catch {}
             this.player.unMute();
             this.player.setVolume(this.volume);
             resolve();
           },
           onStateChange: (event) => {
             if (event.data === window.YT?.PlayerState?.PLAYING || event.data === 1) {
+              this._clearBlockedCheck();
+              if (typeof this._onPlayingCb === 'function') {
+                this._onPlayingCb();
+              }
               if (!this._audioStartedForCurrentTrack) {
                 this._startPlaybackWatcher();
               }
@@ -185,10 +204,73 @@ export class YouTubePlayerEngine {
         if (!this.isMuted && typeof this.player.unMute === 'function') {
           this.player.unMute();
         }
+        this._scheduleBlockedCheck();
       }
     } catch (e) {
       console.warn('Error al cargar vídeo en YT.Player:', e);
     }
+  }
+
+  /**
+   * Programa una comprobación: si tras unos segundos el vídeo no está sonando ni cargando,
+   * el navegador (Chrome móvil, Safari iOS) ha bloqueado el autoplay y hace falta un toque del usuario.
+   * @private
+   */
+  _scheduleBlockedCheck(delayMs = 3500) {
+    this._clearBlockedCheck();
+    this._blockedCheckTimer = setTimeout(() => {
+      this._blockedCheckTimer = null;
+      if (!this.player || typeof this.player.getPlayerState !== 'function') return;
+      const state = this.player.getPlayerState();
+      // 1 = PLAYING, 3 = BUFFERING
+      if (state !== 1 && state !== 3 && typeof this._onPlaybackBlockedCb === 'function') {
+        this._onPlaybackBlockedCb(state);
+      }
+    }, delayMs);
+  }
+
+  /** @private */
+  _clearBlockedCheck() {
+    if (this._blockedCheckTimer) {
+      clearTimeout(this._blockedCheckTimer);
+      this._blockedCheckTimer = null;
+    }
+  }
+
+  /**
+   * Fuerza la reproducción con sonido. Debe llamarse dentro de un gesto del usuario (toque/clic)
+   * para que Chrome móvil conceda el permiso de autoplay al iframe de YouTube.
+   */
+  forcePlay() {
+    if (!this.player) return;
+    try {
+      if (!this.isMuted && typeof this.player.unMute === 'function') {
+        this.player.unMute();
+        this.player.setVolume(this.volume);
+      }
+      if (typeof this.player.playVideo === 'function') {
+        this.player.playVideo();
+      }
+      this._scheduleBlockedCheck(2500);
+    } catch (e) {
+      console.warn('No se pudo forzar la reproducción de YouTube:', e);
+    }
+  }
+
+  /**
+   * Callback cuando se detecta que el navegador bloqueó la reproducción automática.
+   * @param {function(number): void} cb
+   */
+  onPlaybackBlocked(cb) {
+    this._onPlaybackBlockedCb = cb;
+  }
+
+  /**
+   * Callback cuando el reproductor entra en estado PLAYING.
+   * @param {function(): void} cb
+   */
+  onPlaying(cb) {
+    this._onPlayingCb = cb;
   }
 
   /**
@@ -215,6 +297,9 @@ export class YouTubePlayerEngine {
   play() {
     if (this.player && typeof this.player.playVideo === 'function') {
       try {
+        if (!this.isMuted && typeof this.player.unMute === 'function') {
+          this.player.unMute();
+        }
         this.player.playVideo();
       } catch (e) {
         console.warn('Fallo al reproducir vídeo de YouTube:', e);
@@ -238,6 +323,7 @@ export class YouTubePlayerEngine {
    */
   stop() {
     this._clearPlaybackWatcher();
+    this._clearBlockedCheck();
     if (this.player && typeof this.player.stopVideo === 'function') {
       try {
         this.player.stopVideo();

@@ -486,6 +486,7 @@ button, a, input, textarea {
   inset: 0;
   width: 100%;
   height: 100%;
+  min-height: 200px;
   z-index: 1;
   pointer-events: none;
   background: #000000;
@@ -515,11 +516,20 @@ button, a, input, textarea {
   justify-content: flex-start;
 }
 
-.audio-stage.minimized .yt-player-container,
 .audio-stage.minimized .visualizer-canvas,
 .audio-stage.minimized .audio-overlay-label,
 .audio-stage.minimized .anti-spoiler-top-shield {
   display: none !important;
+}
+
+/* El iframe de YouTube NUNCA se oculta con display:none: Chrome móvil pausa o no inicia
+   reproductores sin tamaño. Se mantiene renderizado (≥200px, mínimo exigido por YouTube) pero invisible. */
+.audio-stage.minimized .yt-player-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 220px;
 }
 
 .audio-stage.minimized .floating-ad-pill-wrapper {
@@ -1435,6 +1445,70 @@ button, a, input, textarea {
   border: 0;
 }
 
+/* ==========================================================================
+   DESBLOQUEO TÁCTIL DE AUDIO (CHROME MÓVIL / iOS)
+   ========================================================================== */
+.tap-to-play-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  background: radial-gradient(circle at center, rgba(18, 18, 18, 0.82) 0%, rgba(0, 0, 0, 0.95) 100%);
+  animation: fadeSlideUp 0.2s ease forwards;
+}
+
+.tap-to-play-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #000000;
+  font-size: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.6);
+  animation: tapPulse 1.4s infinite;
+}
+
+.tap-to-play-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.tap-to-play-sub {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  color: var(--color-secondary);
+}
+
+@keyframes tapPulse {
+  0% { box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.55); }
+  70% { box-shadow: 0 0 0 18px rgba(29, 185, 84, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(29, 185, 84, 0); }
+}
+
+/* Segundo intento fallido: mostrar el vídeo para pulsar el ▶ nativo de YouTube */
+.audio-stage.needs-native-tap .yt-player-container {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 15 !important;
+}
+
+.audio-stage.needs-native-tap .floating-ad-pill-wrapper {
+  z-index: 16;
+}
+
 /* ACCESIBILIDAD UNIVERSAL: FOCO VISIBLE (WCAG 2.1 AA) */
 :focus-visible {
   outline: 3px solid var(--color-accent) !important;
@@ -1450,6 +1524,24 @@ button, a, input, textarea {
 /* ==========================================================================
    INTEGRACIÓN CHROMECAST / SEGUNDA PANTALLA EN MISMA RED WI-FI
    ========================================================================== */
+google-cast-launcher {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  cursor: pointer;
+  --connected-color: var(--color-accent);
+  --disconnected-color: var(--color-secondary);
+}
+
+.modal-cast-launcher {
+  width: 20px;
+  height: 20px;
+  --disconnected-color: #000000;
+  --connected-color: #000000;
+  display: inline-block;
+}
+
 .btn-cast-header {
   border-color: rgba(29, 185, 84, 0.35);
   color: var(--color-accent-light);
@@ -1680,9 +1772,9 @@ body.tv-cast-mode .option-title-main {
     border-radius: var(--radius-lg);
   }
 
-  /* Altura compacta del escenario en móvil para que quepan vídeo + temporizador + 4 opciones sin scroll */
+  /* Altura del escenario en móvil: ≥200px para cumplir el mínimo del reproductor de YouTube */
   .audio-stage {
-    height: clamp(136px, 21dvh, 172px);
+    height: clamp(200px, 27dvh, 230px);
   }
 
   .audio-stage-toolbar {
