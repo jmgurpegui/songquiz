@@ -2992,7 +2992,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "y7ab3PSbvvU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. The result of an extraordinary collaboration between Arthur Baker and London band Freeez, 'IOU' was a pioneering hit of the electro genre."
   },
   {
@@ -3012,7 +3012,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "Cv6tuzHUuuk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: David Kahne. 'Walk Like An Egyptian' was a huge hit for the Bangles, but it all started with a demo mix‑up and some very unusual percussion."
   },
   {
@@ -3022,7 +3022,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "s98m8iV_yqI",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Gary Katz • Studio: Producers' Workshop. The title track of Steely Dan's Aja is legendary for many reasons, including the spectacular work of Steve Gadd. Who, it turns out, almost didn't make the cut in the album's planned 'rotating list of drummers"
   },
   {
@@ -3032,7 +3032,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "6M0x5HKn7iU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Paul Oakenfold & Steve Osborne. Much vaunted as a fusion of indie and dance music, Happy Mondays' joyous version of 'Step On' is greater than the sum of its parts."
   },
   {
@@ -3042,7 +3042,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "qUE4oDunYkc",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Sam Williams | Engineer: John Cornfield. When producer Sam Williams discovered Supergrass, he knew he had to capture the band's infectious energy on tape."
   },
   {
@@ -3052,7 +3052,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "ww9484EM2OQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Label: Swan Song • Producer: Jimmy Page. Led Zeppelin's 'Kashmir' became a band-defining track, but it started life in an Airstream trailer known as the Ronnie Lane Mobile Studio."
   },
   {
@@ -3062,7 +3062,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "gPFP8bdQKJY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Stephen Street • Studio: Windmill 2. After a record label bidding war the success of the Cranberries' first single was vital. Fans of the Smiths, they called in producer Stephen Street..."
   },
   {
@@ -3072,7 +3072,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "eP16c_rZ3Gk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Kevin Shields. It may be famous for its difficult birth, but Loveless was a technical triumph. My Bloody Valentine's Kevin Shields tells us the story behind their breathtakingly original album."
   },
   {
@@ -3082,7 +3082,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
+    "youtubeId": "InFbBlpDTfQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Produced, Engineered, Mixed By DJ Shadow. DJ Shadow's Endtroducing wasn't just a staggering technical achievement. It also reimagined a whole musical genre."
   },
   {
@@ -3092,7 +3092,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "Xq1L4YhK8tM",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Andrew Weatherall, Hugo Nicolson. With the Screamadelica album Primal Scream didn't just reinvent themselves as a band, they reinvented what it meant to be a band."
   },
   {
@@ -3102,7 +3102,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1988,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "JWsRz3TJDEY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tim Simenon & Mark Saunders. Neneh Cherry's breakthrough 1988 single melded hip-hop and cut-and-paste sampling into a perfect pop record."
   },
   {
@@ -3112,7 +3112,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "ruAi4VBoUBQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Norman Cook. Armed with nothing but an Atari, a pair of S950 samplers and his faithful TB303, Fatboy Slim took the charts of the late 1990s by storm."
   },
   {
@@ -3122,7 +3122,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "GzN4-k4hC3M",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bill Laswell. In 1985 John Lydon found himself in a New York studio with producer Bill Laswell and a group of session musicians. The result was to become one of PiL's most recognisable tracks."
   },
   {
@@ -3132,7 +3132,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1982,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "bvkUSJpY5lY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineer: Gary Langan. 1982's 'The Look Of Love' paired an ambitious band with an ambitious producer, and the result was a perfect piece of pop music."
   },
   {
@@ -3142,7 +3142,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "Xq1L4YhK8tM",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer/Mixer: Darren Allison. Recording the centrepiece of Spiritualized's celebrated space rock masterpiece took engineer Darren Allison on a trip into the unexpected."
   },
   {
@@ -3152,7 +3152,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "qzpPy9hJWA8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: The Zombies • Engineers: Peter Vince, Geoff Emerick. Now considered one of the classic tracks of the 1960s, the Zombies' 'Time Of The Season' almost disappeared without trace..."
   },
   {
@@ -3162,7 +3162,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "b8_3Yc9WcI8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Martin Hannett • Engineer: Phil Thompson. Engineer Phil Hampson didn't even like punk rock — yet, with an inexperienced Martin Hannett, he recorded one of the defining records of the era."
   },
   {
@@ -3172,7 +3172,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1987,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "BHRFZFXXEqg",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Peter J Moore. In 1987, swimming against the tide of MIDI–powered pop records, Cowboy Junkies went into a church to record an album into a single microphone in a single day."
   },
   {
@@ -3182,7 +3182,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1978,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "I1IXW3FbtEA",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1978 • Producer: Throbbing Gristle. Throbbing Gristle's highly individualist approach to music extended as far as making their own instruments and, ultimately, their own genre."
   },
   {
@@ -3192,7 +3192,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1988,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "Ym4L_c-w558",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1988. Hailed as the first British acid house single, A Guy Called Gerald's sublime 'Voodoo Ray' has since become a classic in its own right."
   },
   {
@@ -3202,7 +3202,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "4V9c7vR0gP0",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Simon Rogers • Engineer: Ian Grimble. In their 39–year career the Fall have always embraced chaos, but perhaps nowhere more so than in the studio."
   },
   {
@@ -3212,7 +3212,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "cWGE9Gi0bB8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Pink Floyd • Engineer: Brian Humphries. Engineer Brian Humphries tells the story of recording Pink Floyd's nine-part lamentation to their lost colleague, Syd Barrett."
   },
   {
@@ -3222,7 +3222,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "OJWJE0x7T4Q",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Daniel Lanois • Engineers: Kevin Killen, David Bascombe. When Peter Gabriel made the transition from prog to pop with 'Sledgehammer' he did it on his own exacting terms..."
   }
 ]
@@ -4094,7 +4094,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Dembow / Bachata Urbana",
     "year": 2022,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "Cr8K88UcO08",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Tití Me Preguntó\" de Bad Bunny destacó dentro de la escena Dembow / Bachata Urbana, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4104,7 +4104,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Reggaeton",
     "year": 2022,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "saGYMhApaH8",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Me Porto Bonito\" de Bad Bunny & Chencho Corleone destacó dentro de la escena Reggaeton, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4114,7 +4114,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Indie Tropical / Reggaeton",
     "year": 2022,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "10EX-_h4pYc",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Ojitos Lindos\" de Bad Bunny & Bomba Estéreo destacó dentro de la escena Indie Tropical / Reggaeton, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4124,7 +4124,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Reggaeton",
     "year": 2019,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "acEOASYioGY",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Callaíta\" de Bad Bunny destacó dentro de la escena Reggaeton, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4134,7 +4134,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Reggaeton / Pop Urbano",
     "year": 2021,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "doLMt10ytHY",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Yonaguni\" de Bad Bunny destacó dentro de la escena Reggaeton / Pop Urbano, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4144,7 +4144,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Latin Trap",
     "year": 2018,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "U4fErC9skHE",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"I Like It\" de Cardi B, Bad Bunny & J Balvin destacó dentro de la escena Latin Trap, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4154,7 +4154,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Bachata",
     "year": 2022,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "j5y6xLpRwx4",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Monotonía\" de Shakira & Ozuna destacó dentro de la escena Bachata, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -4164,7 +4164,7 @@ export const THEMATIC_PLAYLISTS = [
     "genre": "Electropop / Latin Urbano",
     "year": 2023,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "CocEMWJZ7Gc",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2023): \"BZRP Music Sessions #53\" de Bizarrap & Shakira destacó dentro de la escena Electropop / Latin Urbano, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   }
 ]

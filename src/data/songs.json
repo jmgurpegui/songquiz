@@ -96,16 +96,14 @@
     "views": "4.64B"
   },
   {
-    "id": "yt_top_009",
-    "title": "Counting Stars",
-    "artist": "OneRepublic",
-    "genre": "Folk Pop / Pop Rock",
-    "year": 2013,
-    "audioSrc": "assets/audio/blinding_lights.wav",
+    "id": "song_175",
+    "title": "Counting Stars / Apologize",
+    "artist": "Timbaland ft. OneRepublic",
+    "genre": "Pop Rock / R&B",
+    "year": 2007,
+    "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "hT_nvWreIhg",
-    "culturalTrivia": "Puesto #9 en YouTube (>4.460M vistas). Ryan Tedder la escribió mientras trabajaba en sesiones para Beyoncé en los Hamptons; el videoclip se rodó en la planta baja de un edificio en Nueva Orleans con un caimán real.",
-    "rank": 9,
-    "views": "4.46B"
+    "culturalTrivia": "Timbaland añadió su inconfundible percusión R&B y el grito rítmico 'Hey!' a la balada original de Ryan Tedder, batiendo el récord de emisiones radiales en Norteamérica."
   },
   {
     "id": "yt_top_010",
@@ -1240,14 +1238,14 @@
     "culturalTrivia": "Grabada en el estudio casero de Tittenhurst Park con su piano Steinway blanco; en 2017 Yoko Ono fue reconocida oficialmente como coautora por inspirar sus versos."
   },
   {
-    "id": "song_105",
-    "title": "What's Going On",
+    "id": "song_262",
+    "title": "What's Going On?",
     "artist": "Marvin Gaye",
-    "genre": "Soul",
-    "year": 1971,
-    "audioSrc": "assets/audio/billie_jean.wav",
+    "genre": "Classic Track / Studio Legend",
+    "year": 1985,
+    "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "o5TmORitlKk",
-    "culturalTrivia": "Inspirada en el relato de su hermano Frankie al regresar de Vietnam; el saxofonista Eli Fontaine tocó la melodía inicial pensando que solo estaba calentando."
+    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Ken Sands. As the '60s came to a close, Marvin Gaye was forced to ask some serious questions about the world as he found it; the result was the sublimely soulful piece of social commentary, 'What's Going On'."
   },
   {
     "id": "song_106",
@@ -1450,14 +1448,14 @@
     "culturalTrivia": "Su acorde final de piano fue ejecutado simultáneamente por cuatro personas en tres pianos distintos y mantenido durante más de 40 segundos subiendo los faders de grabación."
   },
   {
-    "id": "song_126",
-    "title": "Royals",
+    "id": "song_170",
+    "title": "Royals / Team",
     "artist": "Lorde",
-    "genre": "Art Pop / Minimal",
+    "genre": "Electropop",
     "year": 2013,
-    "audioSrc": "assets/audio/blinding_lights.wav",
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "nlcIKh6sBtc",
-    "culturalTrivia": "Escrita en media hora por Ella Yelich-O'Connor (Lorde) a los 15 años en Auckland, inspirándose en una fotografía de George Brett firmando pelotas de béisbol en National Geographic."
+    "culturalTrivia": "Consolidó el movimiento del pop alternativo minimalista de los años 2010 desde Nueva Zelanda hacia las listas internacionales."
   },
   {
     "id": "song_127",
@@ -1480,14 +1478,14 @@
     "culturalTrivia": "Con un tempo de 103 BPM, se utiliza mundialmente en medicina de urgencias para marcar el ritmo de las compresiones cardíacas en la maniobra de RCP; su batería es un bucle de cinta de dos compases de 'Night Fever'."
   },
   {
-    "id": "song_129",
+    "id": "song_270",
     "title": "Hotel California",
-    "artist": "Eagles",
-    "genre": "Classic Rock",
-    "year": 1976,
-    "audioSrc": "assets/audio/billie_jean.wav",
+    "artist": "The Eagles",
+    "genre": "Classic Track / Studio Legend",
+    "year": 1977,
+    "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "09839DpTctU",
-    "culturalTrivia": "Su legendario duelo final de guitarras entre Don Felder y Joe Walsh requirió tres días de arreglos armónicos milimétricos en los estudios Criteria de Miami."
+    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bill Szymczyk. 1977's Hotel California saw The Eagles abandon their country origins in favour of full-blown rock & roll, and made them one of the biggest-selling groups in the world. Producer Bill Szymczyk tells SOS how it happened."
   },
   {
     "id": "song_130",
@@ -1800,14 +1798,14 @@
     "culturalTrivia": "The Edge utilizó el prototipo de la 'Infinite Guitar' (inventada por Michael Brook) para lograr notas de guitarra con sustain infinito sobre el pulso de cuatro acordes de Adam Clayton."
   },
   {
-    "id": "song_161",
+    "id": "song_264",
     "title": "One",
-    "artist": "U2",
-    "genre": "Alternative Rock",
-    "year": 1991,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "ftjEcrrf7r0",
-    "culturalTrivia": "Surgió de una improvisación espontánea en los estudios Hansa de Berlín en un momento en que la banda estuvo a punto de disolverse, salvando la grabación de 'Achtung Baby'."
+    "artist": "Metallica",
+    "genre": "Classic Track / Studio Legend",
+    "year": 1985,
+    "audioSrc": "assets/audio/blinding_lights.wav",
+    "youtubeId": "WM8bTdBs-cw",
+    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Flemming Rasmussen. ...And Justice For All marked a turning point for Metallica — one that would launch the cult band into the mainstream. The man at the controls, Flemming Rasmussen, tells us how it happened."
   },
   {
     "id": "song_162",
@@ -1890,16 +1888,6 @@
     "culturalTrivia": "El músico belga-australiano Wally De Backer (Gotye) construyó la base sampleando 'Sevilla' (1967) del guitarrista brasileño Luiz Bonfá con la melodía infantil 'Baa, Baa, Black Sheep'."
   },
   {
-    "id": "song_170",
-    "title": "Royals / Team",
-    "artist": "Lorde",
-    "genre": "Electropop",
-    "year": 2013,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "nlcIKh6sBtc",
-    "culturalTrivia": "Consolidó el movimiento del pop alternativo minimalista de los años 2010 desde Nueva Zelanda hacia las listas internacionales."
-  },
-  {
     "id": "song_171",
     "title": "Pumped Up Kicks",
     "artist": "Foster the People",
@@ -1938,16 +1926,6 @@
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "mWRsgZuwf_8",
     "culturalTrivia": "Producida por Alex da Kid, su videoclip grabado en el hotel The Joint de Las Vegas incluye un homenaje al seguidor de la banda Tyler Robinson."
-  },
-  {
-    "id": "song_175",
-    "title": "Counting Stars / Apologize",
-    "artist": "Timbaland ft. OneRepublic",
-    "genre": "Pop Rock / R&B",
-    "year": 2007,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hT_nvWreIhg",
-    "culturalTrivia": "Timbaland añadió su inconfundible percusión R&B y el grito rítmico 'Hey!' a la balada original de Ryan Tedder, batiendo el récord de emisiones radiales en Norteamérica."
   },
   {
     "id": "song_176",
@@ -2256,7 +2234,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "WZ-1DYwaxrE",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. The result of an extraordinary collaboration between Arthur Baker and London band Freeez, 'IOU' was a pioneering hit of the electro genre."
   },
   {
@@ -2276,7 +2254,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "Cv6tuzHUuuk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: David Kahne. 'Walk Like An Egyptian' was a huge hit for the Bangles, but it all started with a demo mix‑up and some very unusual percussion."
   },
   {
@@ -2286,7 +2264,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "s98m8iV_yqI",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Gary Katz • Studio: Producers' Workshop. The title track of Steely Dan's Aja is legendary for many reasons, including the spectacular work of Steve Gadd. Who, it turns out, almost didn't make the cut in the album's planned 'rotating list of drummers"
   },
   {
@@ -2296,7 +2274,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "6M0x5HKn7iU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Paul Oakenfold & Steve Osborne. Much vaunted as a fusion of indie and dance music, Happy Mondays' joyous version of 'Step On' is greater than the sum of its parts."
   },
   {
@@ -2306,7 +2284,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "qUE4oDunYkc",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Sam Williams | Engineer: John Cornfield. When producer Sam Williams discovered Supergrass, he knew he had to capture the band's infectious energy on tape."
   },
   {
@@ -2316,7 +2294,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "tzVJPgCn-Z8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Label: Swan Song • Producer: Jimmy Page. Led Zeppelin's 'Kashmir' became a band-defining track, but it started life in an Airstream trailer known as the Ronnie Lane Mobile Studio."
   },
   {
@@ -2326,7 +2304,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "G6Kspd394xo",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Stephen Street • Studio: Windmill 2. After a record label bidding war the success of the Cranberries' first single was vital. Fans of the Smiths, they called in producer Stephen Street..."
   },
   {
@@ -2336,7 +2314,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1993,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "RijB8wnJCN0",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1993 • Producer: Cypress Hill • Engineer: Joe Nicolo. Cypress Hill's crossover classic launched the group into the mainstream — and without sampling a single horse..."
   },
   {
@@ -2346,7 +2324,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "eP16c_rZ3Gk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Kevin Shields. It may be famous for its difficult birth, but Loveless was a technical triumph. My Bloody Valentine's Kevin Shields tells us the story behind their breathtakingly original album."
   },
   {
@@ -2356,18 +2334,18 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
+    "youtubeId": "InFbBlpDTfQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Produced, Engineered, Mixed By DJ Shadow. DJ Shadow's Endtroducing wasn't just a staggering technical achievement. It also reimagined a whole musical genre."
   },
   {
-    "id": "song_217",
+    "id": "song_383",
     "title": "Come Together",
-    "artist": "Primal Scream",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Andrew Weatherall, Hugo Nicolson. With the Screamadelica album Primal Scream didn't just reinvent themselves as a band, they reinvented what it meant to be a band."
+    "artist": "The Beatles",
+    "genre": "Blues Rock",
+    "year": 1969,
+    "audioSrc": "assets/audio/take_on_me.wav",
+    "youtubeId": "Xq1L4YhK8tM",
+    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1969): \"Come Together\" de The Beatles destacó dentro de la escena Blues Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
     "id": "song_218",
@@ -2376,7 +2354,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1988,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "JWsRz3TJDEY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tim Simenon & Mark Saunders. Neneh Cherry's breakthrough 1988 single melded hip-hop and cut-and-paste sampling into a perfect pop record."
   },
   {
@@ -2386,7 +2364,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "ruAi4VBoUBQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Norman Cook. Armed with nothing but an Atari, a pair of S950 samplers and his faithful TB303, Fatboy Slim took the charts of the late 1990s by storm."
   },
   {
@@ -2396,7 +2374,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "GzN4-k4hC3M",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bill Laswell. In 1985 John Lydon found himself in a New York studio with producer Bill Laswell and a group of session musicians. The result was to become one of PiL's most recognisable tracks."
   },
   {
@@ -2406,18 +2384,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1982,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "bvkUSJpY5lY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineer: Gary Langan. 1982's 'The Look Of Love' paired an ambitious band with an ambitious producer, and the result was a perfect piece of pop music."
-  },
-  {
-    "id": "song_222",
-    "title": "Come Together",
-    "artist": "Spiritualized",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer/Mixer: Darren Allison. Recording the centrepiece of Spiritualized's celebrated space rock masterpiece took engineer Darren Allison on a trip into the unexpected."
   },
   {
     "id": "song_223",
@@ -2426,7 +2394,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "qzpPy9hJWA8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: The Zombies • Engineers: Peter Vince, Geoff Emerick. Now considered one of the classic tracks of the 1960s, the Zombies' 'Time Of The Season' almost disappeared without trace..."
   },
   {
@@ -2436,7 +2404,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "b8_3Yc9WcI8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Martin Hannett • Engineer: Phil Thompson. Engineer Phil Hampson didn't even like punk rock — yet, with an inexperienced Martin Hannett, he recorded one of the defining records of the era."
   },
   {
@@ -2446,7 +2414,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1987,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "BHRFZFXXEqg",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Peter J Moore. In 1987, swimming against the tide of MIDI–powered pop records, Cowboy Junkies went into a church to record an album into a single microphone in a single day."
   },
   {
@@ -2456,7 +2424,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1978,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "I1IXW3FbtEA",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1978 • Producer: Throbbing Gristle. Throbbing Gristle's highly individualist approach to music extended as far as making their own instruments and, ultimately, their own genre."
   },
   {
@@ -2466,7 +2434,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1988,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "Ym4L_c-w558",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1988. Hailed as the first British acid house single, A Guy Called Gerald's sublime 'Voodoo Ray' has since become a classic in its own right."
   },
   {
@@ -2476,7 +2444,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 2005,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
+    "youtubeId": "pK7egZaT3hs",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 2005 • Producer: Jim Abbiss. In 2005 the only problem facing Arctic Monkeys was how to capture their frenetic live sound in the studio. Producer Jim Abbiss was ready to accept the challenge..."
   },
   {
@@ -2486,7 +2454,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "4V9c7vR0gP0",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Simon Rogers • Engineer: Ian Grimble. In their 39–year career the Fall have always embraced chaos, but perhaps nowhere more so than in the studio."
   },
   {
@@ -2496,7 +2464,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "cWGE9Gi0bB8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Pink Floyd • Engineer: Brian Humphries. Engineer Brian Humphries tells the story of recording Pink Floyd's nine-part lamentation to their lost colleague, Syd Barrett."
   },
   {
@@ -2506,7 +2474,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "OJWJE0x7T4Q",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Daniel Lanois • Engineers: Kevin Killen, David Bascombe. When Peter Gabriel made the transition from prog to pop with 'Sledgehammer' he did it on his own exacting terms..."
   },
   {
@@ -2516,7 +2484,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "rnDEr9R0snU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: James Brown • Engineer: Ron Lenhoff. 'Papa's Got A Brand New Bag' was James Brown's statement of intent as he abandoned soulful ballads in favour of a raw and frenetic new sound."
   },
   {
@@ -2526,7 +2494,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "m1M5Tc7eLCo",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Bob Tischler. His role as producer of The Blues Brothers soundtrack left Bob Tischler in charge of recording some of the best musicians of the 20th century, while managing conflicting shooting schedules and coping with the day-to-day effe"
   },
   {
@@ -2536,7 +2504,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "tLxDRePUwEY",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: 808 State • Engineer: Graham Massey. Born of the fertile late‑'80s Manchester music scene, 808 State's 'Pacific State' was a landmark in British house music."
   },
   {
@@ -2546,7 +2514,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "Xy23JpVOtGo",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mark Wirtz • Engineer: Geoff Emerick. Tomorrow's pioneering paean to the joys of communal public transport has proved to be a classic of the British psychedelic underground."
   },
   {
@@ -2556,7 +2524,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "s5BJXwNeKsQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tom Petty, Jeff Lynne • Engineer: Richard Dodd. While Tom Petty and Jeff Lynne's writing partnership was certainly successful, it was the partnership between Jeff Lynne and engineer Richard Dodd that gave the records their distinctive sparkle."
   },
   {
@@ -2566,7 +2534,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "EnseiOJ2jGQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: John Barry, George Martin. Engineer: Eric Tomlinson.. Engineer Eric Tomlinson recorded a host of classic soundtracks during his 40-year career, not to mention what's..."
   },
   {
@@ -2576,7 +2544,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "qFLw26BjDZs",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Andy Warhol, Norman Dolph, Tom Wilson • Engineers: John Licata, Ami Hadani. Its status as one of pop's most influential albums is clear, but the circumstances surrounding the creation of The Velvet Underground & Nico have always been clouded. We as"
   },
   {
@@ -2586,7 +2554,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "IvG3is7Bm1w",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Simon Humphrey. When the Clash entered the studio for the first time they were determined not to sacrifice their punk principles, and the fates — not to mention a sympathetic engineer and a negligent record company — were on their side..."
   },
   {
@@ -2596,7 +2564,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
+    "youtubeId": "z9nkzaOPP6g",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Jeff Lynne • Engineer: Mack. Melding Beatlesque pop melodies with symphonic strings, multi-layered vocals and leader Jeff Lynne's generally overblown production of his own compositions"
   },
   {
@@ -2606,7 +2574,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "z5rRZdiu1UE",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Beastie Boys & Mario Caldato Jr (Mario C) • Engineer: Mario Caldato Jr. The standout track from the Beastie Boys' smash hit Ill Communication album nearly didn't make it onto the record at all — and when it did, it was the eight-track ADAT mix that"
   },
   {
@@ -2616,7 +2584,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "H9tEvfIsDyo",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer & Producer David Z. Originally intended for another group, 'Kiss' was quickly reclaimed by Prince when he heard David Z's arrangement. Despite record company scepticism, the track became his third number one single and rejuvenated his career."
   },
   {
@@ -2626,7 +2594,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "yuTMWgOduFM",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Chris Thomas • Engineer: David Nicholas. Pulp's infectiously catchy commentary on the joys of class tourism helped propel the group to fame after nearly two decades of obscurity. Engineer David Nicholas tells us how 'Common People' was recorded."
   },
   {
@@ -2636,7 +2604,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "nbYQYOM66MA",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tom Newman, Simon Heyworth • Engineers: Tom Newman, Simon Heyworth. Forty years after its original release, Mike Oldfield tells us the story of recording his hugely successful debut album, Tubular Bells."
   },
   {
@@ -2646,7 +2614,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1986,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "6Cs3Pvmmv0E",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: George Michael • Engineer: Chris Porter. Wham! went their separate ways in 1986, but the triumph of George Michael's debut album Faith in 1987 meant that the success of his solo career was never really in doubt."
   },
   {
@@ -2656,7 +2624,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "4B2a6l6wM2k",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Chris Hughes • Engineer: Alan Douglas. To say that producer Chris Hughes was closely involved with Recording Adam & The Ants' biggest records would be a bit of an understatement — he got so involved he joined the band..."
   },
   {
@@ -2666,7 +2634,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1956,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "OqH7VwpSwBo",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Voyle Gilmore • Engineer: John Palladino. In 1956, Frank Sinatra revived his flagging career with an album that would define the swing sound and go on to become one of the most highly regarded in history. John Palladino, now in his 92nd year, was at"
   },
   {
@@ -2676,7 +2644,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "PTFwQP86BRs",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Trent Reznor, Mark 'Flood' Ellis • Engineer: Sean Beavan. Although the shock value of its lyrics and ensuing censorship earned it notoriety, 'Closer' perfectly exemplifies Trent Reznor's radical use of sampling and singularly focused musical vision"
   },
   {
@@ -2686,7 +2654,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "BpmmeU_mXyU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Co-producer: Martyn Young • Co-producer/Engineer: John Fryer. The unlikely result of a collaboration between two 4AD bands, the release of 'Pump Up The Volume' by MARRS was a great day for house music and copyright lawyers alike."
   },
   {
@@ -2696,7 +2664,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "vkUpfw4Hf3w",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer & Producer: Chris Tsangarides. 'Parisienne Walkways' showcased Gary Moore's virtuoso guitar work and quickly became his signature song. Its recording also provided a young engineer at Morgan Studios with his first, unexpected production credit."
   },
   {
@@ -2706,7 +2674,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
+    "youtubeId": "VJDJs9dumZI",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Ken Scott. Recording the  White Album  was a major project by any standards, not least for Ken Scott, who, at the age of just 21, found himself engineering the biggest band in the world..."
   },
   {
@@ -2716,7 +2684,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
+    "youtubeId": "oKWPYxXkAS0",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Narada Michael Walden. 'I Wanna Dance With Somebody' was a huge global hit, but it also represented a tour de force in coaxing the perfect vocal from a singer, as explained by producer Narada Michael Walden."
   },
   {
@@ -2726,7 +2694,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "XZVpR3Pk-r8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Thorne. Soft Cell's cover of 'Tainted Love' not only catapulted the duo to stardom in the UK, but also went on to spend a record-breaking 43 weeks on the American Billboard Hot 100 chart."
   },
   {
@@ -2736,7 +2704,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "Z4q_MZ7CRvI",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Ed Freeman • Engineer: Tom Flye. The story of Don McLean's 'American Pie' goes from cryptic beginnings to massive chart success, and an eventual position as a perennial US radio favourite."
   },
   {
@@ -2746,18 +2714,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "0-EF60neguk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Co-producer & Engineer Chris Birkett. Recording Sinéad O'Connor's breakthrough hit was easy in some ways, but difficult in others — for example, all compression was forbidden..."
-  },
-  {
-    "id": "song_256",
-    "title": "Downtown",
-    "artist": "Petula Clark",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Tony Hatch • Engineer: Ray Prickett. The single 'Downtown' gave Petula Clark a worldwide hit and rejuvenated her career. Presiding over the session was engineer Ray Prickett, who tells us how it happened..."
   },
   {
     "id": "song_257",
@@ -2766,7 +2724,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "W8r-tXRLazs",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineer: Gary Langan. The Buggles' JG Ballard-inspired 'Video Killed The Radio Star' hit the number one spot in no fewer than 16 different countries, and confirmed Trevor Horn in his career as a producer in the process."
   },
   {
@@ -2776,28 +2734,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1981,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "RZ2oXzrnti4",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: John Collins. The haunting dub of 'Ghost Town' perfectly captured the mood of its time, and spent three weeks at the top of the British charts during the turbulent summer of 1981."
-  },
-  {
-    "id": "song_259",
-    "title": "Goodbye Yellow Brick Road",
-    "artist": "Elton John:",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: David Hentschel. Elton John's Goodbye Yellow Brick Road has proved to be one of his most popular and enduring works. The man at the controls, David Hentschel, tells us how it came to be."
-  },
-  {
-    "id": "song_260",
-    "title": "Jack & Diane",
-    "artist": "John Cougar",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Ron Albert & Howard Albert • Engineer: Donald Gehman. But for the timely intervention of Mick Ronson, John Cougar's celebrated portrait of small-town American life might never have existed at all, let alone topped the Billboard Hot 100."
   },
   {
     "id": "song_261",
@@ -2806,48 +2744,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "2Ng9Pf_p7Fw",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Dr Alex Paterson. Dr Alex Paterson tells us how the Orb's cavalier sampling and devil‑may‑care attitude towards copyright took ambient house from the chill‑out room to the top of the charts."
-  },
-  {
-    "id": "song_262",
-    "title": "What's Going On?",
-    "artist": "Marvin Gaye",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "o5TmORitlKk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Ken Sands. As the '60s came to a close, Marvin Gaye was forced to ask some serious questions about the world as he found it; the result was the sublimely soulful piece of social commentary, 'What's Going On'."
-  },
-  {
-    "id": "song_263",
-    "title": "Whole Lotta Shakin' Goin' On",
-    "artist": "Jerry Lee Lewis",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Jack Clement. Jerry Lee Lewis's raucous piano playing is the stuff of rock & roll legend, but his discovery and signing to Sun Records was the result of a series of lucky chances. Engineer Jack Clement tells us the story..."
-  },
-  {
-    "id": "song_264",
-    "title": "One",
-    "artist": "Metallica",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Flemming Rasmussen. ...And Justice For All marked a turning point for Metallica — one that would launch the cult band into the mainstream. The man at the controls, Flemming Rasmussen, tells us how it happened."
-  },
-  {
-    "id": "song_265",
-    "title": "Teenage Kicks",
-    "artist": "The Undertones:",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Davy Shannon • Songwriter: John O'Neill. 'Teenage Kicks' was the punk-pop gem that, with a little help from John Peel, kick-started the Undertones' career."
   },
   {
     "id": "song_266",
@@ -2856,108 +2754,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "NUTGr5t3Mo8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Neill King. 'Do you have the time to listen to me whine?' asked Green Day in the opening lines of their song 'Basket Case'. For 16 million people, the answer was apparently 'yes'..."
-  },
-  {
-    "id": "song_267",
-    "title": "Oliver's Army",
-    "artist": "Elvis Costello & The Attractions",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Roger Béchirian. A song named for Christmas-cancelling regicide Oliver Cromwell may seem like an unlikely hit, but the infectious ebullience of 'Oliver's Army' provided Elvis Costello with his biggest-selling single..."
-  },
-  {
-    "id": "song_268",
-    "title": "It's A Sin",
-    "artist": "Pet Shop Boys",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & engineer: Julian Mendelsohn. Protests against Catholicism have taken many forms, Martin Luther nailing his objections to the cathedral door, but the Pet Shop Boys chose to make theirs in disco...• Producer: Julian Mendelsohn • Engineers: Julian Men"
-  },
-  {
-    "id": "song_269",
-    "title": "Road To Nowhere",
-    "artist": "Talking Heads",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Eric Thorngren. As the first issue of  SOS  hit the shops in October 1985, Talking Heads were already climbing towards their highest UK chart position. The song was 'Road To Nowhere'. Engineer Eric Thorngren tells the story of its recording. • Produ"
-  },
-  {
-    "id": "song_270",
-    "title": "Hotel California",
-    "artist": "The Eagles",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1977,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bill Szymczyk. 1977's Hotel California saw The Eagles abandon their country origins in favour of full-blown rock & roll, and made them one of the biggest-selling groups in the world. Producer Bill Szymczyk tells SOS how it happened."
-  },
-  {
-    "id": "song_271",
-    "title": "Suite: Judy Blue Eyes",
-    "artist": "Crosby, Stills & Nash",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: David Crosby, Stephen Stills, Graham Nash • Engineer: Bill Halverson. As the '60s drew to a close, David Crosby, Stephen Stills and Graham Nash came together to form a new group, the unique sound of which was perfectly demonstrated by their first r"
-  },
-  {
-    "id": "song_272",
-    "title": "Don't You Want Me",
-    "artist": "Human League",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Martin Rushent. When producer Martin Rushent took the Human Leagues leaden new song and turned it into pop gold, the band hated it — but that didnt stop it from being a number one hit on both sides of the Atlantic..."
-  },
-  {
-    "id": "song_273",
-    "title": "Crimson & Clover",
-    "artist": "Tommy James & The Shondells",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1968,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Tommy James • Engineer: Bruce Staple. In 1968, Tommy James made a dramatic stylistic turnaround, swapping bubblegum pop for full-blown psychedelic rock. The result was the superlative single Crimson & Clover."
-  },
-  {
-    "id": "song_274",
-    "title": "Sad Eyed Lady Of The Lowlands",
-    "artist": "Bob Dylan",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bob Johnston. It took a while for Bob Dylan to hit his stride on his seventh studio album, but once he did there was no stopping him. Producer Bob Johnston recalls the difficult birth of Blonde On Blonde."
-  },
-  {
-    "id": "song_275",
-    "title": "Round Midnight",
-    "artist": "Miles Davis",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1956,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: George Avakian • Engineer: Frank Laico. In 1956, Miles Davis was at Columbia Studios to record an album with the musicians who subsequently became known as his First Great Quintet. Engineer Frank Laico was at the controls..."
-  },
-  {
-    "id": "song_276",
-    "title": "Born In The USA",
-    "artist": "Bruce Springsteen",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1984,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Jon Landau, Chuck Plotkin, Bruce Springsteen, Steve Van Zandt • Engineers: Toby Scott, Bob Clearmountain. Seven top 10 singles isnt bad going for a career, let alone one album, yet thats precisely what Bruce Springsteen achieved with his smash hit "
   },
   {
     "id": "song_277",
@@ -2966,28 +2764,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1982,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "dGs3vJNg3V4",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Ritchie Cordell, Kenny Laguna, Glen Kolotkin • Engineer: Glen Kolotkin. Joan Jett's heartfelt reworking of the Arrows I Love Rock & Roll became an international hit in 1982 and turned her career around. Glen Kolotkin tells us how it happened."
-  },
-  {
-    "id": "song_278",
-    "title": "Black Steel In The Hour Of Chaos",
-    "artist": "Public Enemy",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1988,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: The Bomb Squad • Engineer: Nick Sansano. Hank Shocklees 1988 collaboration with Public Enemy brought a new aggression to hip-hop — both sonically and politically..."
-  },
-  {
-    "id": "song_279",
-    "title": "Personality Crisis",
-    "artist": "New York Dolls",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Todd Rundgren • Engineer: Jack Douglas. The fact that they achieved little commercial success didnt stop the New York Dolls from making one of the most influential albums in the history of pop music."
   },
   {
     "id": "song_280",
@@ -2996,7 +2774,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "Ac0aNyoW44o",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: REM, Mitch Easter, Don Dixon. REMs first single wasnt just an embryonic form of the style and sound that would later make them so successful, it was also a gem of the American new wave. But it took a long time coming..."
   },
   {
@@ -3006,7 +2784,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "Nm-ISatLDG0",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Giorgio Moroder, Pete Bellotte • Engineer: Juergen Koppers. The pioneering electronica of I Feel Love didnt just revolutionise disco, it changed dance music forever. This is the story of how it was made..."
   },
   {
@@ -3016,18 +2794,18 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "fTTsYbPOgaI",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Shel Talmy. There are very few records whose influence can be so strongly felt after 45 years as the Kinks You Really Got Me. At the controls was Shel Talmy, who tells us the story of a song that changed pop music."
   },
   {
-    "id": "song_283",
+    "id": "song_357",
     "title": "Walk This Way",
-    "artist": "Aerosmith",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1975,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Jack Douglas • Engineer: Jay Messina. In 1975, Aerosmith stormed into the mainstream with their Toys In The Attic album, and in doing so set the tone for a decade of West Coast heavy metal."
+    "artist": "Run-D.M.C. ft. Aerosmith",
+    "genre": "Rap Rock",
+    "year": 1986,
+    "audioSrc": "assets/audio/billie_jean.wav",
+    "youtubeId": "4c8O2n1Gfto",
+    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1986): \"Walk This Way\" de Run-D.M.C. ft. Aerosmith destacó dentro de la escena Rap Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
     "id": "song_284",
@@ -3036,18 +2814,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "cs4ZGrmHdpM",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Tony Clarke • Engineer: Derek Varnals. Thunderous reverbs, haunting vocals and Mellotron galore: we tell the story of recording the Moody Blues symphonic rock masterpiece, Nights In White Satin."
-  },
-  {
-    "id": "song_285",
-    "title": "Whatever Gets You Thru The Night",
-    "artist": "John Lennon",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: John Lennon • Engineers: Roy Cicala, Shelly Yakus. Engineer Roy Cicala worked on all of John Lennon's albums from Imagine onwards, and in Whatever Gets You Thru The Night, recorded this solo number one hit single."
   },
   {
     "id": "song_286",
@@ -3056,28 +2824,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
+    "youtubeId": "7kfYOGNdJY8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Van Morrison • Engineers: Shelly Yakus, Elliot Scheiner. On his second solo album, Van Morrison took the production reins for the first time. Manning the desk was engineer Shelly Yakus, who tells the story of recording Moondance."
-  },
-  {
-    "id": "song_287",
-    "title": "Karla",
-    "artist": "Heavy Zebra",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1972,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Heavy Zebra • Engineer: Kevin Byrne. Blighted by drug abuse and mental illness, Heavy Zebra never fulfilled their early promise. Nevertheless, the deranged majesty of their 1972 single Karla makes it a bona fide classic track."
-  },
-  {
-    "id": "song_288",
-    "title": "I Only Have Eyes For You",
-    "artist": "The Flamingos",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: George Goldner, Terry Johnson • Engineer: Allen Weintraub. This is the story of how an inspired rearrangement of an old song created a track that, 50 years on, remains a genuine and enduring classic."
   },
   {
     "id": "song_289",
@@ -3086,7 +2834,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1987,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "dQw4w9WgXcQ",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Stock, Aitken and Waterman. Producers Stock, Aitken and Waterman developed a massively successful formula for making pop records — and the story of Rick Astleys 1987 smash hit, Never Gonna Give You Up, is a perfect guide to the SAW assembly line..."
   },
   {
@@ -3096,7 +2844,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1977,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
+    "youtubeId": "Khn9yD0d_zU",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Pip Williams • Engineer: John Eden. In 1977 Status Quo brought in producer Pip Williams to help them clean up their act. The result was a hit album and a best-selling single — 'Rockin' All Over The World'."
   },
   {
@@ -3106,7 +2854,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "j9jbdgZidu8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Steve Lillywhite • Engineers: Chris Dickie, Steve Lillywhite. A Christmas song was an unexpected move from a group like the Pogues, but the story of heartbreak and pain that is 'Fairytale Of New York' eventually became the band's biggest commercial "
   },
   {
@@ -3116,7 +2864,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "9lDCYjb8RHk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. For mixing Kraftwerk's synthetic beats and simple melodies with New York rap, 'Planet Rock' and producer Arthur Baker can arguably be credited with creating an entirely new genre: hip-hop. This is how it happened..."
   },
   {
@@ -3126,7 +2874,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "uq-gYOrU8bA",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Paul Simon • Engineer: Roy Halee. Paul Simon's Graceland album combined a huge mixture of musical styles and was recorded in studios all over the world. The man responsible for putting it all together, both sonically and physically, was Simon's long"
   },
   {
@@ -3136,7 +2884,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1980,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "j_QLzthSkfM",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Devo, Robert Margouleff • Engineers: Robert Margouleff, Howard Siegel. Armed with a subversive view of society and a command of catchy synth-pop, Devo burst into the charts in 1980 with weird classic 'Whip It'. Producer Robert Margouleff talks de-e"
   },
   {
@@ -3146,7 +2894,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "uWhkbqmnKEs",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Chapman • Engineer: Peter Coleman. The partnership between Blondie and producer Mike Chapman created a perfect pop record - and catapulted the group from the underground to mainstream chart success."
   },
   {
@@ -3156,7 +2904,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1972,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "cWc7vYjgnTs",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Ray Minshull, Michael Woolcock • Engineers: James Lock, Kenneth Wilkinson. Recording opera requires a completely different approach, environment and technique to pop or rock music — a fact that has seldom been better demonstrated than in Pavarotti'"
   },
   {
@@ -3166,68 +2914,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "Q3_2entulkw",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineers: Steve Lipson, Julian Mendelsohn. The debut single from Liverpool's Frankie Goes To Hollywood was the result of adventurous production and enjoyed massive chart success - as well as creating a great deal of controversy."
-  },
-  {
-    "id": "song_298",
-    "title": "Pet Sematary",
-    "artist": "The Ramones",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Jean Beauvoir • Engineer: Fernando Kral. Undisputed kings of the three-chord thrash and arguably responsible for punk rock, it took over 10 years and the theme song to a Stephen King film to secure serious US chart success for the Ramones..."
-  },
-  {
-    "id": "song_299",
-    "title": "Reach Out I'll Be There",
-    "artist": "The Four Tops:",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Brian Holland, Lamont Dozier, Eddie Holland. One of the most famous record labels of all time, Motown fostered a group of uniquely talented writers, engineers and musicians who often had to invent the equipment and techniques they used to keep thei"
-  },
-  {
-    "id": "song_300",
-    "title": "Sweet Home Alabama",
-    "artist": "Lynyrd Skynyrd",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1973,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Al Kooper • Engineers: Al Kooper, Rodney Mills. In 1973, a band from Florida and California went to a studio in Georgia to record a song, provoked by a Canadian, about Alabama - and managed to define the sound of Southern rock while they were at it."
-  },
-  {
-    "id": "song_301",
-    "title": "Pastime Paradise",
-    "artist": "Stevie Wonder",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Stevie Wonder • Engineers: Gary Olazabal, John Fischbach. Epic in every sense of the word — unning to 21 songs, involving more than 120 musicians and taking almost two years to complete — Stevie Wonder's  Songs In The Key Of Life  was in many ways t"
-  },
-  {
-    "id": "song_302",
-    "title": "I Can Help",
-    "artist": "Billy Swan",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1974,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Chip Young, Billy Swan • Engineer: Chip Young. In 1974 Billy Swan walked into Chip Young's Young'un Sound studio and, in two takes, recorded a million-selling single that had taken him 20 minutes to write. This is how it was done..."
-  },
-  {
-    "id": "song_303",
-    "title": "Hit Me With Your Rhythm Stick",
-    "artist": "Ian Dury & The Blockheads",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1978,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Chaz Jankel, Laurie Latham • Engineers: Laurie Latham, Chaz Jankel. The story of how a characteristically chaotic and unorthodox 1978 recording session took Ian Dury & The Blockheads to the top of the UK charts."
   },
   {
     "id": "song_304",
@@ -3236,7 +2924,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1984,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "s__rX_WL100",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Nile Rodgers, Madonna, Stephen Bray • Engineer: Jason Corsaro. In mid-1984 Madonna arrived at New York City's Power Station studios with Nile Rodgers to record the album that would make her an international superstar - using cutting-edge 12-bit tec"
   },
   {
@@ -3246,38 +2934,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1976,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "6ul-cZyuYq4",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Richard Dashut, Ken Caillat, Fleetwood Mac • Engineers: Ken Caillat, Richard Dashut. In 1976, in the face of deteriorating personal relationships and massive record company pressure, Fleetwood Mac managed to create a record that would go on to sell"
-  },
-  {
-    "id": "song_306",
-    "title": "Another Girl, Another Planet",
-    "artist": "The Only Ones",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Alan Mair • Engineers: John Burns, Robert Ash. Although never a commercial success, the Only One's 'Another Girl, Another Planet' has proved to be massively influential; and nearly 30 years after its original release, it's finally getting the recogn"
-  },
-  {
-    "id": "song_307",
-    "title": "Black Steel",
-    "artist": "Tricky",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tricky • Mark Saunders. Tricky's highly unorthodox approach to recording and making music led to the creation of one of the most unique and critically lauded records of the '90s."
-  },
-  {
-    "id": "song_308",
-    "title": "The Most Beautiful Girl In The World",
-    "artist": "Charlie Rich",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1973,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Billy Sherrill • Engineer: Lou Bradley. 1973's 'The Most Beautiful Girl In The World' was one of the defining moments of the Nashville sound, and was the product of a finely-honed studio recording process."
   },
   {
     "id": "song_309",
@@ -3286,68 +2944,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "NNC0kIzM1Fo",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Phil Spector • Engineer: Larry Levine. Phil Spector was one of the first producers to realise that a recording studio could be an instrument in itself - and the sound he created over 40 years ago has influenced popular music ever since."
-  },
-  {
-    "id": "song_310",
-    "title": "The Eton Rifles",
-    "artist": "The Jam",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: The Jam, Vic Coppersmith-Heaven • Engineers: Alan Douglas, Vic Coppersmith-Heaven. 'The Eton Rifles' captured both Paul Weller's growing talent as a songwriter and the raw power of his band the Jam, and gave the group their first top 10 hit."
-  },
-  {
-    "id": "song_311",
-    "title": "People Are People",
-    "artist": "Depeche Mode",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1984,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Depeche Mode, Daniel Miller, Gareth Jones • Engineer: Gareth Jones. Released in 1984, 'People Are People' perfectly combined Depeche Mode's love of pop music and experimentalism, and gave them their first US hit single."
-  },
-  {
-    "id": "song_312",
-    "title": "How High The Moon",
-    "artist": "Les Paul & Mary Ford",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Les Paul. Les Paul made some of the most innovative records of the 20th Century, but he had to invent multitrack tape recording first..."
-  },
-  {
-    "id": "song_313",
-    "title": "Chime",
-    "artist": "Orbital",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Paul & Phil Hartnoll • Engineers: Tim Hunt, Orbital. Orbital were renowned for their amazing live shows, and the story of 'Chime', the track that launched their career, shows how they brought their 'live' approach to electronic music to the studio "
-  },
-  {
-    "id": "song_314",
-    "title": "Papua New Guinea",
-    "artist": "Future Sound Of London",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1991,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Garry Cobain, Brian Dougans • Engineers: Yage. In 1991 The Future Sound of London brought their unique brand of experimentalism to the dancefloor with the seminal track, 'Papua New Guinea' — and launched their career in the process."
-  },
-  {
-    "id": "song_315",
-    "title": "The Night They Drove Old Dixie Down",
-    "artist": "The Band",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: The Band, John Simon • Engineers: John Simon, Robbie Robertson, Tony May. The origins of The Band as Bob Dylan's backing group are well known, but with songs like 'The Night They Drove Old Dixie Down' they forged their own unique American sound."
   },
   {
     "id": "song_316",
@@ -3356,7 +2954,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "Thls_tMx428",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tom Dowd • Derek & The Dominos. Inspired by a Persian classical poet and a certain Mrs Harrison, 'Layla' went on to become Eric Clapton's most enduring hit."
   },
   {
@@ -3366,7 +2964,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1979,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "bbr60I0z228",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Chapman • Engineers: David Tickle, Pete Coleman. In 1979, at the end of a 13-way bidding war, The Knack went into the studio to record their debut single — a debut single that would go gold in seven days and sell six million copies worldwide. T"
   },
   {
@@ -3376,7 +2974,7 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "nCBASt507WA",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Bryan Adams, Bob Clearmountain • Engineer: Bob Clearmountain. The Reckless album was a huge success for Bryan Adams, giving rise to six hit singles — but the first one, 'Run To You', was almost never even recorded."
   },
   {
@@ -3386,58 +2984,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1982,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "oXA6CLTDurg",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Clive Langer, Alan Winstanley. Producers Clive Langer and Alan Winstanley helped to make Madness one of the most successful British bands of the '80s. Find out how they worked their magic on this 1982 classic pop track..."
-  },
-  {
-    "id": "song_320",
-    "title": "September Gurls",
-    "artist": "Big Star",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Big Star • Engineer: John Fry. Three decades after they disappeared into obscurity, the cult of Big Star continues to grow. John Fry was the engineer and studio owner at Ardent, who oversaw the recording of their now-classic albums #1 Record and Rad"
-  },
-  {
-    "id": "song_321",
-    "title": "I Shot The Sheriff",
-    "artist": "Bob Marley & The Wailers",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Chris Blackwell, The Wailers • Engineers: Phill Brown, Tony Platt. Bob Marley & The Wailers were the first Jamaican musicians to achieve world stardom. Tracked in Kingston and finished in London by Island engineers Phill Brown and Tony Platt, their"
-  },
-  {
-    "id": "song_322",
-    "title": "Aquarius/Let The Sunshine In",
-    "artist": "Fifth Dimension",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer/Engineer: Bones Howe. The art of the record producer blossomed in the 1960s, with the likes of Phil Spector crafting miniature symphonies in the studio. As that decade drew to a close, Bones Howe masterminded one of its biggest and most innovative hi"
-  },
-  {
-    "id": "song_323",
-    "title": "I'll Take You There",
-    "artist": "The Staple Singers",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1972,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Al Bell • Engineers: Terry Manning, Jerry Masters. For the Staple Singers' landmark 1972 Stax album, engineer Terry Manning and producer Al Bell employed the talents of Memphis's finest musicians and two of the South's most famous studios."
-  },
-  {
-    "id": "song_324",
-    "title": "Monkey Gone To Heaven",
-    "artist": "The Pixies",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer/Engineer: Gil Norton. With their oblique, short and often brutally noisy songs, The Pixies reinvented rock music at the turn of the '90s, and influenced almost everyone who picked up a guitar in the following decade. Producer and engineer Gil Norton "
   },
   {
     "id": "song_325",
@@ -3446,78 +2994,8 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
+    "youtubeId": "TLV4_xx4Urk",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Chas Chandler, Jimi Hendrix • Engineer: Eddie Kramer. With his searing version of 'All Along The Watchtower', Jimi Hendrix set a standard for Dylan covers that has rarely been equalled. Eddie Kramer was behind the glass as the sessions moved from L"
-  },
-  {
-    "id": "song_326",
-    "title": "The Air That I Breathe",
-    "artist": "The Hollies",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1974,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Ron Richards, The Hollies • Engineer: Alan Parsons. The Hollies were the third artist in as many years to cut Albert Hammond and Mike Hazelwood's pop ballad, yet it was their version that became a worldwide top 10 hit. In 1974, Alan Parsons was behi"
-  },
-  {
-    "id": "song_327",
-    "title": "Back On The Chain Gang",
-    "artist": "The Pretenders",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1982,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Chris Thomas • Engineer: Steve Churchyard. In 1982, the Pretenders responded to desperate circumstances with some of the strongest material they would ever produce. Engineer Steve Churchyard was there to record it."
-  },
-  {
-    "id": "song_328",
-    "title": "Stayin' Alive",
-    "artist": "The Bee Gees",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: The Bee Gees, Albhy Galuten, Karl Richardson • Engineer: Karl Richardson. Disco was an American phenomenon, but its greatest hits were recorded in France by an English band who were trying to play R&B..."
-  },
-  {
-    "id": "song_329",
-    "title": "The Logical Song",
-    "artist": "Supertramp",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Supertramp, Peter Henderson • Engineer: Peter Henderson. Producer/engineer Peter Henderson spent nine months recording an album that neither he nor the A&M label could afford to fail. Yet when he handed in the masters, Henderson was convinced that "
-  },
-  {
-    "id": "song_330",
-    "title": "I'm Not In Love",
-    "artist": "10cc",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: 10cc • Engineeer: Eric Stewart. Disagreement can be destructive, but it can also drive a band on to new heights. So it was when 10cc's Kevin Godley turned up his nose at a love song penned by Eric Stewart and Graham Gouldman, insisting that it woul"
-  },
-  {
-    "id": "song_331",
-    "title": "Who Are You?",
-    "artist": "The Who",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers & Engineers: Jon Astley • Glyn Johns. The Who's final album with Keith Moon took almost a year to record and pushed the band to the limit. Engineer and producer Jon Astley tells the remarkable story behind Who Are You?'s title track."
-  },
-  {
-    "id": "song_332",
-    "title": "Le Freak",
-    "artist": "Chic",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Nile Rodgers, Bernard Edwards • Engineer: Bob Clearmountain. They might have been the greatest production team of the disco era, but even Nile Rodgers and Bernard Edwards could fall victim to the elitism of New York's club scene — and their respons"
   },
   {
     "id": "song_333",
@@ -3526,418 +3004,48 @@
     "genre": "Classic Track / Studio Legend",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
+    "youtubeId": "mfI1S0PKJR8",
     "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Stephen Hague & New Order • Engineer: David Jacob. Producer Stephen Hague took New Order into the studio with an ambitious brief: to write and record a single that would break the band in America."
   },
   {
-    "id": "song_334",
-    "title": "Fools Gold",
-    "artist": "The Stone Roses",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: John Leckie • Engineers: John Leckie, John Cornfield, Paul Schroeder. As the '80s drew to a close, The Stone Roses made rock music cool again, melding '60s psychedelia and acid house under the production guidance of John Leckie."
-  },
-  {
-    "id": "song_335",
-    "title": "The Queen Is Dead",
-    "artist": "The Smiths",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Morrissey, Johnny Marr • Engineer: Stephen Street. Stephen Street made his name as an engineer working with one of the most influential indie bands ever. He describes the sessions that created the title track of The Smiths' most celebrated album."
-  },
-  {
-    "id": "song_336",
-    "title": "A Forest",
-    "artist": "The Cure",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1980,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Robert Smith, Mike Hedges • Engineers: Mike Hedges, Mike Dutton. Mike Hedges made his 1980 debut as a producer with one of The Cure's most enduring singles. 'A Forest' and the accompanying Seventeen Seconds album used his and the band's creativity "
-  },
-  {
-    "id": "song_337",
-    "title": "The Sweetest Taboo",
-    "artist": "Sade",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Robin Millar, Sade Adu, Mike Pela, Ben Rogan • Engineer: Mike Pela. Sade's ice-cool vocals and sophisticated, jazz-tinged instrumentation defined a new kind of soul music for the '80s. Engineer and producer Mike Pela describes the organic recording"
-  },
-  {
-    "id": "song_338",
-    "title": "Anarchy In The UK",
-    "artist": "The Sex Pistols",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1976,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Chris Thomas • Engineer: Bill Price. When punk rock broke in 1976, the Sex Pistols caused panic in establishment Britain — and more than a few raised eyebrows in Wessex Studios, where Chris Thomas and Bill Price recorded the band's milestone EMI deb"
-  },
-  {
-    "id": "song_339",
-    "title": "Black Or White",
-    "artist": "Michael Jackson",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Michael Jackson, Bill Bottrell • Engineer: Bill Bottrell. The 18-month gestation period behind Michael Jackson's  Dangerous  album and its lead single 'Black Or White' saw '80s studio perfectionism taken to extremes — and despite their success, the"
-  },
-  {
-    "id": "song_340",
-    "title": "The Reflex",
-    "artist": "Duran Duran",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1983,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Duran Duran, Alex Sadkin, Ian Little • Engineers: Phil Thornalley, Pete Schwier. When Duran Duran began work on their third album in 1983, they were already one of the biggest bands in the world — and with eight months of studio time and half a mil"
-  },
-  {
-    "id": "song_341",
-    "title": "Wuthering Heights",
-    "artist": "Kate Bush",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1978,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Andrew Powell • Engineer: Jon Kelly. Kate Bush's 1978 smash hit debut single was also the first major project Jon Kelly had recorded. It proved to be a dream start for both artist and engineer, and a perfect illustration of the benefits of working w"
-  },
-  {
-    "id": "song_342",
-    "title": "What's Love Got To Do With It?",
-    "artist": "Tina Turner",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1984,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Terry Britten • Engineer: John Hudson. In 1984, a dose of British soul resurrected Tina Turner's flagging career in spectacular style. For engineer John Hudson, the recording of 'What's Love Got To Do With It?' also provided a memorable example of t"
-  },
-  {
-    "id": "song_343",
-    "title": "Start Me Up",
-    "artist": "The Rolling Stones",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1981,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Chris Kimsey. In 1981, 'Start Me Up' became one of the Rolling Stones' biggest hit singles. Yet it was actually a reject from a previous session, and only saw the light of day because its infamous co-writers had fallen out..."
-  },
-  {
-    "id": "song_344",
-    "title": "King' Cole 'Unforgettable",
-    "artist": "Natalie Cole & Nat",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1991,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: David Foster • Engineer: Al Schmitt. Half a century in the business has seen recording engineer Al Schmitt reach the very top of his profession, but even a man of his experience can find himself faced with new challenges. So it was in 1991, when he "
-  },
-  {
-    "id": "song_345",
-    "title": "Strange Days",
-    "artist": "The Doors",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Paul Rothchild • Engineeer: Bruce Botnick. Engineer and producer Bruce Botnick recorded some of the greatest artifacts of West Coast psychedelia, among them the first five albums by The Doors. Here he describes the making of their influential second"
-  },
-  {
-    "id": "song_346",
-    "title": "Move It",
-    "artist": "Cliff Richard",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Norrie Paramor • Engineer: Malcolm Addey. This month, Sound On Sound begins a major new series, looking back in detail at the engineering and production behind some of the most historically significant recordings ever made, with the story of the fir"
-  },
-  {
-    "id": "song_347",
-    "title": "Bohemian Like You",
-    "artist": "The Dandy Warhols",
+    "id": "song_161",
+    "title": "One",
+    "artist": "U2",
     "genre": "Alternative Rock",
-    "year": 2000,
+    "year": 1991,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2000): \"Bohemian Like You\" de The Dandy Warhols destacó dentro de la escena Alternative Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
+    "youtubeId": "ftjEcrrf7r0",
+    "culturalTrivia": "Surgió de una improvisación espontánea en los estudios Hansa de Berlín en un momento en que la banda estuvo a punto de disolverse, salvando la grabación de 'Achtung Baby'."
   },
   {
-    "id": "song_348",
-    "title": "Waterloo",
-    "artist": "ABBA",
-    "genre": "Europop / Disco",
-    "year": 1974,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1974): \"Waterloo\" de ABBA destacó dentro de la escena Europop / Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_349",
-    "title": "Dancing Queen",
-    "artist": "ABBA",
-    "genre": "Disco / Europop",
-    "year": 1976,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1976): \"Dancing Queen\" de ABBA destacó dentro de la escena Disco / Europop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_350",
-    "title": "Mamma Mia",
-    "artist": "ABBA",
-    "genre": "Pop",
-    "year": 1975,
+    "id": "song_206",
+    "title": "IOU",
+    "artist": "Freeez",
+    "genre": "Classic Track / Studio Legend",
+    "year": 1985,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1975): \"Mamma Mia\" de ABBA destacó dentro de la escena Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
+    "youtubeId": "y7ab3PSbvvU",
+    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. The result of an extraordinary collaboration between Arthur Baker and London band Freeez, 'IOU' was a pioneering hit of the electro genre."
   },
   {
-    "id": "song_351",
-    "title": "Gimme! Gimme! Gimme! (A Man After Midnight)",
-    "artist": "ABBA",
-    "genre": "Disco / Synth-Pop",
-    "year": 1979,
+    "id": "song_212",
+    "title": "Kashmir",
+    "artist": "Led Zeppelin",
+    "genre": "Classic Track / Studio Legend",
+    "year": 1985,
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "youtubeId": "ww9484EM2OQ",
+    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Label: Swan Song • Producer: Jimmy Page. Led Zeppelin's 'Kashmir' became a band-defining track, but it started life in an Airstream trailer known as the Ronnie Lane Mobile Studio."
+  },
+  {
+    "id": "song_213",
+    "title": "Linger",
+    "artist": "The Cranberries",
+    "genre": "Classic Track / Studio Legend",
+    "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1979): \"Gimme! Gimme! Gimme! (A Man After Midnight)\" de ABBA destacó dentro de la escena Disco / Synth-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_352",
-    "title": "The Winner Takes It All",
-    "artist": "ABBA",
-    "genre": "Pop Ballad",
-    "year": 1980,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1980): \"The Winner Takes It All\" de ABBA destacó dentro de la escena Pop Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_353",
-    "title": "You Shook Me All Night Long",
-    "artist": "AC/DC",
-    "genre": "Hard Rock",
-    "year": 1980,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1980): \"You Shook Me All Night Long\" de AC/DC destacó dentro de la escena Hard Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_354",
-    "title": "T.N.T.",
-    "artist": "AC/DC",
-    "genre": "Hard Rock",
-    "year": 1975,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1975): \"T.N.T.\" de AC/DC destacó dentro de la escena Hard Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_355",
-    "title": "Dream On",
-    "artist": "Aerosmith",
-    "genre": "Hard Rock / Power Ballad",
-    "year": 1973,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1973): \"Dream On\" de Aerosmith destacó dentro de la escena Hard Rock / Power Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_356",
-    "title": "I Don't Want to Miss a Thing",
-    "artist": "Aerosmith",
-    "genre": "Power Ballad",
-    "year": 1998,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1998): \"I Don't Want to Miss a Thing\" de Aerosmith destacó dentro de la escena Power Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_357",
-    "title": "Walk This Way",
-    "artist": "Run-D.M.C. ft. Aerosmith",
-    "genre": "Rap Rock",
-    "year": 1986,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1986): \"Walk This Way\" de Run-D.M.C. ft. Aerosmith destacó dentro de la escena Rap Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_358",
-    "title": "No One",
-    "artist": "Alicia Keys",
-    "genre": "R&B / Soul",
-    "year": 2007,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2007): \"No One\" de Alicia Keys destacó dentro de la escena R&B / Soul, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_359",
-    "title": "Fallin'",
-    "artist": "Alicia Keys",
-    "genre": "R&B / Neo Soul",
-    "year": 2001,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2001): \"Fallin'\" de Alicia Keys destacó dentro de la escena R&B / Neo Soul, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_360",
-    "title": "If I Ain't Got You",
-    "artist": "Alicia Keys",
-    "genre": "Soul / R&B",
-    "year": 2003,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2003): \"If I Ain't Got You\" de Alicia Keys destacó dentro de la escena Soul / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_361",
-    "title": "Rehab",
-    "artist": "Amy Winehouse",
-    "genre": "Soul / R&B",
-    "year": 2006,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2006): \"Rehab\" de Amy Winehouse destacó dentro de la escena Soul / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_362",
-    "title": "Back to Black",
-    "artist": "Amy Winehouse",
-    "genre": "Soul",
-    "year": 2006,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2006): \"Back to Black\" de Amy Winehouse destacó dentro de la escena Soul, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_363",
-    "title": "Valerie",
-    "artist": "Mark Ronson ft. Amy Winehouse",
-    "genre": "Soul / Pop",
-    "year": 2007,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2007): \"Valerie\" de Mark Ronson ft. Amy Winehouse destacó dentro de la escena Soul / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_364",
-    "title": "Barbie Girl",
-    "artist": "Aqua",
-    "genre": "Eurodance / Bubblegum Pop",
-    "year": 1997,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1997): \"Barbie Girl\" de Aqua destacó dentro de la escena Eurodance / Bubblegum Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_365",
-    "title": "Do I Wanna Know?",
-    "artist": "Arctic Monkeys",
-    "genre": "Indie Rock",
-    "year": 2013,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2013): \"Do I Wanna Know?\" de Arctic Monkeys destacó dentro de la escena Indie Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_366",
-    "title": "505",
-    "artist": "Arctic Monkeys",
-    "genre": "Indie Rock",
-    "year": 2007,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2007): \"505\" de Arctic Monkeys destacó dentro de la escena Indie Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_367",
-    "title": "7 Rings",
-    "artist": "Ariana Grande",
-    "genre": "Trap-Pop / R&B",
-    "year": 2019,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"7 Rings\" de Ariana Grande destacó dentro de la escena Trap-Pop / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_368",
-    "title": "Thank U, Next",
-    "artist": "Ariana Grande",
-    "genre": "Pop / R&B",
-    "year": 2018,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"Thank U, Next\" de Ariana Grande destacó dentro de la escena Pop / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_369",
-    "title": "No Tears Left to Cry",
-    "artist": "Ariana Grande",
-    "genre": "Dance-Pop",
-    "year": 2018,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"No Tears Left to Cry\" de Ariana Grande destacó dentro de la escena Dance-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_370",
-    "title": "Into You",
-    "artist": "Ariana Grande",
-    "genre": "Dance-Pop",
-    "year": 2016,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2016): \"Into You\" de Ariana Grande destacó dentro de la escena Dance-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_371",
-    "title": "Complicated",
-    "artist": "Avril Lavigne",
-    "genre": "Pop Rock",
-    "year": 2002,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2002): \"Complicated\" de Avril Lavigne destacó dentro de la escena Pop Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_372",
-    "title": "Sk8er Boi",
-    "artist": "Avril Lavigne",
-    "genre": "Pop Punk",
-    "year": 2002,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2002): \"Sk8er Boi\" de Avril Lavigne destacó dentro de la escena Pop Punk, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_373",
-    "title": "Everybody (Backstreet's Back)",
-    "artist": "Backstreet Boys",
-    "genre": "Dance-Pop",
-    "year": 1997,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1997): \"Everybody (Backstreet's Back)\" de Backstreet Boys destacó dentro de la escena Dance-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_374",
-    "title": "As Long as You Love Me",
-    "artist": "Backstreet Boys",
-    "genre": "Teen Pop",
-    "year": 1997,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1997): \"As Long as You Love Me\" de Backstreet Boys destacó dentro de la escena Teen Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
+    "youtubeId": "gPFP8bdQKJY",
+    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Stephen Street • Studio: Windmill 2. After a record label bidding war the success of the Cranberries' first single was vital. Fans of the Smiths, they called in producer Stephen Street..."
   },
   {
     "id": "song_375",
@@ -3946,7 +3054,7 @@
     "genre": "Dembow / Bachata Urbana",
     "year": 2022,
     "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
+    "youtubeId": "Cr8K88UcO08",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Tití Me Preguntó\" de Bad Bunny destacó dentro de la escena Dembow / Bachata Urbana, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -3956,7 +3064,7 @@
     "genre": "Reggaeton",
     "year": 2022,
     "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
+    "youtubeId": "saGYMhApaH8",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Me Porto Bonito\" de Bad Bunny & Chencho Corleone destacó dentro de la escena Reggaeton, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -3966,7 +3074,7 @@
     "genre": "Indie Tropical / Reggaeton",
     "year": 2022,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "10EX-_h4pYc",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Ojitos Lindos\" de Bad Bunny & Bomba Estéreo destacó dentro de la escena Indie Tropical / Reggaeton, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -3976,7 +3084,7 @@
     "genre": "Reggaeton",
     "year": 2019,
     "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
+    "youtubeId": "acEOASYioGY",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Callaíta\" de Bad Bunny destacó dentro de la escena Reggaeton, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -3986,698 +3094,8 @@
     "genre": "Reggaeton / Pop Urbano",
     "year": 2021,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "doLMt10ytHY",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Yonaguni\" de Bad Bunny destacó dentro de la escena Reggaeton / Pop Urbano, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_380",
-    "title": "(You Gotta) Fight for Your Right (To Party!)",
-    "artist": "Beastie Boys",
-    "genre": "Rap Rock",
-    "year": 1986,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1986): \"(You Gotta) Fight for Your Right (To Party!)\" de Beastie Boys destacó dentro de la escena Rap Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_381",
-    "title": "Let It Be",
-    "artist": "The Beatles",
-    "genre": "Pop Rock / Gospel",
-    "year": 1970,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1970): \"Let It Be\" de The Beatles destacó dentro de la escena Pop Rock / Gospel, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_382",
-    "title": "Yesterday",
-    "artist": "The Beatles",
-    "genre": "Baroque Pop",
-    "year": 1965,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1965): \"Yesterday\" de The Beatles destacó dentro de la escena Baroque Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_383",
-    "title": "Come Together",
-    "artist": "The Beatles",
-    "genre": "Blues Rock",
-    "year": 1969,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1969): \"Come Together\" de The Beatles destacó dentro de la escena Blues Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_384",
-    "title": "Here Comes the Sun",
-    "artist": "The Beatles",
-    "genre": "Folk Pop",
-    "year": 1969,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1969): \"Here Comes the Sun\" de The Beatles destacó dentro de la escena Folk Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_385",
-    "title": "Help!",
-    "artist": "The Beatles",
-    "genre": "Folk Rock",
-    "year": 1965,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1965): \"Help!\" de The Beatles destacó dentro de la escena Folk Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_386",
-    "title": "Twist and Shout",
-    "artist": "The Beatles",
-    "genre": "Rock and Roll",
-    "year": 1963,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1963): \"Twist and Shout\" de The Beatles destacó dentro de la escena Rock and Roll, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_387",
-    "title": "Eleanor Rigby",
-    "artist": "The Beatles",
-    "genre": "Baroque Pop",
-    "year": 1966,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1966): \"Eleanor Rigby\" de The Beatles destacó dentro de la escena Baroque Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_388",
-    "title": "In My Life",
-    "artist": "The Beatles",
-    "genre": "Baroque Pop",
-    "year": 1965,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1965): \"In My Life\" de The Beatles destacó dentro de la escena Baroque Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_389",
-    "title": "How Deep Is Your Love",
-    "artist": "Bee Gees",
-    "genre": "Soft Rock / Pop",
-    "year": 1977,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1977): \"How Deep Is Your Love\" de Bee Gees destacó dentro de la escena Soft Rock / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_390",
-    "title": "Night Fever",
-    "artist": "Bee Gees",
-    "genre": "Disco",
-    "year": 1977,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1977): \"Night Fever\" de Bee Gees destacó dentro de la escena Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_391",
-    "title": "Stand by Me",
-    "artist": "Ben E. King",
-    "genre": "Soul / R&B",
-    "year": 1961,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1961): \"Stand by Me\" de Ben E. King destacó dentro de la escena Soul / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_392",
-    "title": "Irreplaceable",
-    "artist": "Beyoncé",
-    "genre": "R&B / Pop",
-    "year": 2006,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2006): \"Irreplaceable\" de Beyoncé destacó dentro de la escena R&B / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_393",
-    "title": "Love on Top",
-    "artist": "Beyoncé",
-    "genre": "R&B / Funk",
-    "year": 2011,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2011): \"Love on Top\" de Beyoncé destacó dentro de la escena R&B / Funk, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_394",
-    "title": "CUFF IT",
-    "artist": "Beyoncé",
-    "genre": "Disco-Funk / R&B",
-    "year": 2022,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"CUFF IT\" de Beyoncé destacó dentro de la escena Disco-Funk / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_395",
-    "title": "Happier Than Ever",
-    "artist": "Billie Eilish",
-    "genre": "Alternative Rock / Pop",
-    "year": 2021,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Happier Than Ever\" de Billie Eilish destacó dentro de la escena Alternative Rock / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_396",
-    "title": "Everything I Wanted",
-    "artist": "Billie Eilish",
-    "genre": "Electropop",
-    "year": 2019,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Everything I Wanted\" de Billie Eilish destacó dentro de la escena Electropop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_397",
-    "title": "Birds of a Feather",
-    "artist": "Billie Eilish",
-    "genre": "Indie Pop",
-    "year": 2024,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Birds of a Feather\" de Billie Eilish destacó dentro de la escena Indie Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_398",
-    "title": "Ocean Eyes",
-    "artist": "Billie Eilish",
-    "genre": "Dream Pop",
-    "year": 2016,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2016): \"Ocean Eyes\" de Billie Eilish destacó dentro de la escena Dream Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_399",
-    "title": "Piano Man",
-    "artist": "Billy Joel",
-    "genre": "Soft Rock",
-    "year": 1973,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1973): \"Piano Man\" de Billy Joel destacó dentro de la escena Soft Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_400",
-    "title": "Uptown Girl",
-    "artist": "Billy Joel",
-    "genre": "Pop Rock",
-    "year": 1983,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1983): \"Uptown Girl\" de Billy Joel destacó dentro de la escena Pop Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_401",
-    "title": "We Didn't Start the Fire",
-    "artist": "Billy Joel",
-    "genre": "Pop Rock",
-    "year": 1989,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1989): \"We Didn't Start the Fire\" de Billy Joel destacó dentro de la escena Pop Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_402",
-    "title": "I Gotta Feeling",
-    "artist": "The Black Eyed Peas",
-    "genre": "Dance-Pop",
-    "year": 2009,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2009): \"I Gotta Feeling\" de The Black Eyed Peas destacó dentro de la escena Dance-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_403",
-    "title": "Where Is the Love?",
-    "artist": "The Black Eyed Peas",
-    "genre": "Conscious Hip-Hop / Pop",
-    "year": 2003,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2003): \"Where Is the Love?\" de The Black Eyed Peas destacó dentro de la escena Conscious Hip-Hop / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_404",
-    "title": "Pump It",
-    "artist": "The Black Eyed Peas",
-    "genre": "Hip-Hop / Surf Rock",
-    "year": 2005,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2005): \"Pump It\" de The Black Eyed Peas destacó dentro de la escena Hip-Hop / Surf Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_405",
-    "title": "Paranoid",
-    "artist": "Black Sabbath",
-    "genre": "Heavy Metal",
-    "year": 1970,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1970): \"Paranoid\" de Black Sabbath destacó dentro de la escena Heavy Metal, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_406",
-    "title": "Iron Man",
-    "artist": "Black Sabbath",
-    "genre": "Heavy Metal",
-    "year": 1970,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1970): \"Iron Man\" de Black Sabbath destacó dentro de la escena Heavy Metal, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_407",
-    "title": "Heart of Glass",
-    "artist": "Blondie",
-    "genre": "New Wave / Disco",
-    "year": 1978,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1978): \"Heart of Glass\" de Blondie destacó dentro de la escena New Wave / Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_408",
-    "title": "Call Me",
-    "artist": "Blondie",
-    "genre": "New Wave / Rock",
-    "year": 1980,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1980): \"Call Me\" de Blondie destacó dentro de la escena New Wave / Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_409",
-    "title": "One Way or Another",
-    "artist": "Blondie",
-    "genre": "New Wave / Power Pop",
-    "year": 1978,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1978): \"One Way or Another\" de Blondie destacó dentro de la escena New Wave / Power Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_410",
-    "title": "Song 2",
-    "artist": "Blur",
-    "genre": "Alternative Rock / Britpop",
-    "year": 1997,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1997): \"Song 2\" de Blur destacó dentro de la escena Alternative Rock / Britpop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_411",
-    "title": "Girls & Boys",
-    "artist": "Blur",
-    "genre": "Britpop",
-    "year": 1994,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1994): \"Girls & Boys\" de Blur destacó dentro de la escena Britpop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_412",
-    "title": "Knockin' on Heaven's Door",
-    "artist": "Bob Dylan",
-    "genre": "Folk Rock",
-    "year": 1973,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1973): \"Knockin' on Heaven's Door\" de Bob Dylan destacó dentro de la escena Folk Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_413",
-    "title": "Blowin' in the Wind",
-    "artist": "Bob Dylan",
-    "genre": "Folk",
-    "year": 1963,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1963): \"Blowin' in the Wind\" de Bob Dylan destacó dentro de la escena Folk, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_414",
-    "title": "Three Little Birds",
-    "artist": "Bob Marley & The Wailers",
-    "genre": "Reggae",
-    "year": 1977,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1977): \"Three Little Birds\" de Bob Marley & The Wailers destacó dentro de la escena Reggae, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_415",
-    "title": "No Woman, No Cry",
-    "artist": "Bob Marley & The Wailers",
-    "genre": "Reggae",
-    "year": 1974,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1974): \"No Woman, No Cry\" de Bob Marley & The Wailers destacó dentro de la escena Reggae, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_416",
-    "title": "Is This Love",
-    "artist": "Bob Marley & The Wailers",
-    "genre": "Reggae",
-    "year": 1978,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1978): \"Is This Love\" de Bob Marley & The Wailers destacó dentro de la escena Reggae, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_417",
-    "title": "Could You Be Loved",
-    "artist": "Bob Marley & The Wailers",
-    "genre": "Reggae / Disco",
-    "year": 1980,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1980): \"Could You Be Loved\" de Bob Marley & The Wailers destacó dentro de la escena Reggae / Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_418",
-    "title": "Redemption Song",
-    "artist": "Bob Marley & The Wailers",
-    "genre": "Acoustic Reggae",
-    "year": 1980,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1980): \"Redemption Song\" de Bob Marley & The Wailers destacó dentro de la escena Acoustic Reggae, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_419",
-    "title": "Rasputin",
-    "artist": "Boney M.",
-    "genre": "Eurodisco",
-    "year": 1978,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1978): \"Rasputin\" de Boney M. destacó dentro de la escena Eurodisco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_420",
-    "title": "Daddy Cool",
-    "artist": "Boney M.",
-    "genre": "Disco",
-    "year": 1976,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1976): \"Daddy Cool\" de Boney M. destacó dentro de la escena Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_421",
-    "title": "You Give Love a Bad Name",
-    "artist": "Bon Jovi",
-    "genre": "Hard Rock",
-    "year": 1986,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1986): \"You Give Love a Bad Name\" de Bon Jovi destacó dentro de la escena Hard Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_422",
-    "title": "Always",
-    "artist": "Bon Jovi",
-    "genre": "Power Ballad",
-    "year": 1994,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1994): \"Always\" de Bon Jovi destacó dentro de la escena Power Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_423",
-    "title": "More Than a Feeling",
-    "artist": "Boston",
-    "genre": "Arena Rock",
-    "year": 1976,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1976): \"More Than a Feeling\" de Boston destacó dentro de la escena Arena Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_424",
-    "title": "Space Oddity",
-    "artist": "David Bowie",
-    "genre": "Folk Rock / Art Rock",
-    "year": 1969,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1969): \"Space Oddity\" de David Bowie destacó dentro de la escena Folk Rock / Art Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_425",
-    "title": "Starman",
-    "artist": "David Bowie",
-    "genre": "Glam Rock",
-    "year": 1972,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1972): \"Starman\" de David Bowie destacó dentro de la escena Glam Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_426",
-    "title": "Let's Dance",
-    "artist": "David Bowie",
-    "genre": "Post-Disco / New Wave",
-    "year": 1983,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1983): \"Let's Dance\" de David Bowie destacó dentro de la escena Post-Disco / New Wave, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_427",
-    "title": "Under Pressure",
-    "artist": "Queen & David Bowie",
-    "genre": "Rock",
-    "year": 1981,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1981): \"Under Pressure\" de Queen & David Bowie destacó dentro de la escena Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_428",
-    "title": "Total Eclipse of the Heart",
-    "artist": "Bonnie Tyler",
-    "genre": "Power Ballad",
-    "year": 1983,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1983): \"Total Eclipse of the Heart\" de Bonnie Tyler destacó dentro de la escena Power Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_429",
-    "title": "Holding Out for a Hero",
-    "artist": "Bonnie Tyler",
-    "genre": "Synth-Rock",
-    "year": 1984,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1984): \"Holding Out for a Hero\" de Bonnie Tyler destacó dentro de la escena Synth-Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_430",
-    "title": "Oops!... I Did It Again",
-    "artist": "Britney Spears",
-    "genre": "Teen Pop / Dance-Pop",
-    "year": 2000,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2000): \"Oops!... I Did It Again\" de Britney Spears destacó dentro de la escena Teen Pop / Dance-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_431",
-    "title": "Gimme More",
-    "artist": "Britney Spears",
-    "genre": "Electropop / Dance",
-    "year": 2007,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2007): \"Gimme More\" de Britney Spears destacó dentro de la escena Electropop / Dance, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_432",
-    "title": "Dancing in the Dark",
-    "artist": "Bruce Springsteen",
-    "genre": "Synth-Rock",
-    "year": 1984,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1984): \"Dancing in the Dark\" de Bruce Springsteen destacó dentro de la escena Synth-Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_433",
-    "title": "Born in the U.S.A.",
-    "artist": "Bruce Springsteen",
-    "genre": "Heartland Rock",
-    "year": 1984,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1984): \"Born in the U.S.A.\" de Bruce Springsteen destacó dentro de la escena Heartland Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_434",
-    "title": "Just the Way You Are",
-    "artist": "Bruno Mars",
-    "genre": "Pop / R&B",
-    "year": 2010,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2010): \"Just the Way You Are\" de Bruno Mars destacó dentro de la escena Pop / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_435",
-    "title": "Locked Out of Heaven",
-    "artist": "Bruno Mars",
-    "genre": "Reggae Rock / Funk Pop",
-    "year": 2012,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2012): \"Locked Out of Heaven\" de Bruno Mars destacó dentro de la escena Reggae Rock / Funk Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_436",
-    "title": "24K Magic",
-    "artist": "Bruno Mars",
-    "genre": "Funk / Disco",
-    "year": 2016,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2016): \"24K Magic\" de Bruno Mars destacó dentro de la escena Funk / Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_437",
-    "title": "That's What I Like",
-    "artist": "Bruno Mars",
-    "genre": "New Jack Swing / R&B",
-    "year": 2017,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2017): \"That's What I Like\" de Bruno Mars destacó dentro de la escena New Jack Swing / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_438",
-    "title": "When I Was Your Man",
-    "artist": "Bruno Mars",
-    "genre": "Piano Ballad",
-    "year": 2012,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2012): \"When I Was Your Man\" de Bruno Mars destacó dentro de la escena Piano Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_439",
-    "title": "Grenade",
-    "artist": "Bruno Mars",
-    "genre": "Pop / R&B",
-    "year": 2010,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2010): \"Grenade\" de Bruno Mars destacó dentro de la escena Pop / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_440",
-    "title": "The Lazy Song",
-    "artist": "Bruno Mars",
-    "genre": "Reggae Pop",
-    "year": 2011,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2011): \"The Lazy Song\" de Bruno Mars destacó dentro de la escena Reggae Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_441",
-    "title": "Leave the Door Open",
-    "artist": "Silk Sonic (Bruno Mars & Anderson .Paak)",
-    "genre": "Soul / R&B",
-    "year": 2021,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Leave the Door Open\" de Silk Sonic (Bruno Mars & Anderson .Paak) destacó dentro de la escena Soul / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_442",
-    "title": "Die With A Smile",
-    "artist": "Lady Gaga & Bruno Mars",
-    "genre": "Pop Soul Ballad",
-    "year": 2024,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Die With A Smile\" de Lady Gaga & Bruno Mars destacó dentro de la escena Pop Soul Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_443",
-    "title": "APT.",
-    "artist": "ROSÉ & Bruno Mars",
-    "genre": "Pop Punk / Indie Pop",
-    "year": 2024,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"APT.\" de ROSÉ & Bruno Mars destacó dentro de la escena Pop Punk / Indie Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_444",
-    "title": "Summer of '69",
-    "artist": "Bryan Adams",
-    "genre": "Heartland Rock",
-    "year": 1984,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1984): \"Summer of '69\" de Bryan Adams destacó dentro de la escena Heartland Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_445",
-    "title": "(Everything I Do) I Do It for You",
-    "artist": "Bryan Adams",
-    "genre": "Soft Rock Ballad",
-    "year": 1991,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1991): \"(Everything I Do) I Do It for You\" de Bryan Adams destacó dentro de la escena Soft Rock Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_446",
-    "title": "Feel So Close",
-    "artist": "Calvin Harris",
-    "genre": "Electro House",
-    "year": 2011,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2011): \"Feel So Close\" de Calvin Harris destacó dentro de la escena Electro House, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_447",
-    "title": "One Kiss",
-    "artist": "Calvin Harris & Dua Lipa",
-    "genre": "Deep House / Eurodance",
-    "year": 2018,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"One Kiss\" de Calvin Harris & Dua Lipa destacó dentro de la escena Deep House / Eurodance, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_448",
-    "title": "Safe and Sound",
-    "artist": "Capital Cities",
-    "genre": "Indie Pop / Synth-Pop",
-    "year": 2011,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2011): \"Safe and Sound\" de Capital Cities destacó dentro de la escena Indie Pop / Synth-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
     "id": "song_449",
@@ -4686,498 +3104,8 @@
     "genre": "Latin Trap",
     "year": 2018,
     "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
+    "youtubeId": "U4fErC9skHE",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"I Like It\" de Cardi B, Bad Bunny & J Balvin destacó dentro de la escena Latin Trap, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_450",
-    "title": "Call Me Maybe",
-    "artist": "Carly Rae Jepsen",
-    "genre": "Dance-Pop",
-    "year": 2011,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2011): \"Call Me Maybe\" de Carly Rae Jepsen destacó dentro de la escena Dance-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_451",
-    "title": "My Heart Will Go On",
-    "artist": "Celine Dion",
-    "genre": "Pop Ballad",
-    "year": 1997,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1997): \"My Heart Will Go On\" de Celine Dion destacó dentro de la escena Pop Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_452",
-    "title": "Attention",
-    "artist": "Charlie Puth",
-    "genre": "Funk Pop",
-    "year": 2017,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2017): \"Attention\" de Charlie Puth destacó dentro de la escena Funk Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_453",
-    "title": "Believe",
-    "artist": "Cher",
-    "genre": "Eurodance / Pop",
-    "year": 1998,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1998): \"Believe\" de Cher destacó dentro de la escena Eurodance / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_454",
-    "title": "If I Could Turn Back Time",
-    "artist": "Cher",
-    "genre": "Pop Rock",
-    "year": 1989,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1989): \"If I Could Turn Back Time\" de Cher destacó dentro de la escena Pop Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_455",
-    "title": "Good Times",
-    "artist": "Chic",
-    "genre": "Disco / Funk",
-    "year": 1979,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1979): \"Good Times\" de Chic destacó dentro de la escena Disco / Funk, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_456",
-    "title": "Beautiful",
-    "artist": "Christina Aguilera",
-    "genre": "Pop Ballad",
-    "year": 2002,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2002): \"Beautiful\" de Christina Aguilera destacó dentro de la escena Pop Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_457",
-    "title": "Genie in a Bottle",
-    "artist": "Christina Aguilera",
-    "genre": "Teen Pop / R&B",
-    "year": 1999,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (1999): \"Genie in a Bottle\" de Christina Aguilera destacó dentro de la escena Teen Pop / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_458",
-    "title": "Fighter",
-    "artist": "Christina Aguilera",
-    "genre": "Pop Rock",
-    "year": 2002,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2002): \"Fighter\" de Christina Aguilera destacó dentro de la escena Pop Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_459",
-    "title": "A Sky Full of Stars",
-    "artist": "Coldplay",
-    "genre": "Progressive House / Pop",
-    "year": 2014,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2014): \"A Sky Full of Stars\" de Coldplay destacó dentro de la escena Progressive House / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_460",
-    "title": "Adventure of a Lifetime",
-    "artist": "Coldplay",
-    "genre": "Disco-Rock / Pop",
-    "year": 2015,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2015): \"Adventure of a Lifetime\" de Coldplay destacó dentro de la escena Disco-Rock / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_461",
-    "title": "Something Just Like This",
-    "artist": "The Chainsmokers & Coldplay",
-    "genre": "Future Bass / Electropop",
-    "year": 2017,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2017): \"Something Just Like This\" de The Chainsmokers & Coldplay destacó dentro de la escena Future Bass / Electropop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_462",
-    "title": "Don't Let Me Down",
-    "artist": "The Chainsmokers ft. Daya",
-    "genre": "Trap-Pop",
-    "year": 2016,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2016): \"Don't Let Me Down\" de The Chainsmokers ft. Daya destacó dentro de la escena Trap-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_463",
-    "title": "Roses",
-    "artist": "SAINt JHN (Imanbek Remix)",
-    "genre": "Slap House",
-    "year": 2019,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Roses\" de SAINt JHN (Imanbek Remix) destacó dentro de la escena Slap House, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_464",
-    "title": "7 Years",
-    "artist": "Lukas Graham",
-    "genre": "Soul-Pop",
-    "year": 2015,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2015): \"7 Years\" de Lukas Graham destacó dentro de la escena Soul-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_465",
-    "title": "Someone You Loved",
-    "artist": "Lewis Capaldi",
-    "genre": "Piano Ballad",
-    "year": 2018,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"Someone You Loved\" de Lewis Capaldi destacó dentro de la escena Piano Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_466",
-    "title": "Before You Go",
-    "artist": "Lewis Capaldi",
-    "genre": "Pop Ballad",
-    "year": 2019,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Before You Go\" de Lewis Capaldi destacó dentro de la escena Pop Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_467",
-    "title": "Dance Monkey",
-    "artist": "Tones and I",
-    "genre": "Electropop",
-    "year": 2019,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Dance Monkey\" de Tones and I destacó dentro de la escena Electropop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_468",
-    "title": "Watermelon Sugar",
-    "artist": "Harry Styles",
-    "genre": "Funk Pop / Indie Pop",
-    "year": 2019,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Watermelon Sugar\" de Harry Styles destacó dentro de la escena Funk Pop / Indie Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_469",
-    "title": "Sign of the Times",
-    "artist": "Harry Styles",
-    "genre": "Soft Rock / Glam Rock",
-    "year": 2017,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2017): \"Sign of the Times\" de Harry Styles destacó dentro de la escena Soft Rock / Glam Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_470",
-    "title": "Adore You",
-    "artist": "Harry Styles",
-    "genre": "Synth-Funk",
-    "year": 2019,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Adore You\" de Harry Styles destacó dentro de la escena Synth-Funk, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_471",
-    "title": "Don't Start Now",
-    "artist": "Dua Lipa",
-    "genre": "Nu-Disco",
-    "year": 2019,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Don't Start Now\" de Dua Lipa destacó dentro de la escena Nu-Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_472",
-    "title": "Physical",
-    "artist": "Dua Lipa",
-    "genre": "Synth-Pop",
-    "year": 2020,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2020): \"Physical\" de Dua Lipa destacó dentro de la escena Synth-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_473",
-    "title": "Houdini",
-    "artist": "Dua Lipa",
-    "genre": "Neo-Psychedelia / Nu-Disco",
-    "year": 2023,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2023): \"Houdini\" de Dua Lipa destacó dentro de la escena Neo-Psychedelia / Nu-Disco, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_474",
-    "title": "Drivers License",
-    "artist": "Olivia Rodrigo",
-    "genre": "Indie Pop / Power Ballad",
-    "year": 2021,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Drivers License\" de Olivia Rodrigo destacó dentro de la escena Indie Pop / Power Ballad, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_475",
-    "title": "Good 4 U",
-    "artist": "Olivia Rodrigo",
-    "genre": "Pop Punk",
-    "year": 2021,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Good 4 U\" de Olivia Rodrigo destacó dentro de la escena Pop Punk, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_476",
-    "title": "Vampire",
-    "artist": "Olivia Rodrigo",
-    "genre": "Piano Rock / Pop",
-    "year": 2023,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2023): \"Vampire\" de Olivia Rodrigo destacó dentro de la escena Piano Rock / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_477",
-    "title": "Anti-Hero",
-    "artist": "Taylor Swift",
-    "genre": "Synth-Pop",
-    "year": 2022,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Anti-Hero\" de Taylor Swift destacó dentro de la escena Synth-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_478",
-    "title": "Cruel Summer",
-    "artist": "Taylor Swift",
-    "genre": "Synth-Pop",
-    "year": 2019,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Cruel Summer\" de Taylor Swift destacó dentro de la escena Synth-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_479",
-    "title": "Love Story",
-    "artist": "Taylor Swift",
-    "genre": "Country Pop",
-    "year": 2008,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2008): \"Love Story\" de Taylor Swift destacó dentro de la escena Country Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_480",
-    "title": "You Belong with Me",
-    "artist": "Taylor Swift",
-    "genre": "Country Pop",
-    "year": 2008,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2008): \"You Belong with Me\" de Taylor Swift destacó dentro de la escena Country Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_481",
-    "title": "Look What You Made Me Do",
-    "artist": "Taylor Swift",
-    "genre": "Electropop",
-    "year": 2017,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2017): \"Look What You Made Me Do\" de Taylor Swift destacó dentro de la escena Electropop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_482",
-    "title": "Bad Blood",
-    "artist": "Taylor Swift ft. Kendrick Lamar",
-    "genre": "Pop / Hip-Hop",
-    "year": 2015,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2015): \"Bad Blood\" de Taylor Swift ft. Kendrick Lamar destacó dentro de la escena Pop / Hip-Hop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_483",
-    "title": "Style",
-    "artist": "Taylor Swift",
-    "genre": "Synth-Pop / Funk Pop",
-    "year": 2014,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2014): \"Style\" de Taylor Swift destacó dentro de la escena Synth-Pop / Funk Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_484",
-    "title": "We Are Never Ever Getting Back Together",
-    "artist": "Taylor Swift",
-    "genre": "Pop Rock",
-    "year": 2012,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2012): \"We Are Never Ever Getting Back Together\" de Taylor Swift destacó dentro de la escena Pop Rock, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_485",
-    "title": "HUMBLE.",
-    "artist": "Kendrick Lamar",
-    "genre": "Hip-Hop",
-    "year": 2017,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2017): \"HUMBLE.\" de Kendrick Lamar destacó dentro de la escena Hip-Hop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_486",
-    "title": "Not Like Us",
-    "artist": "Kendrick Lamar",
-    "genre": "West Coast Hip-Hop",
-    "year": 2024,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Not Like Us\" de Kendrick Lamar destacó dentro de la escena West Coast Hip-Hop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_487",
-    "title": "All the Stars",
-    "artist": "Kendrick Lamar & SZA",
-    "genre": "R&B / Hip-Hop",
-    "year": 2018,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2018): \"All the Stars\" de Kendrick Lamar & SZA destacó dentro de la escena R&B / Hip-Hop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_488",
-    "title": "Kill Bill",
-    "artist": "SZA",
-    "genre": "R&B / Indie Pop",
-    "year": 2022,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Kill Bill\" de SZA destacó dentro de la escena R&B / Indie Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_489",
-    "title": "Snooze",
-    "artist": "SZA",
-    "genre": "R&B",
-    "year": 2022,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "G7KNmW9a75Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Snooze\" de SZA destacó dentro de la escena R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_490",
-    "title": "Kiss Me More",
-    "artist": "Doja Cat ft. SZA",
-    "genre": "Disco-Pop / R&B",
-    "year": 2021,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "kJQP7kiw5Fk",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Kiss Me More\" de Doja Cat ft. SZA destacó dentro de la escena Disco-Pop / R&B, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_491",
-    "title": "Say So",
-    "artist": "Doja Cat",
-    "genre": "Disco-Pop",
-    "year": 2019,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "OPf0YbXqDm0",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2019): \"Say So\" de Doja Cat destacó dentro de la escena Disco-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_492",
-    "title": "Woman",
-    "artist": "Doja Cat",
-    "genre": "Afrobeats / Pop",
-    "year": 2021,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "4NRXx6U8ABQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2021): \"Woman\" de Doja Cat destacó dentro de la escena Afrobeats / Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_493",
-    "title": "Paint The Town Red",
-    "artist": "Doja Cat",
-    "genre": "Hip-Hop / Pop Rap",
-    "year": 2023,
-    "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "JGwWNGJdvx8",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2023): \"Paint The Town Red\" de Doja Cat destacó dentro de la escena Hip-Hop / Pop Rap, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_494",
-    "title": "Espresso",
-    "artist": "Sabrina Carpenter",
-    "genre": "Nu-Disco / Funk Pop",
-    "year": 2024,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "fJ9rUzIMcZQ",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Espresso\" de Sabrina Carpenter destacó dentro de la escena Nu-Disco / Funk Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_495",
-    "title": "Please Please Please",
-    "artist": "Sabrina Carpenter",
-    "genre": "Synth-Pop / Country Pop",
-    "year": 2024,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "Zi_XLOBDo_Y",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Please Please Please\" de Sabrina Carpenter destacó dentro de la escena Synth-Pop / Country Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_496",
-    "title": "Good Luck, Babe!",
-    "artist": "Chappell Roan",
-    "genre": "Synth-Pop",
-    "year": 2024,
-    "audioSrc": "assets/audio/stayin_alive.wav",
-    "youtubeId": "I_izvAbhExY",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Good Luck, Babe!\" de Chappell Roan destacó dentro de la escena Synth-Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_497",
-    "title": "Texas Hold 'Em",
-    "artist": "Beyoncé",
-    "genre": "Country Pop",
-    "year": 2024,
-    "audioSrc": "assets/audio/take_on_me.wav",
-    "youtubeId": "djV11Xbc914",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2024): \"Texas Hold 'Em\" de Beyoncé destacó dentro de la escena Country Pop, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
-  },
-  {
-    "id": "song_498",
-    "title": "Calm Down",
-    "artist": "Rema & Selena Gomez",
-    "genre": "Afrobeats",
-    "year": 2022,
-    "audioSrc": "assets/audio/blinding_lights.wav",
-    "youtubeId": "dvgZkm1xWPE",
-    "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Calm Down\" de Rema & Selena Gomez destacó dentro de la escena Afrobeats, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
     "id": "song_499",
@@ -5186,7 +3114,7 @@
     "genre": "Bachata",
     "year": 2022,
     "audioSrc": "assets/audio/shape_of_you.wav",
-    "youtubeId": "hTWKbfoikeg",
+    "youtubeId": "j5y6xLpRwx4",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2022): \"Monotonía\" de Shakira & Ozuna destacó dentro de la escena Bachata, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   },
   {
@@ -5196,7 +3124,7 @@
     "genre": "Electropop / Latin Urbano",
     "year": 2023,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "eVTXPUF4Oz4",
+    "youtubeId": "CocEMWJZ7Gc",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2023): \"BZRP Music Sessions #53\" de Bizarrap & Shakira destacó dentro de la escena Electropop / Latin Urbano, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
   }
 ]
