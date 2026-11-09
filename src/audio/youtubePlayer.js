@@ -95,7 +95,7 @@ export class YouTubePlayerEngine {
             try {
               const iframe = typeof this.player.getIframe === 'function' ? this.player.getIframe() : null;
               if (iframe) {
-                iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope; web-share');
+                iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope; web-share; presentation; remote-playback');
                 iframe.setAttribute('playsinline', '1');
               }
             } catch {}

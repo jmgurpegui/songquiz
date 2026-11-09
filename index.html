@@ -461,39 +461,63 @@
       </div>
 
       <div class="cast-actions-stack">
-        <button id="btn-connect-chromecast" class="btn-primary cast-main-btn" type="button">
-          <google-cast-launcher class="modal-cast-launcher" aria-hidden="true"></google-cast-launcher>
-          <svg class="modal-cast-fallback-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
-            <line x1="2" y1="20" x2="2.01" y2="20"></line>
-          </svg>
-          <span id="btn-connect-chromecast-text">Conectar a Chromecast (Wi-Fi)</span>
-        </button>
+        <!-- VÍA 1: TRANSMISIÓN DE VÍDEO Y AUDIO COMPLETO (CHROME TAB CAST / PANTALLA COMPLETA) -->
+        <div class="cast-mode-card">
+          <div class="cast-mode-title">
+            <span class="cast-badge-rec">⭐ RECOMENDADO PARA VÍDEO Y SONIDO</span>
+            <strong>1. Proyectar Vídeo y Audio en Pantalla TV</strong>
+          </div>
+          <p class="cast-mode-desc">La vía oficial para ver los videoclips en 1080p, escuchar la música por los altavoces del TV y jugar en pantalla gigante:</p>
+          <div class="cast-buttons-row">
+            <button id="btn-toggle-tv-mode" class="btn-primary cast-main-btn" type="button">
+              <span>📺</span>
+              <span id="btn-toggle-tv-mode-text">Activar Modo Pantalla TV (Salón)</span>
+            </button>
+            <button id="btn-android-screen-cast" class="btn-subtle cast-secondary-btn" type="button">
+              <span>📱</span>
+              <span>Duplicar Pantalla (Google Home / Smart View)</span>
+            </button>
+          </div>
+          <p class="cast-mode-hint">💡 En Chrome (móvil o PC): Pulsa el menú <strong>⋮ ➔ Transmitir / Enviar</strong> y elige tu TV para emitir imagen y sonido.</p>
+        </div>
 
-        <button id="btn-android-screen-cast" class="btn-subtle cast-secondary-btn" type="button">
-          <span>📱</span>
-          <span>Enviar pantalla Android (Google Home / TV)</span>
-        </button>
+        <!-- VÍA 2: PANTALLA DE MARCADOR CHROMECAST DIRECTO (GOOGLE CAST SDK) -->
+        <div class="cast-mode-card">
+          <div class="cast-mode-title">
+            <strong>2. Pantalla de Marcador Chromecast</strong>
+          </div>
+          <p class="cast-mode-desc">Conecta con el receptor de Google Cast. Tu televisor mostrará la ronda en juego y proyectará la carátula oficial en HD al revelar cada respuesta:</p>
+          <button id="btn-connect-chromecast" class="btn-subtle cast-secondary-btn" type="button">
+            <google-cast-launcher class="modal-cast-launcher" aria-hidden="true"></google-cast-launcher>
+            <svg class="modal-cast-fallback-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+              <line x1="2" y1="20" x2="2.01" y2="20"></line>
+            </svg>
+            <span id="btn-connect-chromecast-text">Conectar Marcador Chromecast (Wi-Fi)</span>
+          </button>
+        </div>
 
-        <button id="btn-toggle-tv-mode" class="btn-subtle cast-secondary-btn" type="button">
-          <span>📺</span>
-          <span id="btn-toggle-tv-mode-text">Activar Modo Pantalla TV (Salón / Duplicar)</span>
-        </button>
-
-        <a id="btn-open-yt-cast-app" class="btn-subtle cast-secondary-btn" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-          <span>▶</span>
-          <span>Abrir canción actual en app YouTube para Cast directo</span>
-        </a>
+        <!-- VÍA 3: TRANSMITIR VÍDEO A LA APP YOUTUBE DEL SMART TV -->
+        <div class="cast-mode-card">
+          <div class="cast-mode-title">
+            <strong>3. Reproducir en App YouTube TV (4K)</strong>
+          </div>
+          <p class="cast-mode-desc">Abre el videoclip actual directamente en YouTube para enviarlo a la app YouTube de tu Smart TV con 1 toque:</p>
+          <a id="btn-open-yt-cast-app" class="btn-subtle cast-secondary-btn" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
+            <span>▶</span>
+            <span>Abrir canción actual en YouTube TV</span>
+          </a>
+        </div>
       </div>
 
       <div class="cast-instructions-grid">
         <div class="cast-instruction-item">
           <strong>📱 En Móvil o Tablet (Android / Chrome):</strong>
-          <p>Pulsa <em>«Buscar Chromecast»</em> arriba o abre el menú de Chrome <strong>(⋮ ➔ Enviar / Transmitir)</strong> para proyectar el juego y el sonido en tu TV.</p>
+          <p>Para ver el vídeo en la TV, usa el menú <strong>⋮ ➔ Transmitir</strong> o el panel superior "Enviar pantalla". Para usar la TV como marcador, pulsa «Conectar Marcador».</p>
         </div>
         <div class="cast-instruction-item">
           <strong>🍎 En iPad / iPhone (AirPlay o YouTube):</strong>
-          <p>Usa el botón <em>«Abrir en app YouTube»</em> y toca el icono de Chromecast dentro de YouTube, o comparte audio por AirPlay desde el Centro de Control.</p>
+          <p>Usa <em>«Abrir en YouTube TV»</em> para reproducir en la app de tu televisor, o activa <strong>Duplicar pantalla / AirPlay</strong> desde el Centro de Control de iOS.</p>
         </div>
       </div>
     </div>

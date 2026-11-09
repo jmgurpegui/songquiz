@@ -1,6 +1,6 @@
 {
   "name": "songquiz",
-  "version": "2.2.0",
+  "version": "3.2.2",
   "type": "module",
   "description": "SongQuiz - Trivia musical y aprendizaje de inglés con Web Audio API (Zero-API, Zero-IA)",
   "scripts": {

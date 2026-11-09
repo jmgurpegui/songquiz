@@ -47,13 +47,15 @@ export class CastManager extends EventTarget {
     this.presentationConnection = null;
 
     this._lastRevealPayload = null;
+    this._lastRoundPayload = null;
     this._init();
   }
 
   /** @private */
   _init() {
-    if (this.isTvDisplayMode) {
+    if (this.isTvDisplayMode || (typeof navigator !== 'undefined' && navigator.presentation?.receiver)) {
       document.body.classList.add('tv-cast-mode');
+      this._setupPresentationReceiver();
     }
 
     // iOS no admite el SDK web de Cast (WebKit): no se carga para no bloquear nada.
@@ -110,8 +112,13 @@ export class CastManager extends EventTarget {
           this.castSession = context.getCurrentSession();
           const name = this.castSession?.getCastDevice()?.friendlyName || 'Chromecast';
           this._setConnectedState(true, 'gcast', name);
-          this._showWelcomeOnTv();
-          if (this._lastRevealPayload) this._pushRevealToCast(this._lastRevealPayload);
+          if (this._lastRevealPayload) {
+            this._pushRevealToCast(this._lastRevealPayload);
+          } else if (this._lastRoundPayload) {
+            this._pushRoundToCast(this._lastRoundPayload);
+          } else {
+            this._showWelcomeOnTv();
+          }
         } else if (event.sessionState === S.SESSION_ENDED) {
           this.castSession = null;
           if (this.activeMethod === 'gcast') this._setConnectedState(false, null, '');
@@ -241,21 +248,29 @@ export class CastManager extends EventTarget {
   }
 
   /**
-   * Nueva ronda: en el TV se mantiene la carátula anterior (no se envía nada que desvele la canción).
+   * Nueva ronda: en el TV se actualiza el marcador y el reto activo (sin spoilers).
    * @param {Object} payload
    */
   syncRoundStart(payload) {
+    this._lastRoundPayload = payload;
+    this._lastRevealPayload = null;
+
+    if (this.castSession && this.activeMethod === 'gcast') {
+      this._pushRoundToCast(payload);
+    }
     if (this.presentationConnection?.state === 'connected') {
       try { this.presentationConnection.send(JSON.stringify({ type: 'ROUND_START', ...payload })); } catch {}
     }
   }
 
   /**
-   * Respuesta revelada: el TV muestra la carátula oficial de la canción con título y artista.
+   * Respuesta revelada: el TV muestra la carátula oficial de la canción con título, artista y puntos.
    * @param {Object} payload
    */
   syncRoundReveal(payload) {
     this._lastRevealPayload = payload;
+    this._lastRoundPayload = null;
+
     if (this.castSession && this.activeMethod === 'gcast') {
       this._pushRevealToCast(payload);
     }
@@ -269,17 +284,52 @@ export class CastManager extends EventTarget {
     const chromeCast = window.chrome?.cast;
     if (!this.castSession || !chromeCast) return;
     try {
-      const url = 'https://i.ytimg.com/vi/kJQP7kiw5Fk/maxresdefault.jpg';
-      const mediaInfo = new chromeCast.media.MediaInfo(url, 'image/jpeg');
-      const md = new chromeCast.media.PhotoMediaMetadata();
-      md.title = 'SongQuiz — ¡Adivina la canción desde tu móvil!';
+      const welcomeUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/A_black_vinyl_record_with_a_blank_label.jpg/1280px-A_black_vinyl_record_with_a_blank_label.jpg';
+      const mediaInfo = new chromeCast.media.MediaInfo(welcomeUrl, 'image/jpeg');
+      const md = new chromeCast.media.GenericMediaMetadata();
+      md.title = 'SongQuiz — ¡Adivina la canción!';
+      md.subtitle = 'Sincronizado con tu pantalla. ¡Que empiece la música!';
+      md.images = [new chromeCast.Image(welcomeUrl)];
       mediaInfo.metadata = md;
-      if (this._lastRevealPayload) return;
-      this.castSession.loadMedia(new chromeCast.media.LoadRequest(mediaInfo)).catch(() => {});
+      if (this._lastRevealPayload || this._lastRoundPayload) return;
+      const request = new chromeCast.media.LoadRequest(mediaInfo);
+      request.autoplay = true;
+      this.castSession.loadMedia(request).catch(() => {});
     } catch {}
   }
 
-  /** @private */
+  /**
+   * Envía a Chromecast la pantalla de ronda activa (anti-spoilers con marcador en vivo).
+   * @private
+   * @param {Object} payload
+   */
+  _pushRoundToCast(payload) {
+    const chromeCast = window.chrome?.cast;
+    if (!this.castSession || !chromeCast) return;
+    try {
+      const stageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/A_black_vinyl_record_with_a_blank_label.jpg/1280px-A_black_vinyl_record_with_a_blank_label.jpg';
+      const mediaInfo = new chromeCast.media.MediaInfo(stageUrl, 'image/jpeg');
+      const md = new chromeCast.media.GenericMediaMetadata();
+      const roundTxt = payload.roundNumber ? `Ronda ${payload.roundNumber} / ${payload.totalRounds || '10'}` : 'Nueva ronda';
+      md.title = `🎵 ${roundTxt} — ¿Qué canción está sonando?`;
+      md.subtitle = `Marcador: ${payload.score || 0} pts • Racha: ${payload.streak || 0} 🔥 • ¡Adivina en tu pantalla!`;
+      md.images = [new chromeCast.Image(stageUrl)];
+      mediaInfo.metadata = md;
+      const request = new chromeCast.media.LoadRequest(mediaInfo);
+      request.autoplay = true;
+      this.castSession.loadMedia(request).catch((err) => {
+        console.warn('Chromecast no pudo cargar pantalla de ronda:', err);
+      });
+    } catch (err) {
+      console.warn('Error al enviar estado de ronda a Chromecast:', err);
+    }
+  }
+
+  /**
+   * Envía a Chromecast la carátula oficial en HD y los detalles de la canción resuelta.
+   * @private
+   * @param {Object} payload
+   */
   _pushRevealToCast(payload) {
     const chromeCast = window.chrome?.cast;
     const song = payload?.song;
@@ -287,16 +337,59 @@ export class CastManager extends EventTarget {
     try {
       const imageUrl = `https://i.ytimg.com/vi/${song.youtubeId}/hqdefault.jpg`;
       const mediaInfo = new chromeCast.media.MediaInfo(imageUrl, 'image/jpeg');
-      const md = new chromeCast.media.PhotoMediaMetadata();
-      md.title = `${payload.isCorrect ? '✅' : '🎵'} ${song.title} — ${song.artist}${song.year ? ` (${song.year})` : ''}`;
-      md.location = `+${payload.pointsEarned || 0} pts • Total ${payload.score || 0}`;
+      const md = new chromeCast.media.GenericMediaMetadata();
+      const statusIcon = payload.isCorrect ? '✅ ¡Correcto!' : '❌ Era:';
+      const pointsTxt = payload.pointsEarned ? `+${payload.pointsEarned} pts` : '+0 pts';
+      md.title = `${statusIcon} ${song.title} — ${song.artist}${song.year ? ` (${song.year})` : ''}`;
+      md.subtitle = `${pointsTxt} • Puntuación: ${payload.score || 0} pts • Racha: ${payload.streak || 0} 🔥`;
       md.images = [new chromeCast.Image(imageUrl)];
       mediaInfo.metadata = md;
-      this.castSession.loadMedia(new chromeCast.media.LoadRequest(mediaInfo)).catch((e) => {
+      const request = new chromeCast.media.LoadRequest(mediaInfo);
+      request.autoplay = true;
+      this.castSession.loadMedia(request).catch((e) => {
         console.warn('Chromecast no pudo mostrar la carátula:', e);
       });
     } catch (err) {
       console.warn('Error al enviar carátula al Chromecast:', err);
+    }
+  }
+
+  /**
+   * Inicializa el receptor de Presentation API para Smart TVs o pantallas secundarias.
+   * @private
+   */
+  _setupPresentationReceiver() {
+    if (typeof navigator === 'undefined' || !navigator.presentation?.receiver) return;
+    try {
+      navigator.presentation.receiver.connectionList
+        .then((list) => {
+          const handleConnection = (connection) => {
+            connection.addEventListener('message', (event) => {
+              try {
+                const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                if (data?.type === 'ROUND_START') {
+                  if (data.song?.youtubeId && this.youtubePlayer) {
+                    this.youtubePlayer.loadVideo(data.song.youtubeId, { startSeconds: 0 });
+                  }
+                  this._emit('remoteRoundStart', data);
+                } else if (data?.type === 'ROUND_REVEAL') {
+                  this._emit('remoteRoundReveal', data);
+                }
+              } catch (err) {
+                console.warn('Error procesando mensaje en Presentation Receiver:', err);
+              }
+            });
+          };
+          list.connections.forEach(handleConnection);
+          list.addEventListener('connectionavailable', (event) => {
+            handleConnection(event.connection);
+          });
+        })
+        .catch((err) => {
+          console.debug('Presentation Receiver no activo:', err);
+        });
+    } catch (err) {
+      console.warn('Error en _setupPresentationReceiver:', err);
     }
   }
 
