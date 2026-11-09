@@ -43,6 +43,7 @@ export class DOMRenderer {
     this._bindPlaylistManagerEvents();
     this._bindCastEvents();
     this._updateModeButtons();
+    this._initDeviceView();
   }
 
   /**
@@ -57,6 +58,8 @@ export class DOMRenderer {
       roundIndicator: document.getElementById('round-indicator'),
       btnMute: document.getElementById('btn-mute'),
       btnOpenImporter: document.getElementById('btn-open-importer'),
+      deviceSwitcher: document.getElementById('device-switcher'),
+      deviceButtons: document.querySelectorAll('.device-btn'),
 
       // Regiones de anuncios accesibles ARIA Live
       a11yAnnouncer: document.getElementById('a11y-announcer'),
@@ -383,6 +386,71 @@ export class DOMRenderer {
     ) {
       this.gameLogic.startRound();
     }
+  }
+
+  /**
+   * Inicializa el simulador de dispositivos interactivo (PC / Tablet / Móvil).
+   * @private
+   */
+  _initDeviceView() {
+    let saved = 'pc';
+    try {
+      saved = localStorage.getItem('songquiz_device_view') || 'pc';
+    } catch {}
+
+    this._setDeviceView(saved, false);
+
+    this.dom.deviceButtons?.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dev = btn.dataset.device;
+        if (dev) {
+          this._setDeviceView(dev, true);
+        }
+      });
+    });
+  }
+
+  /**
+   * Aplica el modo de visualización de pantalla al contenedor principal.
+   * @param {'pc'|'tablet'|'mobile'} mode
+   * @param {boolean} [notify=true]
+   * @private
+   */
+  _setDeviceView(mode, notify = true) {
+    const validModes = ['pc', 'tablet', 'mobile'];
+    const currentMode = validModes.includes(mode) ? mode : 'pc';
+
+    document.body.setAttribute('data-device-view', currentMode);
+
+    this.dom.deviceButtons?.forEach(btn => {
+      const isActive = btn.dataset.device === currentMode;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-checked', String(isActive));
+    });
+
+    try {
+      localStorage.setItem('songquiz_device_view', currentMode);
+    } catch {}
+
+    if (notify) {
+      const labels = {
+        pc: 'Modo PC / Pantalla Completa activado',
+        tablet: 'Modo Tablet (768px) activado',
+        mobile: 'Modo Móvil (390px) activado'
+      };
+      this.announce(labels[currentMode] || currentMode);
+    }
+  }
+
+  /**
+   * Alterna cíclicamente entre PC -> Tablet -> Móvil (atajo tecla D).
+   * @private
+   */
+  _cycleDeviceView() {
+    const modes = ['pc', 'tablet', 'mobile'];
+    const current = document.body.getAttribute('data-device-view') || 'pc';
+    const nextIdx = (modes.indexOf(current) + 1) % modes.length;
+    this._setDeviceView(modes[nextIdx], true);
   }
 
   /**
@@ -1369,6 +1437,13 @@ export class DOMRenderer {
       if (e.key.toLowerCase() === 'c') {
         e.preventDefault();
         this._openCastModal();
+        return;
+      }
+
+      // Tecla D: Alternar simulador de dispositivos (PC / Tablet / Móvil)
+      if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        this._cycleDeviceView();
         return;
       }
     });

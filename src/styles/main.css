@@ -20,20 +20,23 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-bg-base);
+  background-color: var(--shazam-bg-deep);
   color: var(--color-text-main);
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background-image:
-    radial-gradient(circle at 50% 0%, rgba(29, 185, 84, 0.08) 0%, transparent 55%),
-    radial-gradient(circle at 100% 100%, rgba(24, 24, 24, 0.92) 0%, var(--color-bg-base) 100%);
+    radial-gradient(ellipse at 50% -10%, rgba(0, 136, 255, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 100%, rgba(0, 210, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 90%, rgba(13, 30, 70, 0.45) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(8, 13, 26, 0.95) 0%, #05070d 100%);
   background-attachment: fixed;
   line-height: 1.4;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 300ms ease;
 }
 
 button, a, input, textarea {
@@ -41,9 +44,9 @@ button, a, input, textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ENVOLTORIO PRINCIPAL OPTIMIZADO PARA CABER EN UNA SOLA PANTALLA (DESKTOP, TABLET Y MÓVIL) */
+/* ENVOLTORIO PRINCIPAL CON SOPORTE PARA SIMULADOR PC / TABLET / MÓVIL */
 .app-container {
-  max-width: 960px;
+  max-width: 980px;
   width: 100%;
   margin: 0 auto;
   padding: max(8px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
@@ -51,6 +54,50 @@ button, a, input, textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: max-width 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms ease, border 350ms ease, border-radius 350ms ease, padding 350ms ease;
+}
+
+/* SIMULADOR DE DISPOSITIVO: MODO TABLET (768px - Formato iPad / Tablet) */
+body[data-device-view="tablet"] .app-container {
+  max-width: 768px;
+  margin: 16px auto;
+  border: 2px solid var(--shazam-border-glow);
+  border-radius: 28px;
+  box-shadow: 0 0 45px rgba(0, 136, 255, 0.2), 0 25px 70px rgba(0, 0, 0, 0.88);
+  background: rgba(10, 16, 32, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px 20px 22px;
+}
+
+/* SIMULADOR DE DISPOSITIVO: MODO MÓVIL (390px - Formato Smartphone / iPhone / Pixel) */
+body[data-device-view="mobile"] .app-container {
+  max-width: 412px;
+  margin: 12px auto;
+  border: 2.5px solid var(--shazam-border-glow);
+  border-radius: 38px;
+  box-shadow: 0 0 50px rgba(0, 136, 255, 0.28), 0 30px 85px rgba(0, 0, 0, 0.95);
+  background: rgba(10, 16, 32, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 14px 12px 20px;
+}
+
+body[data-device-view="mobile"] .options-grid {
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+body[data-device-view="mobile"] .audio-stage {
+  height: clamp(180px, 26vh, 220px) !important;
+}
+
+body[data-device-view="mobile"] .theme-pills-bar {
+  padding-bottom: 4px;
+}
+
+body[data-device-view="mobile"] .app-header {
+  padding-bottom: 6px;
 }
 
 /* CABECERA CON IDENTIDAD PROPIA LIMPIA Y TIPOGRÁFICA */
@@ -156,6 +203,47 @@ button, a, input, textarea {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* SELECTOR DE MODO DE DISPOSITIVO: PC, TABLET O MÓVIL (ESTILO SHAZAM) */
+.device-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: var(--shazam-surface);
+  border: 1px solid var(--shazam-border);
+  border-radius: var(--radius-full);
+  padding: 2px;
+  gap: 2px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.device-btn {
+  background: transparent;
+  border: 0;
+  color: var(--color-secondary);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.device-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.device-btn.active {
+  background: linear-gradient(135deg, var(--shazam-blue) 0%, var(--shazam-cyan) 100%);
+  color: #ffffff;
+  box-shadow: 0 0 14px var(--shazam-glow);
 }
 
 .btn-subtle,
@@ -281,10 +369,11 @@ button, a, input, textarea {
 }
 
 .theme-pill.active {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
+  background: linear-gradient(135deg, var(--shazam-blue) 0%, var(--shazam-cyan) 100%);
+  color: #ffffff;
+  border-color: var(--shazam-cyan);
   font-weight: 700;
+  box-shadow: 0 0 12px var(--shazam-glow);
 }
 
 /* TARJETAS DE LISTAS TEMÁTICAS EN EL MODAL */
@@ -371,16 +460,16 @@ button, a, input, textarea {
   overflow: hidden;
 }
 
-/* ESCENARIO DE AUDIO Y REPRODUCTOR YOUTUBE (VÍDEO VISIBLE CON VISERA ANTI-SPOILER) */
+/* ESCENARIO DE AUDIO Y REPRODUCTOR YOUTUBE (VÍDEO VISIBLE CON VISERA ANTI-SPOILER Y HALO SHAZAM) */
 .audio-stage {
   position: relative;
   width: 100%;
   height: clamp(200px, 32vh, 310px);
   background: #000000;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--shazam-border);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 136, 255, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -388,8 +477,48 @@ button, a, input, textarea {
 }
 
 .audio-stage.revealed {
-  border-color: rgba(29, 185, 84, 0.55);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(29, 185, 84, 0.2);
+  border-color: var(--shazam-cyan);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 25px var(--shazam-cyan-glow);
+}
+
+/* HALO SONAR / RADAR PULSANTE ESTILO SHAZAM ("SAZAN") */
+.shazam-radar-halo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shazam-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 210, 255, 0.45);
+  opacity: 0;
+  animation: shazamPulse 3.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+.shazam-ring.ring-1 { width: 90px; height: 90px; animation-delay: 0s; }
+.shazam-ring.ring-2 { width: 190px; height: 190px; animation-delay: 1.05s; }
+.shazam-ring.ring-3 { width: 300px; height: 300px; animation-delay: 2.1s; }
+
+@keyframes shazamPulse {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.85;
+    border-color: rgba(0, 210, 255, 0.75);
+    box-shadow: 0 0 16px rgba(0, 136, 255, 0.45);
+  }
+  50% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+    border-color: rgba(0, 136, 255, 0);
+  }
 }
 
 /* BARRA DE HERRAMIENTAS SUPERIOR DEL ESCENARIO */
@@ -933,10 +1062,10 @@ button, a, input, textarea {
 
 .option-btn {
   min-height: 58px;
-  background: rgba(255, 255, 255, 0.045);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--shazam-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--shazam-border);
   border-radius: var(--radius-lg);
   padding: 10px 14px;
   color: var(--color-text-main);
@@ -948,12 +1077,14 @@ button, a, input, textarea {
   text-align: left;
   transition: all var(--transition-fast);
   position: relative;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .option-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.24);
-  transform: translateY(-1px);
+  background: var(--shazam-surface-hover);
+  border-color: var(--shazam-cyan);
+  box-shadow: 0 6px 20px rgba(0, 136, 255, 0.28);
+  transform: translateY(-2px);
 }
 
 .option-btn:disabled {
@@ -965,9 +1096,9 @@ button, a, input, textarea {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-text-dim);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--shazam-cyan);
+  background: rgba(0, 136, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.22);
   width: 28px;
   height: 28px;
   border-radius: var(--radius-md);
@@ -975,11 +1106,14 @@ button, a, input, textarea {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
 
 .option-btn:hover .option-key {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 136, 255, 0.3);
+  border-color: var(--shazam-cyan);
+  box-shadow: 0 0 10px var(--shazam-cyan-glow);
 }
 
 .option-text {
@@ -1110,18 +1244,18 @@ button, a, input, textarea {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* BOTÓN DE ACCIÓN PRINCIPAL (CTA JERÁRQUICO) */
+/* BOTÓN DE ACCIÓN PRINCIPAL (CTA JERÁRQUICO ESTILO SHAZAM) */
 .btn-primary {
-  background: var(--color-accent);
+  background: linear-gradient(135deg, var(--shazam-blue) 0%, var(--shazam-cyan) 100%);
   border: none;
   border-radius: var(--radius-full);
-  color: #000000;
+  color: #ffffff;
   font-family: var(--font-heading);
   font-size: 0.88rem;
   font-weight: 800;
   padding: 10px 22px;
   cursor: pointer;
-  box-shadow: 0 4px 16px var(--color-accent-glow);
+  box-shadow: 0 4px 18px var(--shazam-glow), 0 0 12px var(--shazam-cyan-glow);
   transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;
@@ -1136,8 +1270,9 @@ button, a, input, textarea {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--color-accent-light);
+  background: linear-gradient(135deg, var(--shazam-blue-light) 0%, #33e1ff 100%);
   transform: scale(1.03);
+  box-shadow: 0 6px 24px var(--shazam-glow), 0 0 20px var(--shazam-cyan-glow);
 }
 
 .btn-primary:active:not(:disabled) {

@@ -5,14 +5,27 @@
 
 :root {
   /* Paleta de Acento Principal */
+  /* Paleta Shazam ("Sazan") - Electric Blue & Neon Cyan */
+  --shazam-blue: #0088ff;
+  --shazam-blue-light: #33a3ff;
+  --shazam-blue-dark: #005bb5;
+  --shazam-cyan: #00d2ff;
+  --shazam-cyan-glow: rgba(0, 210, 255, 0.4);
+  --shazam-glow: rgba(0, 136, 255, 0.4);
+  --shazam-bg-deep: #080d1a;
+  --shazam-surface: rgba(14, 22, 42, 0.75);
+  --shazam-surface-hover: rgba(22, 34, 64, 0.88);
+  --shazam-border: rgba(0, 210, 255, 0.22);
+  --shazam-border-glow: rgba(0, 210, 255, 0.55);
+
   --spotify-green: #1db954;
   --spotify-green-light: #1ed760;
   --spotify-green-dark: #169c46;
   --spotify-green-glow: rgba(29, 185, 84, 0.35);
 
-  --color-accent: #1db954;
-  --color-accent-light: #1ed760;
-  --color-accent-glow: rgba(29, 185, 84, 0.35);
+  --color-accent: #0088ff;
+  --color-accent-light: #00d2ff;
+  --color-accent-glow: rgba(0, 136, 255, 0.4);
 
   --color-bg-base: #121212;
   --color-bg-dark: #000000;

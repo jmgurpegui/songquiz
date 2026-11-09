@@ -76,6 +76,32 @@
         <span class="brand-badge" id="round-indicator">Pista 1 / 10</span>
 
         <div class="header-actions">
+          <!-- Selector de Modo de Dispositivo: PC, Tablet o Móvil (Estilo Shazam) -->
+          <div class="device-switcher" id="device-switcher" role="radiogroup" aria-label="Simulador de dispositivo (Atajo: tecla D)">
+            <button id="btn-device-pc" class="device-btn active" data-device="pc" type="button" role="radio" aria-checked="true" title="Modo PC (Pantalla completa / Atajo: D)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>PC</span>
+            </button>
+            <button id="btn-device-tablet" class="device-btn" data-device="tablet" type="button" role="radio" aria-checked="false" title="Modo Tablet (768px)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span>Tablet</span>
+            </button>
+            <button id="btn-device-mobile" class="device-btn" data-device="mobile" type="button" role="radio" aria-checked="false" title="Modo Móvil (390px)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span>Móvil</span>
+            </button>
+          </div>
+
           <button id="btn-cast" class="btn-subtle btn-cast-header" type="button" aria-label="Enviar a Chromecast en la misma red Wi-Fi" title="Enviar a Chromecast / TV en la misma red Wi-Fi (C)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
@@ -185,6 +211,13 @@
               <span class="minimized-title" id="minimized-title">Reproductor en modo audio puro 🎧</span>
               <span class="minimized-subtitle" id="minimized-subtitle">Vídeo y título ocultos para evitar spoilers</span>
             </div>
+          </div>
+
+          <!-- Halo Sonar / Radar pulsante estilo Shazam ("Sazan") -->
+          <div class="shazam-radar-halo" id="shazam-radar-halo" aria-hidden="true">
+            <span class="shazam-ring ring-1"></span>
+            <span class="shazam-ring ring-2"></span>
+            <span class="shazam-ring ring-3"></span>
           </div>
 
           <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio en tiempo real"></canvas>
