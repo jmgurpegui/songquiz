@@ -47,9 +47,8 @@ async function bootstrap() {
       startBtn.textContent = '▶ Comenzar Partida';
     }
 
-    // Preparar la partida SIN iniciar la primera ronda: en Chrome móvil el vídeo de YouTube
-    // solo puede sonar si se carga tras un toque del usuario (botón "Comenzar Partida").
-    gameLogic.startNewGame(defaultSongs, false, false);
+    // Iniciar automáticamente la partida cargando la primera pista y sus 4 opciones
+    gameLogic.startNewGame(defaultSongs, false, true);
   } catch (err) {
     console.error('Error al inicializar el catálogo de canciones:', err);
     const statusMsg = document.getElementById('status-msg');

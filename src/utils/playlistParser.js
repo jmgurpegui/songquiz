@@ -4,7 +4,26 @@
  * nodos Piped/Invidious y enriquecimiento automático con nuestro banco de letras bilingües.
  */
 
-import { THEMATIC_PLAYLISTS, ENRICHED_SONGS_MAP } from '../data/thematicPlaylists.js';
+import { THEMATIC_PLAYLISTS, TOP_100_YOUTUBE_ORDERED } from '../data/thematicPlaylists.js';
+
+// Mapa rápido de canciones enriquecidas para evitar duplicados y reutilizar metadatos
+const ENRICHED_SONGS_MAP = new Map();
+if (Array.isArray(TOP_100_YOUTUBE_ORDERED)) {
+  TOP_100_YOUTUBE_ORDERED.forEach(s => {
+    if (s.youtubeId) ENRICHED_SONGS_MAP.set(s.youtubeId, s);
+    if (s.title) ENRICHED_SONGS_MAP.set(s.title.toLowerCase().trim(), s);
+  });
+}
+if (Array.isArray(THEMATIC_PLAYLISTS)) {
+  THEMATIC_PLAYLISTS.forEach(p => {
+    if (Array.isArray(p.songs)) {
+      p.songs.forEach(s => {
+        if (s.youtubeId) ENRICHED_SONGS_MAP.set(s.youtubeId, s);
+        if (s.title) ENRICHED_SONGS_MAP.set(s.title.toLowerCase().trim(), s);
+      });
+    }
+  });
+}
 
 /**
  * Limpia el título eliminando coletillas comerciales comunes de YouTube

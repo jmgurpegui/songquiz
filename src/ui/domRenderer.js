@@ -564,12 +564,12 @@ export class DOMRenderer {
     });
 
     if (themeId === 'default') {
-      this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, false);
+      this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, true);
       this.announce(`Catálogo Maestro de ${this.defaultSongs.length} canciones y curiosidades activado.`);
     } else {
       const found = THEMATIC_PLAYLISTS.find(p => p.id === themeId);
       if (!found) return;
-      this.gameLogic.setCustomPlaylist(found.songs, Boolean(found.ordered), false);
+      this.gameLogic.setCustomPlaylist(found.songs, Boolean(found.ordered), true);
       this.announce(`Lista ${found.name} activada con ${found.songs.length} canciones${found.ordered ? ' en orden estricto del #1 al #100' : ''}.`);
     }
 
@@ -579,12 +579,8 @@ export class DOMRenderer {
       this.dom.roundIndicator.textContent = `${prefix} / ${this.gameState.totalRounds}`;
     }
 
-    // Si ya había iniciado la partida, lanzar inmediatamente la nueva ronda
-    if (this.dom.startScreen?.classList.contains('visually-hidden')) {
-      this.gameLogic.startRound();
-    } else {
-      this.dom.startScreen?.classList.remove('visually-hidden');
-    }
+    // Asegurar que la pantalla de inicio esté oculta
+    this.dom.startScreen?.classList.add('visually-hidden');
   }
 
   _openPlaylistModal() {
