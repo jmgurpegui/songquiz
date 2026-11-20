@@ -40,12 +40,13 @@ export class DOMRenderer {
     this._lyricsEsRevealed = false;
     this._isCuriosityExpanded = false;
 
-    // Estado de minimizado del reproductor (persistido mediante storageManager)
-    const rawMin = readStorageRaw('songquiz_player_minimized', 'false');
-    this.isPlayerMinimized = rawMin === 'true';
+    // Estado de visibilidad del vídeo: oculto por defecto mientras se adivina,
+    // y visible al completo en cuanto se responde (con opción de minimizar tras revelar)
+    this.isVideoPeekOpen = false;
+    this.isPostRevealMinimized = false;
 
     this._cacheDOMElements();
-    this._applyMinimizeState();
+    this._syncStageVisibility();
     this._bindDOMEvents();
     this._bindStateListeners();
     this._bindKeyboardShortcuts();
@@ -87,6 +88,11 @@ export class DOMRenderer {
       stageTitle: document.getElementById('stage-title'),
       stageSubtitle: document.getElementById('stage-subtitle'),
       audioStage: document.getElementById('audio-stage'),
+      listeningCurtain: document.getElementById('listening-curtain'),
+      curtainEq: document.getElementById('curtain-eq'),
+      stageModeIndicator: document.getElementById('stage-mode-indicator'),
+      stageModeIcon: document.getElementById('stage-mode-icon'),
+      stageModeText: document.getElementById('stage-mode-text'),
       btnToggleMinimize: document.getElementById('btn-toggle-minimize'),
       iconMinimizeSvg: document.getElementById('icon-minimize-svg'),
       iconExpandSvg: document.getElementById('icon-expand-svg'),
@@ -94,13 +100,10 @@ export class DOMRenderer {
       minimizedAudioBar: document.getElementById('minimized-audio-bar'),
       minimizedTitle: document.getElementById('minimized-title'),
       minimizedSubtitle: document.getElementById('minimized-subtitle'),
-      antiSpoilerTopShield: document.getElementById('anti-spoiler-top-shield'),
-      adSkipControlBar: document.getElementById('ad-skip-control-bar'),
       timerStatusDot: document.getElementById('timer-status-dot'),
       timerStatusLabel: document.getElementById('timer-status-label'),
       btnSeekBack: document.getElementById('btn-seek-back'),
       btnSeekForward: document.getElementById('btn-seek-forward'),
-      btnStartTimer: document.getElementById('btn-start-timer'),
       btnPlayPause: document.getElementById('btn-play-pause'),
       playPauseIcon: document.getElementById('play-pause-icon'),
       playPauseLabel: document.getElementById('play-pause-label'),
@@ -202,21 +205,46 @@ export class DOMRenderer {
   }
 
   /**
-   * Aplica el estado visual de minimizado en el escenario del reproductor.
+   * Sincroniza la cortina de escucha, el modo vídeo completo tras responder y el botón Ver/Ocultar vídeo.
    * @private
    */
-  _applyMinimizeState() {
+  _syncStageVisibility() {
     if (!this.dom.audioStage) return;
-    this.dom.audioStage.classList.toggle('minimized', this.isPlayerMinimized);
+
+    const isRevealed = this.gameState.status === GameStates.ROUND_OVER;
+    const isVideoVisible = isRevealed ? !this.isPostRevealMinimized : this.isVideoPeekOpen;
+
+    this.dom.audioStage.classList.toggle('revealed', isRevealed);
+    this.dom.audioStage.classList.toggle('video-peek', !isRevealed && this.isVideoPeekOpen);
+    this.dom.audioStage.classList.toggle('minimized', isRevealed && this.isPostRevealMinimized);
 
     if (this.dom.iconMinimizeSvg) {
-      this.dom.iconMinimizeSvg.style.display = this.isPlayerMinimized ? 'none' : 'block';
+      this.dom.iconMinimizeSvg.style.display = isVideoVisible ? 'block' : 'none';
     }
     if (this.dom.iconExpandSvg) {
-      this.dom.iconExpandSvg.style.display = this.isPlayerMinimized ? 'block' : 'none';
+      this.dom.iconExpandSvg.style.display = isVideoVisible ? 'none' : 'block';
     }
     if (this.dom.labelToggleMinimize) {
-      this.dom.labelToggleMinimize.textContent = this.isPlayerMinimized ? 'Expandir vídeo' : 'Ocultar vídeo';
+      this.dom.labelToggleMinimize.textContent = isVideoVisible ? 'Ocultar vídeo' : 'Ver vídeo';
+    }
+    if (this.dom.stageModeIndicator) {
+      this.dom.stageModeIndicator.classList.toggle('unlocked', isRevealed && !this.isPostRevealMinimized);
+    }
+    if (this.dom.stageModeIcon) {
+      this.dom.stageModeIcon.innerHTML = isVideoVisible
+        ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>'
+        : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+    }
+    if (this.dom.stageModeText) {
+      if (isRevealed) {
+        this.dom.stageModeText.textContent = this.isPostRevealMinimized
+          ? 'Vídeo oculto · Audio activo'
+          : 'Vídeo completo desbloqueado';
+      } else {
+        this.dom.stageModeText.textContent = this.isVideoPeekOpen
+          ? 'Vista manual del reproductor'
+          : 'Vídeo oculto hasta responder';
+      }
     }
   }
 
@@ -349,10 +377,16 @@ export class DOMRenderer {
     });
 
     this.dom.btnToggleMinimize?.addEventListener('click', () => {
-      this.isPlayerMinimized = !this.isPlayerMinimized;
-      this._applyMinimizeState();
-      writeStorageJSON('songquiz_player_minimized', this.isPlayerMinimized);
-      this.announce(this.isPlayerMinimized ? 'Reproductor minimizado (modo audio puro sin spoilers)' : 'Reproductor expandido (vídeo visible)');
+      const isRevealed = this.gameState.status === GameStates.ROUND_OVER;
+      if (isRevealed) {
+        this.isPostRevealMinimized = !this.isPostRevealMinimized;
+        this._syncStageVisibility();
+        this.announce(this.isPostRevealMinimized ? 'Vídeo oculto en modo audio' : 'Vídeo completo visible');
+      } else {
+        this.isVideoPeekOpen = !this.isVideoPeekOpen;
+        this._syncStageVisibility();
+        this.announce(this.isVideoPeekOpen ? 'Reproductor de vídeo visible temporalmente' : 'Vídeo oculto hasta responder');
+      }
     });
 
     this.dom.btnSeekBack?.addEventListener('click', () => {
@@ -373,12 +407,7 @@ export class DOMRenderer {
       } else {
         isPlaying = await this.audioEngine.togglePlayPause();
       }
-      if (this.dom.playPauseIcon) {
-        this.dom.playPauseIcon.textContent = isPlaying ? '⏸' : '▶';
-      }
-      if (this.dom.playPauseLabel) {
-        this.dom.playPauseLabel.textContent = isPlaying ? 'Pausar' : 'Sonar';
-      }
+      this._setPlayPauseButtonState(isPlaying);
       this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
     });
 
@@ -401,10 +430,8 @@ export class DOMRenderer {
         if (s !== GameStates.PLAYING && s !== GameStates.AWAITING_AUDIO && s !== GameStates.ROUND_OVER) return;
         if (this._tapAttempts >= 1) {
           this.dom.audioStage?.classList.add('needs-native-tap');
-          if (this.isPlayerMinimized) {
-            this.isPlayerMinimized = false;
-            this._applyMinimizeState();
-          }
+          this.isPostRevealMinimized = false;
+          this._syncStageVisibility();
           this.announce('Pulsa el botón de reproducción del vídeo de YouTube.', true);
           return;
         }
@@ -416,20 +443,9 @@ export class DOMRenderer {
         this._hideTapToPlay();
         this._hideAudioUnavailableBanner();
         this.dom.audioStage?.classList.remove('needs-native-tap');
-        if (this.dom.playPauseIcon) this.dom.playPauseIcon.textContent = '⏸';
-        if (this.dom.playPauseLabel) this.dom.playPauseLabel.textContent = 'Pausar';
+        this._setPlayPauseButtonState(true);
       });
     }
-
-    this.dom.btnStartTimer?.addEventListener('click', () => {
-      if (!this.gameLogic.isTimerRunning) {
-        this.gameState.startTimer();
-        this.announce('Cronómetro iniciado en 2 minutos exactos. ¡Adivina la canción!');
-      } else {
-        this.gameLogic.pauseRoundTimer();
-        this.announce('Cronómetro en pausa para saltar anuncio de YouTube');
-      }
-    });
 
     this.dom.btnOpenImporter?.addEventListener('click', () => {
       this._openPlaylistModal();
@@ -503,7 +519,7 @@ export class DOMRenderer {
         blankEl.textContent = hintMask;
       }
       if (this.dom.btnLyricsHintLetters) {
-        this.dom.btnLyricsHintLetters.textContent = this._lyricsHintLevel >= 2 ? '💡 Pista máx.' : '💡 Más pista';
+        this.dom.btnLyricsHintLetters.textContent = this._lyricsHintLevel >= 2 ? 'Pista máx.' : 'Más pista';
         this.dom.btnLyricsHintLetters.disabled = this._lyricsHintLevel >= 2;
       }
       this.announce(`Pista nivel ${this._lyricsHintLevel}: ${hintMask}`);
@@ -525,6 +541,22 @@ export class DOMRenderer {
         submitTypedAnswer();
       }
     });
+  }
+
+  /**
+   * Actualiza el icono SVG y la etiqueta del control Reproducir/Pausar.
+   * @param {boolean|null} isPlaying - True reproduciendo, false pausado, null inicial.
+   * @private
+   */
+  _setPlayPauseButtonState(isPlaying) {
+    if (this.dom.playPauseIcon) {
+      this.dom.playPauseIcon.innerHTML = isPlaying
+        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>';
+    }
+    if (this.dom.playPauseLabel) {
+      this.dom.playPauseLabel.textContent = isPlaying === null ? 'Audio' : (isPlaying ? 'Pausar' : 'Reproducir');
+    }
   }
 
   /**
@@ -656,20 +688,20 @@ export class DOMRenderer {
       const url = this.dom.youtubePlaylistUrlInput?.value.trim();
       if (!url) {
         if (this.dom.importProgressStatus) {
-          this.dom.importProgressStatus.textContent = '⚠️ Por favor, introduce una URL o ID de lista de YouTube.';
+          this.dom.importProgressStatus.textContent = 'Introduce una URL o ID de lista de YouTube.';
           this.dom.importProgressStatus.style.color = 'var(--color-warning)';
         }
         return;
       }
 
       this.dom.btnFetchYoutubePlaylist.disabled = true;
-      this.dom.btnFetchYoutubePlaylist.textContent = '⏳ Extrayendo canciones...';
+      this.dom.btnFetchYoutubePlaylist.textContent = 'Extrayendo canciones...';
 
       try {
         const songs = await fetchPlaylistFromYouTube(url, (msg) => {
           if (this.dom.importProgressStatus) {
             this.dom.importProgressStatus.textContent = msg;
-            this.dom.importProgressStatus.style.color = 'var(--spotify-green-light)';
+            this.dom.importProgressStatus.style.color = 'var(--color-accent-light)';
           }
         });
 
@@ -685,8 +717,8 @@ export class DOMRenderer {
         this.announce(`Lista importada con éxito: ${songs.length} pistas activadas.${quotaNote}`);
 
         if (this.dom.importProgressStatus) {
-          this.dom.importProgressStatus.textContent = `✅ ¡Éxito! ${songs.length} pistas extraídas y activadas.${quotaNote}`;
-          this.dom.importProgressStatus.style.color = storageRes.ok ? 'var(--spotify-green)' : 'var(--color-warning)';
+          this.dom.importProgressStatus.textContent = `Lista activada con ${songs.length} pistas.${quotaNote}`;
+          this.dom.importProgressStatus.style.color = storageRes.ok ? 'var(--color-accent-light)' : 'var(--color-warning)';
         }
 
         setTimeout(() => {
@@ -696,13 +728,13 @@ export class DOMRenderer {
       } catch (err) {
         console.error('Error al importar playlist:', err);
         if (this.dom.importProgressStatus) {
-          this.dom.importProgressStatus.textContent = `❌ ${err.message}`;
+          this.dom.importProgressStatus.textContent = err.message;
           this.dom.importProgressStatus.style.color = 'var(--color-error)';
         }
         this.announce(`Error al importar: ${err.message}`, true);
       } finally {
         this.dom.btnFetchYoutubePlaylist.disabled = false;
-        this.dom.btnFetchYoutubePlaylist.textContent = '⬇️ Extraer y Activar';
+        this.dom.btnFetchYoutubePlaylist.textContent = 'Extraer y activar';
       }
     });
 
@@ -855,16 +887,16 @@ export class DOMRenderer {
         <div>
           <div class="thematic-card-header">
             <span class="thematic-card-title">${escapeHtml(pl.name)}</span>
-            <span class="brand-badge" style="font-size: 0.65rem;">${escapeHtml(pl.badge)}</span>
+            <span class="thematic-card-meta">${escapeHtml(pl.badge)}</span>
           </div>
-          <p class="thematic-card-desc" style="margin-top: 4px;">${escapeHtml(pl.description)}</p>
+          <p class="thematic-card-desc">${escapeHtml(pl.description)}</p>
         </div>
         <div class="thematic-card-actions">
-          <a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.72rem; color: var(--color-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Abrir lista en YouTube Music">
-            <span>🔗 YouTube Music</span>
+          <a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer" class="thematic-yt-link" title="Abrir lista en YouTube Music">
+            YouTube Music
           </a>
-          <button type="button" class="btn-spotify-subtle btn-load-theme" data-theme-id="${escapeHtml(pl.id)}" style="padding: 5px 12px; font-size: 0.72rem; border-color: var(--spotify-green); color: var(--spotify-green-light);">
-            ▶ Jugar (${pl.songs.length})
+          <button type="button" class="btn-subtle btn-load-theme" data-theme-id="${escapeHtml(pl.id)}">
+            Jugar (${pl.songs.length})
           </button>
         </div>
       `;
@@ -1000,8 +1032,8 @@ export class DOMRenderer {
       const active = this.castManager.toggleTvDisplayMode();
       if (this.dom.btnToggleTvModeText) {
         this.dom.btnToggleTvModeText.textContent = active
-          ? '✅ Modo Pantalla TV Activo (Pulsa para salir)'
-          : 'Activar Modo Pantalla TV (Salón)';
+          ? 'Modo Pantalla TV activo (salir)'
+          : 'Activar Modo Pantalla TV';
       }
       this.announce(active ? 'Modo Pantalla TV activado' : 'Modo Pantalla TV desactivado');
     });
@@ -1011,20 +1043,20 @@ export class DOMRenderer {
         const { isConnected, deviceName } = e.detail;
         this.dom.btnCast?.classList.toggle('connected', isConnected);
         if (this.dom.castBtnLabel) {
-          this.dom.castBtnLabel.textContent = isConnected ? 'TV ✓' : 'Cast';
+          this.dom.castBtnLabel.textContent = isConnected ? 'TV' : 'Cast';
         }
         if (this.dom.castStatusDot) {
           this.dom.castStatusDot.classList.toggle('paused', !isConnected);
         }
         if (this.dom.castStatusText) {
           this.dom.castStatusText.textContent = isConnected
-            ? `📡 Conectado a "${deviceName}" en la red Wi-Fi`
-            : 'Asegúrate de que tu móvil/tablet y el Chromecast estén en la misma red Wi-Fi.';
+            ? `Conectado a "${deviceName}" en la red Wi-Fi`
+            : 'Asegúrate de que tu dispositivo y el Chromecast estén en la misma red Wi-Fi.';
         }
         if (this.dom.btnConnectChromecastText) {
           this.dom.btnConnectChromecastText.textContent = isConnected
             ? `Desconectar (${deviceName})`
-            : 'Conectar Marcador Chromecast (Wi-Fi)';
+            : 'Conectar marcador Chromecast (Wi-Fi)';
         }
       });
     }
@@ -1177,11 +1209,11 @@ export class DOMRenderer {
 
       tr.innerHTML = `
         <td style="color: var(--color-text-dim); font-family: var(--font-mono);">${escapeHtml(rankLabel)}</td>
-        <td style="font-weight: 700;">${escapeHtml(song.title)}</td>
+        <td style="font-weight: 600;">${escapeHtml(song.title)}</td>
         <td style="color: var(--color-secondary);">${escapeHtml(song.artist)}</td>
-        <td><span class="genre-pill" style="margin: 0; font-size: 0.7rem;">${escapeHtml(song.genre || 'General')}</span></td>
+        <td style="color: var(--color-secondary);">${escapeHtml(song.genre || 'General')}</td>
         <td style="text-align: center; font-family: var(--font-mono); color: var(--color-secondary);">${escapeHtml(song.year || '—')}</td>
-        <td style="text-align: center;">${hasTrivia ? '✅' : '⚠️'}</td>
+        <td style="text-align: center; color: ${hasTrivia ? 'var(--color-accent-light)' : 'var(--color-text-dim)'};">${hasTrivia ? 'Sí' : '—'}</td>
       `;
       fragment.appendChild(tr);
     });
@@ -1246,7 +1278,7 @@ export class DOMRenderer {
       this.dom.btnToggleCuriosity.setAttribute('aria-expanded', String(this._isCuriosityExpanded));
     }
     if (this.dom.curiosityToggleText) {
-      this.dom.curiosityToggleText.textContent = this._isCuriosityExpanded ? 'Ocultar' : 'Ver más';
+      this.dom.curiosityToggleText.textContent = this._isCuriosityExpanded ? 'Ocultar' : 'Leer más';
     }
     if (this.dom.curiosityChevron) {
       this.dom.curiosityChevron.textContent = this._isCuriosityExpanded ? '▴' : '▾';
@@ -1254,40 +1286,33 @@ export class DOMRenderer {
   }
 
   /**
-   * Actualiza controles visuales de pre-roll / pausa y estado del cronómetro.
+   * Actualiza el estado visual del cronómetro de la ronda (la detección de anuncios es automática).
    * @param {boolean} isTimerRunning
    * @private
    */
   _updateTimerControlState(isTimerRunning) {
-    if (this.dom.audioStage) {
-      this.dom.audioStage.classList.toggle('ad-skip-mode', !isTimerRunning);
+    if (this.dom.curtainEq) {
+      this.dom.curtainEq.classList.toggle('paused', !isTimerRunning);
     }
     if (this.dom.timerStatusDot) {
       this.dom.timerStatusDot.classList.toggle('paused', !isTimerRunning);
     }
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = isTimerRunning
-        ? '⏱️ Tiempo en marcha (Máx. 2:00)'
-        : '⏸️ Pausado por anuncio / carga [Tecla S]';
-    }
-    if (this.dom.btnStartTimer) {
-      this.dom.btnStartTimer.style.display = 'inline-flex';
-      this.dom.btnStartTimer.classList.toggle('running', isTimerRunning);
-      this.dom.btnStartTimer.textContent = isTimerRunning
-        ? '⏸️ Pausar por anuncio'
-        : '📢 Anuncio en curso / Pulsa si ya suena la música';
+        ? 'Tiempo en marcha · Máx. 2:00'
+        : 'Esperando inicio de la pista';
     }
 
     if (this.dom.stageTitle && this.dom.stageSubtitle && this.gameState.status !== GameStates.ROUND_OVER) {
       if (!isTimerRunning) {
         this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
+        this.dom.stageSubtitle.textContent = 'Sincronizando reproducción · Si aparece un anuncio, pulsa «Ver vídeo» para saltarlo';
       } else if (this.gameState.gameMode === GameModes.LYRICS) {
-        this.dom.stageTitle.textContent = 'Completa la Letra (Lyrics Challenge)';
-        this.dom.stageSubtitle.textContent = 'Escucha el verso y completa la palabra en inglés que falta...';
+        this.dom.stageTitle.textContent = 'Completa la letra';
+        this.dom.stageSubtitle.textContent = 'Escucha el verso · El vídeo completo se revelará al responder';
       } else {
         this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
-        this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
+        this.dom.stageSubtitle.textContent = 'Escucha con atención · El vídeo completo se revelará al responder';
       }
     }
   }
@@ -1348,7 +1373,7 @@ export class DOMRenderer {
     }
 
     if (this.dom.verseSpanishTranslation) {
-      this.dom.verseSpanishTranslation.textContent = `🇪🇸 ${lyricsData.verseEs || ''}`;
+      this.dom.verseSpanishTranslation.textContent = lyricsData.verseEs || '';
       this.dom.verseSpanishTranslation.classList.add('hidden');
     }
 
@@ -1362,7 +1387,7 @@ export class DOMRenderer {
     }
 
     if (this.dom.btnLyricsHintLetters) {
-      this.dom.btnLyricsHintLetters.textContent = '💡 Pista';
+      this.dom.btnLyricsHintLetters.textContent = 'Pista';
       this.dom.btnLyricsHintLetters.disabled = false;
     }
 
@@ -1396,9 +1421,10 @@ export class DOMRenderer {
       this.dom.statusMsg.className = 'status-msg';
     }
 
-    if (this.dom.audioStage) {
-      this.dom.audioStage.classList.remove('revealed');
-    }
+    // Cada ronda nueva oculta el vídeo al 100% hasta que el jugador seleccione respuesta
+    this.isVideoPeekOpen = false;
+    this.isPostRevealMinimized = false;
+    this._syncStageVisibility();
     this._updateTimerControlState(false);
 
     if (this.dom.btnYtExternal) {
@@ -1409,12 +1435,7 @@ export class DOMRenderer {
       this.dom.btnOpenYtCastApp.href = `https://www.youtube.com/watch?v=${encodeURIComponent(song.youtubeId)}`;
     }
 
-    if (this.dom.playPauseIcon) {
-      this.dom.playPauseIcon.textContent = '⏯';
-    }
-    if (this.dom.playPauseLabel) {
-      this.dom.playPauseLabel.textContent = 'Audio';
-    }
+    this._setPlayPauseButtonState(null);
 
     this.castManager?.syncRoundStart({
       song,
@@ -1426,15 +1447,15 @@ export class DOMRenderer {
     });
 
     if (this.dom.minimizedTitle && this.dom.minimizedSubtitle) {
-      this.dom.minimizedTitle.textContent = '🎧 Modo Audio Puro (Adivinando...)';
+      this.dom.minimizedTitle.textContent = 'Modo audio puro';
       this.dom.minimizedSubtitle.textContent = 'Vídeo y título ocultos para evitar spoilers';
     }
 
     if (this.dom.roundIndicator) {
       if (gameMode === GameModes.LYRICS) {
-        this.dom.roundIndicator.textContent = `Lyrics ${roundNumber} / ${totalRounds}`;
+        this.dom.roundIndicator.textContent = `Lyrics · ${roundNumber} / ${totalRounds}`;
       } else if (isOrderedMode || song?.rank) {
-        this.dom.roundIndicator.textContent = `Top 100 YT • #${song?.rank || roundNumber} / ${totalRounds}`;
+        this.dom.roundIndicator.textContent = `Top 100 YT · #${song?.rank || roundNumber} / ${totalRounds}`;
       } else {
         this.dom.roundIndicator.textContent = `Pista ${roundNumber} / ${totalRounds}`;
       }
@@ -1445,20 +1466,20 @@ export class DOMRenderer {
     if (this.dom.stageTitle && this.dom.stageSubtitle) {
       if (this.gameLogic.isTimerRunning) {
         this.dom.stageTitle.textContent = gameMode === GameModes.LYRICS
-          ? 'Completa la Letra (Lyrics Challenge)'
+          ? 'Completa la letra'
           : '¿Qué canción está sonando?';
         this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
-          ? `Puesto #${song.rank} más reproducido en YouTube (${song.views || 'Top Histórico'})`
-          : 'Escucha con atención...';
+          ? `Puesto #${song.rank} en YouTube (${song.views || 'Top Histórico'})`
+          : 'Escucha con atención la pista';
       } else {
         this.dom.stageTitle.textContent = 'Preparando canción...';
         this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
-          ? `Puesto #${song.rank} en YouTube • Sincronizando audio o esperando fin de anuncio...`
-          : 'Sincronizando audio o esperando fin de anuncio...';
+          ? `Puesto #${song.rank} en YouTube · Sincronizando reproducción`
+          : 'Sincronizando reproducción de la pista';
       }
     }
 
-    this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción. Pulsa S si ya suena la música.`);
+    this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción.`);
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
 
     // Renderizar Lyrics Challenge si corresponde
@@ -1587,44 +1608,48 @@ export class DOMRenderer {
     if (gameMode === GameModes.LYRICS && lyricsData) {
       this.dom.verseSpanishTranslation?.classList.remove('hidden');
       if (this.dom.lyricsLinguisticNote && lyricsData.linguisticNote) {
-        this.dom.lyricsLinguisticNote.textContent = `📚 Clave lingüística: ${lyricsData.linguisticNote}`;
+        this.dom.lyricsLinguisticNote.textContent = `Clave lingüística: ${lyricsData.linguisticNote}`;
         this.dom.lyricsLinguisticNote.classList.remove('hidden');
       }
     }
 
     const safeCorrect = escapeHtml(correctAnswer);
-    const safeSpeedBadge = escapeHtml(speedBadge);
+    const cleanSpeedBadge = escapeHtml(String(speedBadge || '').replace(/^[^\p{L}\p{N}]+/u, '').trim());
 
     if (this.dom.statusMsg) {
       if (isTimeout) {
         this.dom.statusMsg.innerHTML = `
           <div class="score-feedback-card wrong">
-            <span>⏰ ¡Tiempo agotado! Respuesta: <strong>"${safeCorrect}"</strong></span>
+            <span>Tiempo agotado · Respuesta correcta: <strong>${safeCorrect}</strong></span>
           </div>
         `;
         this.announce(`Tiempo agotado. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para pasar a la siguiente pista.`, true);
       } else if (isCorrect) {
         const evalHeadline = evaluation?.matchType === 'fuzzy'
-          ? `¡Casi exacto! "${safeCorrect}" • `
+          ? `Casi exacto · ${safeCorrect}`
           : gameMode === GameModes.LYRICS
-            ? `"${safeCorrect}" • `
-            : '';
-        const bonusHtml = speedBonus > 0 ? `<span class="score-speed-tag">${safeSpeedBadge} +${speedBonus}</span>` : '';
-        const streakHtml = multiplier > 1 ? `<span class="score-streak-tag">x${multiplier} Racha 🔥</span>` : '';
+            ? `Correcto · ${safeCorrect}`
+            : 'Respuesta correcta';
+        const bonusHtml = speedBonus > 0 && cleanSpeedBadge
+          ? `<span class="score-speed-tag">${cleanSpeedBadge} (+${speedBonus})</span>`
+          : '';
+        const streakHtml = multiplier > 1 ? `<span class="score-streak-tag">×${multiplier} racha</span>` : '';
 
         this.dom.statusMsg.innerHTML = `
           <div class="score-feedback-card correct">
-            <span>¡Correcto! ${evalHeadline}</span>
-            <span class="score-points-badge">+${pointsEarned} pts</span>
-            ${bonusHtml}
-            ${streakHtml}
+            <strong>${evalHeadline}</strong>
+            <span class="score-feedback-meta">
+              <span class="score-points-badge">+${pointsEarned} pts</span>
+              ${bonusHtml}
+              ${streakHtml}
+            </span>
           </div>
         `;
         this.announce(`${evaluation?.feedback || `¡Correcto! Respuesta: ${correctAnswer}.`} Has obtenido ${pointsEarned} puntos. Pulsa Enter para continuar.`);
       } else {
         this.dom.statusMsg.innerHTML = `
           <div class="score-feedback-card wrong">
-            <span>¡Incorrecto! Era <strong>"${safeCorrect}"</strong> 🎶</span>
+            <span>Incorrecto · Era <strong>${safeCorrect}</strong></span>
           </div>
         `;
         this.announce(`Incorrecto. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para continuar.`);
@@ -1632,25 +1657,22 @@ export class DOMRenderer {
     }
 
     if (this.dom.stageTitle) this.dom.stageTitle.textContent = `${song.title}`;
-    if (this.dom.stageSubtitle) this.dom.stageSubtitle.textContent = `${song.artist} • ${song.year || ''}`;
+    if (this.dom.stageSubtitle) this.dom.stageSubtitle.textContent = `${song.artist}${song.year ? ` · ${song.year}` : ''}`;
 
     if (this.dom.minimizedTitle && this.dom.minimizedSubtitle) {
-      this.dom.minimizedTitle.textContent = `${song.title} - ${song.artist} 🎵`;
-      this.dom.minimizedSubtitle.textContent = 'Audio en reproducción • Pulsa "Expandir vídeo" para ver el videoclip';
+      this.dom.minimizedTitle.textContent = `${song.title} — ${song.artist}`;
+      this.dom.minimizedSubtitle.textContent = 'Pulsa «Ver vídeo» para mostrar el videoclip completo';
     }
 
-    if (this.dom.audioStage) {
-      this.dom.audioStage.classList.remove('ad-skip-mode');
-      this.dom.audioStage.classList.add('revealed');
-    }
-    if (this.dom.btnStartTimer) {
-      this.dom.btnStartTimer.style.display = 'none';
-    }
+    // Al responder (o agotar tiempo), desbloquear automáticamente el vídeo completo sin obstrucciones
+    this.isVideoPeekOpen = false;
+    this.isPostRevealMinimized = false;
+    this._syncStageVisibility();
     this.dom.btnNext?.classList.remove('hidden');
 
     this.dom.timerStatusDot?.classList.remove('paused');
     if (this.dom.timerStatusLabel) {
-      this.dom.timerStatusLabel.textContent = `🎵 ${song.title} — ${song.artist}`;
+      this.dom.timerStatusLabel.textContent = `${song.title} — ${song.artist}`;
     }
 
     if (this.dom.btnYtExternal) {
@@ -1664,7 +1686,9 @@ export class DOMRenderer {
 
     const triviaText = song.culturalTrivia || `${song.title} es un tema destacado de ${song.artist}.`;
     if (this.dom.genreBadge) {
-      this.dom.genreBadge.textContent = song.genre || 'Música';
+      this.dom.genreBadge.textContent = song.year
+        ? `${song.genre || 'Música'} · ${song.year}`
+        : (song.genre || 'Música');
     }
     if (this.dom.curiosityPreview) {
       this.dom.curiosityPreview.textContent = triviaText;
@@ -1690,11 +1714,11 @@ export class DOMRenderer {
   _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime }) {
     if (this.dom.finalScore) this.dom.finalScore.textContent = String(finalScore);
     if (this.dom.finalAccuracy) this.dom.finalAccuracy.textContent = `${accuracy}%`;
-    if (this.dom.finalStreak) this.dom.finalStreak.textContent = `🔥 ${maxStreak}`;
+    if (this.dom.finalStreak) this.dom.finalStreak.textContent = String(maxStreak);
     if (this.dom.finalAvgTime) this.dom.finalAvgTime.textContent = `${avgTime}s`;
 
     if (this.dom.recordBadge) {
-      this.dom.recordBadge.style.display = isNewRecord ? 'inline-block' : 'none';
+      this.dom.recordBadge.style.display = isNewRecord ? 'block' : 'none';
     }
 
     this.dom.gameOverModal?.classList.add('open');

@@ -44,7 +44,7 @@ async function bootstrap() {
     const startBtn = document.getElementById('btn-start');
     if (startBtn) {
       startBtn.disabled = false;
-      startBtn.textContent = '▶ Comenzar Partida';
+      startBtn.textContent = 'Comenzar partida';
     }
 
     // Iniciar automáticamente la partida cargando la primera pista y sus 4 opciones

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="SongQuiz - Trivia musical interactiva con 291 canciones verificadas, Top 100 YouTube, modo Lyrics Challenge, diseño móvil/tablet y soporte Chromecast.">
-  <meta name="theme-color" content="#121212">
+  <meta name="theme-color" content="#090b10">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,10 +16,10 @@
   <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.svg">
 
-  <!-- Tipografías de Google Fonts -->
+  <!-- Tipografías: Outfit (Display) + Plus Jakarta Sans (Body) + JetBrains Mono (Telemetría) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Estilos del Sistema Modular -->
   <link rel="stylesheet" href="./src/styles/main.css">
@@ -42,176 +42,210 @@
   <div id="a11y-alert" class="visually-hidden" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <div class="app-container" id="app-container">
-    <!-- CABECERA COMPACTA CON IDENTIDAD PROPIA -->
+    <!-- BARRA SUPERIOR DE 3 ZONAS LIMPIA -->
     <header class="app-header">
-      <div class="header-left">
-        <a href="./" class="brand" aria-label="SongQuiz Inicio">
-          <!-- Icono musical vectorial sobrio (nota doble / ecualizador) -->
-          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- Zona 1: Marca -->
+      <a href="./" class="brand" aria-label="SongQuiz Inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18V5l12-2v13"></path>
             <circle cx="6" cy="18" r="3"></circle>
             <circle cx="18" cy="16" r="3"></circle>
           </svg>
-          <span class="brand-title">SongQuiz</span>
-        </a>
+        </span>
+        <span class="brand-title">SongQuiz</span>
+      </a>
 
-        <!-- Selector de Modo de Juego: Classic Trivia vs Lyrics Challenge -->
-        <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
-          <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Modo clásico: adivina la canción y el artista">
-            <span>🎵</span>
-            <span>Classic</span>
-          </button>
-          <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Modo pedagógico: completa la letra en inglés con traducción y pistas">
-            <span>📝</span>
-            <span>Lyrics</span>
-          </button>
-        </div>
-
-        <!-- Conexión directa con el cuaderno NotebookLM SongQuiz (Catálogo Maestro Verificado) -->
-        <a href="https://notebooklm.google.com/notebook/3926d997-19b3-45b1-80da-ff8e01a86e55" target="_blank" rel="noopener noreferrer" class="brand-badge" title="Conectado con cuaderno NotebookLM SongQuiz (Catálogo Maestro Verificado)" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-          <span>🧠</span>
-          <span>NotebookLM • Catálogo Verificado</span>
-        </a>
+      <!-- Zona 2: Selector de Modo (Classic vs Lyrics) -->
+      <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
+        <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Modo clásico: adivina la canción y el artista">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Classic</span>
+        </button>
+        <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Modo pedagógico: completa la letra en inglés con traducción y pistas">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Lyrics</span>
+        </button>
       </div>
 
-      <div class="header-status">
-        <div class="stat-chip streak" id="streak-chip" title="Racha consecutiva de aciertos">
-          <span>🔥</span>
-          <span class="stat-number" id="streak-display">0</span>
-        </div>
-
-        <div class="stat-chip score" title="Puntuación acumulada">
-          <span>🏆</span>
-          <span class="stat-number" id="score-display">0</span>
-        </div>
-
-        <span class="brand-badge" id="round-indicator">Pista 1 / 10</span>
-
-        <div class="header-actions">
-          <!-- Selector de Modo de Dispositivo: PC, Tablet o Móvil (Estilo Shazam) -->
-          <div class="device-switcher" id="device-switcher" role="radiogroup" aria-label="Simulador de dispositivo (Atajo: tecla D)">
-            <button id="btn-device-pc" class="device-btn active" data-device="pc" type="button" role="radio" aria-checked="true" title="Modo PC (Pantalla completa / Atajo: D)">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-              <span>PC</span>
-            </button>
-            <button id="btn-device-tablet" class="device-btn" data-device="tablet" type="button" role="radio" aria-checked="false" title="Modo Tablet (768px)">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-              </svg>
-              <span>Tablet</span>
-            </button>
-            <button id="btn-device-mobile" class="device-btn" data-device="mobile" type="button" role="radio" aria-checked="false" title="Modo Móvil (390px)">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-              </svg>
-              <span>Móvil</span>
-            </button>
-          </div>
-
-          <button id="btn-cast" class="btn-subtle btn-cast-header" type="button" aria-label="Enviar a Chromecast en la misma red Wi-Fi" title="Enviar a Chromecast / TV en la misma red Wi-Fi (C)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
-              <line x1="2" y1="20" x2="2.01" y2="20"></line>
+      <!-- Zona 3: Utilidades de Sesión -->
+      <div class="header-actions">
+        <div class="device-switcher" id="device-switcher" role="radiogroup" aria-label="Simulador de dispositivo (Atajo: tecla D)">
+          <button id="btn-device-pc" class="device-btn active" data-device="pc" type="button" role="radio" aria-checked="true" title="Vista escritorio (Atajo: D)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
-            <span id="cast-btn-label">Cast</span>
+            <span>PC</span>
           </button>
-
-          <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas por temática o importar desde YouTube">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-              <line x1="12" y1="11" x2="12" y2="17"></line>
-              <line x1="9" y1="14" x2="15" y2="14"></line>
+          <button id="btn-device-tablet" class="device-btn" data-device="tablet" type="button" role="radio" aria-checked="false" title="Vista Tablet (768px)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
             </svg>
-            <span class="btn-label-text">Listas</span>
+            <span>Tablet</span>
           </button>
-
-          <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <button id="btn-device-mobile" class="device-btn" data-device="mobile" type="button" role="radio" aria-checked="false" title="Vista Móvil (412px)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
             </svg>
+            <span>Móvil</span>
           </button>
         </div>
+
+        <button id="btn-cast" class="btn-subtle btn-cast-header" type="button" aria-label="Enviar a Chromecast en la misma red Wi-Fi" title="Enviar a Chromecast / TV (C)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+            <line x1="2" y1="20" x2="2.01" y2="20"></line>
+          </svg>
+          <span id="cast-btn-label" class="btn-label-text">Cast</span>
+        </button>
+
+        <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas por temática o importar desde YouTube">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          <span class="btn-label-text">Listas</span>
+        </button>
+
+        <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
       </div>
     </header>
 
-    <!-- BARRA COMPACTA DE PÍLDORAS TEMÁTICAS -->
+    <!-- BARRA DE FILTROS TEMÁTICOS EN UNA SOLA FILA -->
     <nav class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas rápidas">
-      <button class="theme-pill active" data-theme-id="default" type="button" title="Catálogo maestro de canciones con sus curiosidades sincronizado con NotebookLM">📚 Catálogo Maestro & Curiosidades</button>
-      <button class="theme-pill" data-theme-id="top_100_youtube" type="button" title="Las 100 canciones más reproducidas de la historia de YouTube en estricto orden del #1 al #100">🏆 Top 100 YouTube (En Orden #1–100)</button>
-      <button class="theme-pill" data-theme-id="pop_hits" type="button">🔥 Top Global Pop</button>
-      <button class="theme-pill" data-theme-id="rock_legends" type="button">🎸 Leyendas del Rock</button>
-      <button class="theme-pill" data-theme-id="retro_80s" type="button">🕺 Clásicos 70s & 80s</button>
-      <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">💿 Éxitos 90s & 2000s</button>
-      <button class="theme-pill" data-theme-id="latin_hits" type="button">🌎 Hits en Español</button>
+      <button class="theme-pill active" data-theme-id="default" type="button" title="Catálogo maestro verificado de 291 canciones con curiosidades históricas">Catálogo Maestro</button>
+      <button class="theme-pill" data-theme-id="top_100_youtube" type="button" title="Las 100 canciones más reproducidas de la historia de YouTube en orden del #1 al #100">Top 100 YouTube</button>
+      <button class="theme-pill" data-theme-id="pop_hits" type="button">Global Pop</button>
+      <button class="theme-pill" data-theme-id="rock_legends" type="button">Rock</button>
+      <button class="theme-pill" data-theme-id="retro_80s" type="button">70s &amp; 80s</button>
+      <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">90s &amp; 2000s</button>
+      <button class="theme-pill" data-theme-id="latin_hits" type="button">Hits en Español</button>
     </nav>
 
-    <!-- ESCENARIO CENTRAL DEL JUEGO (DISEÑO COMPACTO SIN SCROLL) -->
+    <!-- ESCENARIO PRINCIPAL DEL JUEGO -->
     <main class="game-viewport">
       <section class="game-card" aria-label="Ronda de adivinanza musical">
 
-        <!-- Escenario de Audio y Vídeo Embebido con Espectrograma Canvas y Minimizado Antispoiler -->
-        <div class="audio-stage" id="audio-stage">
-          <!-- Barra superior de control táctil para Reproducir/Pausar, Saltos de Tiempo y Minimizar -->
+        <!-- HUD DE PARTIDA SIN CÁPSULAS (TELEMETRÍA TABULAR LIMPIA) -->
+        <div class="game-hud-bar">
+          <div class="hud-track-meta">
+            <span class="hud-round-label" id="round-indicator">Pista 1 / 291</span>
+          </div>
+          <div class="hud-metrics">
+            <div class="hud-metric streak" id="streak-chip" title="Racha consecutiva de aciertos">
+              <span class="hud-metric-label">Racha</span>
+              <span class="stat-number hud-metric-value" id="streak-display">0</span>
+            </div>
+            <span class="hud-divider" aria-hidden="true"></span>
+            <div class="hud-metric score" title="Puntuación acumulada">
+              <span class="hud-metric-label">Puntos</span>
+              <span class="stat-number hud-metric-value" id="score-display">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BARRA EXTERNA DE CONTROL DEL REPRODUCTOR (NUNCA TAPA EL VÍDEO) -->
+        <div class="stage-control-bar">
+          <span class="stage-mode-indicator" id="stage-mode-indicator">
+            <span id="stage-mode-icon" class="stage-icon-slot" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <span id="stage-mode-text">Vídeo oculto hasta responder</span>
+          </span>
+
           <div class="audio-stage-toolbar">
             <div class="stage-seek-group">
               <button id="btn-play-pause" class="stage-mini-action stage-play-btn" type="button" aria-label="Reproducir o pausar canción" title="Reproducir / Pausar audio (Espacio)">
-                <span id="play-pause-icon">⏯</span>
+                <span id="play-pause-icon" class="stage-icon-slot" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                </span>
                 <span class="stage-btn-label" id="play-pause-label">Audio</span>
               </button>
-              <button id="btn-seek-back" class="stage-mini-action" type="button" title="Retroceder 10 segundos en la canción">
-                ⏪ -10s
+              <button id="btn-seek-back" class="stage-mini-action" type="button" title="Retroceder 10 segundos">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>-10s</span>
               </button>
-              <button id="btn-seek-forward" class="stage-mini-action" type="button" title="Adelantar 15 segundos para saltar introducción">
-                ⏩ +15s
+              <button id="btn-seek-forward" class="stage-mini-action" type="button" title="Adelantar 15 segundos">
+                <span>+15s</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
               </button>
             </div>
-            <button id="btn-toggle-minimize" class="stage-minimize-btn" type="button" aria-label="Minimizar reproductor para ocultar vídeo y título" title="Minimizar reproductor (Ocultar vídeo / Modo Antispoiler) [V]">
-              <svg id="icon-minimize-svg" class="icon-minimize" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="4" y1="12" x2="20" y2="12"></line>
+            <button id="btn-toggle-minimize" class="stage-minimize-btn" type="button" aria-label="Mostrar u ocultar el vídeo" title="Mostrar / Ocultar vídeo (V)">
+              <svg id="icon-minimize-svg" class="icon-minimize" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;" aria-hidden="true">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
               </svg>
-              <svg id="icon-expand-svg" class="icon-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <polyline points="9 21 3 21 3 15"></polyline>
-                <line x1="21" y1="3" x2="14" y2="10"></line>
-                <line x1="3" y1="21" x2="10" y2="14"></line>
+              <svg id="icon-expand-svg" class="icon-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
               </svg>
-              <span id="label-toggle-minimize">Ocultar vídeo</span>
+              <span id="label-toggle-minimize">Ver vídeo</span>
             </button>
           </div>
+        </div>
 
-          <!-- Visera Superior Anti-Spoiler: cubre el título de YouTube mientras permite pulsar "Saltar anuncio" en el vídeo -->
-          <div class="anti-spoiler-top-shield" id="anti-spoiler-top-shield">
-            <span class="shield-badge">🔒 Título oculto</span>
-            <span class="shield-hint" id="shield-hint-text">Salta el anuncio en el vídeo si aparece</span>
-          </div>
-
-          <!-- Píldora flotante sobre el reproductor para sincronización de anuncios (Atajo tecla S) -->
-          <div class="floating-ad-pill-wrapper" id="ad-skip-control-bar">
-            <button id="btn-start-timer" class="floating-ad-pill" type="button" style="display: none;" title="Atajo: tecla [S] para forzar el inicio del cronómetro en 120s">
-              📢 Anuncio en curso / Pulsa si ya suena la música
-            </button>
-          </div>
-
-          <!-- Reproductor de YouTube Embebido -->
+        <!-- ESCENARIO DE AUDIO Y VÍDEO (OCULTO HASTA RESPONDER, SIN VISERA) -->
+        <div class="audio-stage" id="audio-stage">
+          <!-- Reproductor de YouTube Embebido (siempre >= 200px para mantener el audio activo) -->
           <div id="ytplayer-container" class="yt-player-container">
             <div id="ytplayer"></div>
           </div>
 
-          <!-- Desbloqueo táctil del audio: Chrome móvil/iOS bloquean el autoplay con sonido hasta que el usuario toca -->
+          <!-- Cortina opaca de escucha: oculta 100% el vídeo y título hasta seleccionar respuesta -->
+          <div class="listening-curtain" id="listening-curtain">
+            <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio"></canvas>
+
+            <div class="audio-overlay-label" id="stage-overlay">
+              <div class="curtain-eq" id="curtain-eq" aria-hidden="true">
+                <span class="eq-bar bar-1"></span>
+                <span class="eq-bar bar-2"></span>
+                <span class="eq-bar bar-3"></span>
+                <span class="eq-bar bar-4"></span>
+              </div>
+              <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
+              <p class="stage-subtitle" id="stage-subtitle">Escucha con atención · El vídeo se revelará al responder</p>
+            </div>
+          </div>
+
+          <!-- Desbloqueo táctil del audio (móvil / iOS) -->
           <button id="btn-tap-to-play" class="tap-to-play-overlay hidden" type="button" aria-label="Tocar para reproducir la canción">
-            <span class="tap-to-play-icon" aria-hidden="true">▶</span>
+            <span class="tap-to-play-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+            </span>
             <span class="tap-to-play-title">Toca para escuchar la canción</span>
-            <span class="tap-to-play-sub" id="tap-to-play-sub">Tu navegador ha pausado el audio automático</span>
+            <span class="tap-to-play-sub" id="tap-to-play-sub">Tu navegador requiere un toque para activar el sonido</span>
           </button>
 
-          <!-- Barra compacta visible cuando el reproductor está minimizado -->
+          <!-- Barra compacta visible si el usuario oculta el vídeo tras responder -->
           <div class="minimized-audio-bar" id="minimized-audio-bar">
             <div class="eq-bars" aria-hidden="true">
               <span class="eq-bar bar-1"></span>
@@ -220,68 +254,63 @@
               <span class="eq-bar bar-4"></span>
             </div>
             <div class="minimized-meta">
-              <span class="minimized-title" id="minimized-title">Reproductor en modo audio puro 🎧</span>
-              <span class="minimized-subtitle" id="minimized-subtitle">Vídeo y título ocultos para evitar spoilers</span>
+              <span class="minimized-title" id="minimized-title">Modo audio puro</span>
+              <span class="minimized-subtitle" id="minimized-subtitle">Pulsa «Ver vídeo» para mostrar el videoclip completo</span>
             </div>
-          </div>
-
-          <!-- Halo Sonar / Radar pulsante estilo Shazam ("Sazan") -->
-          <div class="shazam-radar-halo" id="shazam-radar-halo" aria-hidden="true">
-            <span class="shazam-ring ring-1"></span>
-            <span class="shazam-ring ring-2"></span>
-            <span class="shazam-ring ring-3"></span>
-          </div>
-
-          <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio en tiempo real"></canvas>
-
-          <!-- Overlay para fase de adivinanza -->
-          <div class="audio-overlay-label" id="stage-overlay">
-            <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
-            <p class="stage-subtitle" id="stage-subtitle">Escucha atentamente el audio...</p>
           </div>
         </div>
 
-        <!-- FILA JERÁRQUICA INTEGRADA: TEMPORIZADOR + BOTÓN CTA PRINCIPAL (COMENZAR / SIGUIENTE) -->
+        <!-- FILA INTEGRADA: TEMPORIZADOR + CTA PRINCIPAL -->
         <div class="timer-cta-row">
           <div class="timer-container" aria-label="Tiempo restante">
             <div class="timer-header">
               <span class="timer-status-inline">
-                <span class="ad-status-dot paused" id="timer-status-dot"></span>
-                <span id="timer-status-label">Tiempo (Máx. 2:00)</span>
+                <span class="ad-status-dot paused" id="timer-status-dot" aria-hidden="true"></span>
+                <span id="timer-status-label">Esperando inicio de la pista</span>
               </span>
-              <span id="timer-text" class="stat-number">2:00</span>
+              <span id="timer-text" class="stat-number timer-countdown">2:00</span>
             </div>
             <div class="timer-bar-track">
               <div class="timer-bar-fill" id="timer-bar-fill"></div>
             </div>
           </div>
 
-          <!-- Botones de Acción Principal (CTA) integrados junto al temporizador -->
           <div class="primary-cta-slot">
             <div id="start-screen" class="cta-inline-wrapper">
-              <button id="btn-start" class="btn-primary btn-cta-inline" type="button" disabled>Cargando Audio...</button>
+              <button id="btn-start" class="btn-primary btn-cta-inline" type="button" disabled>Cargando...</button>
             </div>
-            <button id="btn-next" class="btn-primary btn-cta-inline hidden" type="button">Siguiente Canción ➔</button>
+            <button id="btn-next" class="btn-primary btn-cta-inline hidden" type="button">
+              <span>Siguiente pista</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
           </div>
         </div>
 
         <!-- BANNER DE AUDIO NO DISPONIBLE (SALTO SIN PENALIZACIÓN) -->
         <div class="audio-unavailable-banner hidden" id="audio-unavailable-banner" role="alert">
           <div class="audio-unavailable-info">
-            <span aria-hidden="true">⚠️</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
             <span id="audio-unavailable-reason">No se pudo cargar el audio oficial de esta pista.</span>
           </div>
           <button id="btn-skip-unavailable" class="btn-skip-safe" type="button">
-            Saltar sin penalización ⏭️
+            Saltar sin penalización
           </button>
         </div>
 
-        <!-- CAJA DE DESAFÍO PEDAGÓGICO "LYRICS CHALLENGE" (CARGA DIFERIDA) -->
+        <!-- DESAFÍO PEDAGÓGICO "LYRICS CHALLENGE" (CARGA DIFERIDA) -->
         <section class="lyrics-challenge-box hidden" id="lyrics-challenge-box" aria-label="Desafío pedagógico Lyrics Challenge">
           <div class="lyrics-toolbar">
             <div class="lyrics-toolbar-left">
-              <span class="challenge-badge">Lyrics Challenge</span>
-              <span class="genre-pill" id="lyrics-difficulty-badge">B1</span>
+              <span class="lyrics-kicker">Lyrics Challenge</span>
+              <span class="meta-separator" aria-hidden="true">·</span>
+              <span class="lyrics-level-meta" id="lyrics-difficulty-badge">B1</span>
               <div class="lyrics-level-switcher" role="radiogroup" aria-label="Nivel de andamiaje">
                 <button id="btn-lyrics-level-recognition" class="lyrics-level-btn active" type="button" role="radio" aria-checked="true">
                   Opciones
@@ -293,13 +322,17 @@
             </div>
             <div class="lyrics-toolbar-right">
               <button id="btn-lyrics-repeat-cue" class="lyrics-action-chip" type="button" title="Repetir fragmento del verso">
-                ↺ Verso
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Repetir verso</span>
               </button>
               <button id="btn-lyrics-hint-es" class="lyrics-action-chip" type="button" aria-pressed="false" title="Mostrar traducción al español como pista">
-                🇪🇸 Traducción
+                <span>Traducción ES</span>
               </button>
               <button id="btn-lyrics-hint-letters" class="lyrics-action-chip" type="button" title="Mostrar pista progresiva de letras">
-                💡 Pista
+                <span>Pista</span>
               </button>
             </div>
           </div>
@@ -319,31 +352,32 @@
           </div>
         </section>
 
-        <!-- Cuadrícula 2x2 de Opciones (mínimo 56px, acabado translúcido blur 12px, foco en el título) -->
+        <!-- CUADRÍCULA 2x2 DE OPCIONES DE RESPUESTA -->
         <div class="options-grid" id="options-grid" role="radiogroup" aria-label="Opciones de respuesta disponibles">
           <!-- Inyectado dinámicamente por domRenderer.js -->
         </div>
 
-        <!-- Mensaje de Estado y Tarjeta Plegable Horizontal "Curiosidad Musical" -->
+        <!-- FEEDBACK DE RONDA Y ACORDEÓN DE CURIOSIDAD MUSICAL -->
         <div class="bottom-feedback-row">
           <div class="status-msg" id="status-msg" role="status" aria-live="polite"></div>
 
-          <!-- TARJETA ÚNICA HORIZONTAL, COMPACTA Y PLEGABLE: CURIOSIDAD MUSICAL -->
           <section class="discovery-panel" id="discovery-panel" aria-label="Curiosidad Musical">
             <div class="curiosity-bar">
               <div class="curiosity-header-left">
-                <span class="curiosity-icon" aria-hidden="true">💡</span>
-                <span class="curiosity-label">Curiosidad Musical</span>
-                <span class="genre-pill" id="genre-badge">Género</span>
+                <span class="curiosity-label">Curiosidad musical</span>
+                <span class="meta-separator" aria-hidden="true">·</span>
+                <span class="curiosity-genre-meta" id="genre-badge">Género</span>
+                <span class="meta-separator curiosity-preview-sep" aria-hidden="true">·</span>
                 <span class="curiosity-preview" id="curiosity-preview"></span>
               </div>
               <div class="curiosity-header-actions">
                 <a id="btn-yt-external" class="btn-subtle btn-yt-mini" href="#" target="_blank" rel="noopener noreferrer" style="display: none;" title="Abrir vídeo oficial en YouTube">
-                  <span>▶ YouTube</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  <span>YouTube</span>
                 </a>
                 <button id="btn-toggle-curiosity" class="btn-curiosity-toggle" type="button" aria-expanded="false" aria-controls="curiosity-body">
-                  <span id="curiosity-toggle-text">Ver más</span>
-                  <span class="curiosity-chevron" id="curiosity-chevron">▾</span>
+                  <span id="curiosity-toggle-text">Leer más</span>
+                  <span class="curiosity-chevron" id="curiosity-chevron" aria-hidden="true">▾</span>
                 </button>
               </div>
             </div>
@@ -355,55 +389,65 @@
 
       </section>
     </main>
+
+    <!-- PIE DE PÁGINA DISCRETO: FUENTE VERIFICADA Y ATAJOS -->
+    <footer class="app-footer">
+      <a href="https://notebooklm.google.com/notebook/3926d997-19b3-45b1-80da-ff8e01a86e55" target="_blank" rel="noopener noreferrer" class="footer-source-link">
+        <span>Catálogo verificado en NotebookLM</span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
+      <span class="footer-shortcuts" aria-hidden="true">1–4 Responder · Espacio Audio · V Vídeo · M Silencio</span>
+    </footer>
   </div>
 
   <!-- MODAL GESTOR E IMPORTADOR DE PLAYLISTS -->
   <div class="modal-overlay" id="playlist-modal" role="dialog" aria-modal="true" aria-labelledby="importer-title">
     <div class="modal-card wide">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-xs);">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <h2 class="modal-heading" id="importer-title" style="font-size: var(--text-xl);">Gestor de Listas Musicales</h2>
-          <span class="brand-badge" id="playlist-count-badge">0 canciones</span>
+      <div class="modal-header-row">
+        <div class="modal-title-group">
+          <h2 class="modal-heading" id="importer-title">Gestor de Listas</h2>
+          <span class="meta-separator" aria-hidden="true">·</span>
+          <span class="modal-meta-count" id="playlist-count-badge">0 canciones</span>
         </div>
-        <button id="btn-close-importer" class="icon-btn" type="button" aria-label="Cerrar modal">✕</button>
+        <button id="btn-close-importer" class="icon-btn" type="button" aria-label="Cerrar gestor de listas">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
-      <!-- Pestañas del Gestor (WAI-ARIA Tablist) -->
+      <!-- Pestañas WAI-ARIA Tablist -->
       <div class="playlist-tabs" role="tablist" aria-label="Secciones del gestor de playlists">
-        <button id="tab-btn-link" class="playlist-tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="tab-link" tabindex="0" data-tab="tab-link">🎵 Temáticas & Enlace</button>
-        <button id="tab-btn-list" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-list" tabindex="-1" data-tab="tab-list">📋 Lista Activa</button>
-        <button id="tab-btn-json" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-json" tabindex="-1" data-tab="tab-json">📥 Pegar Texto / JSON</button>
-        <button id="tab-btn-youtube" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-youtube" tabindex="-1" data-tab="tab-youtube">⚡ Script CLI</button>
+        <button id="tab-btn-link" class="playlist-tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="tab-link" tabindex="0" data-tab="tab-link">Temáticas y Enlace</button>
+        <button id="tab-btn-list" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-list" tabindex="-1" data-tab="tab-list">Lista Activa</button>
+        <button id="tab-btn-json" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-json" tabindex="-1" data-tab="tab-json">Texto / JSON</button>
+        <button id="tab-btn-youtube" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-youtube" tabindex="-1" data-tab="tab-youtube">Script CLI</button>
       </div>
 
-      <!-- Pestaña 1: Listas Populares por Temática e Importación por Enlace -->
+      <!-- Pestaña 1: Listas Temáticas e Importación por Enlace -->
       <div class="playlist-tab-content" id="tab-link" role="tabpanel" aria-labelledby="tab-btn-link">
         <div class="thematic-playlists-section">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
-            <span style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-accent-light);">
-              🌟 Listas Populares por Temática en YouTube Music (Carga Instantánea)
-            </span>
-          </div>
+          <p class="modal-section-subtitle">Colecciones temáticas de carga instantánea</p>
           <div class="thematic-grid" id="thematic-playlists-grid">
             <!-- Inyectado dinámicamente por domRenderer.js -->
           </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--color-border); margin: var(--space-md) 0;">
+        <hr class="modal-divider">
 
-        <p style="font-size: var(--text-xs); color: var(--color-secondary); margin-bottom: var(--space-xs); font-weight: 600;">
-          🔗 O pega la URL de cualquier otra lista pública de <strong>YouTube Music</strong> o <strong>YouTube</strong>:
-        </p>
-
-        <div style="display: flex; gap: var(--space-xs); flex-wrap: wrap; margin-bottom: var(--space-xs);">
+        <p class="modal-section-subtitle">Importar desde URL o ID de playlist pública de YouTube / YouTube Music</p>
+        <div class="modal-input-row">
           <label for="youtube-playlist-url-input" class="visually-hidden">URL o ID de la playlist de YouTube</label>
-          <input type="text" id="youtube-playlist-url-input" class="playlist-input" style="flex: 1; min-width: 220px;" placeholder="https://music.youtube.com/playlist?list=... o ID directo">
-          <button id="btn-fetch-youtube-playlist" class="btn-primary" type="button" style="padding: 10px 20px; font-size: var(--text-sm);">
-            ⬇️ Extraer y Activar
-          </button>
+          <input type="text" id="youtube-playlist-url-input" class="playlist-input" placeholder="https://music.youtube.com/playlist?list=... o ID directo">
+          <button id="btn-fetch-youtube-playlist" class="btn-primary" type="button">Extraer y activar</button>
         </div>
 
-        <div id="import-progress-status" role="status" aria-live="polite" style="min-height: 1.4rem; font-size: var(--text-xs); color: var(--color-accent-light); font-weight: 600;"></div>
+        <div id="import-progress-status" class="import-progress-status" role="status" aria-live="polite"></div>
       </div>
 
       <!-- Pestaña 2: Lista de Canciones Activas -->
@@ -412,12 +456,12 @@
           <table class="playlist-table">
             <thead>
               <tr>
-                <th style="width: 30px;">#</th>
+                <th style="width: 48px;">#</th>
                 <th>Título</th>
                 <th>Artista</th>
                 <th>Género</th>
-                <th style="text-align: center; width: 60px;">Año</th>
-                <th style="text-align: center; width: 60px;">Curiosidad</th>
+                <th style="text-align: center; width: 64px;">Año</th>
+                <th style="text-align: center; width: 72px;">Trivia</th>
               </tr>
             </thead>
             <tbody id="playlist-table-body">
@@ -426,48 +470,40 @@
           </table>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-md); flex-wrap: wrap; gap: var(--space-xs);">
-          <button id="btn-export-json" class="btn-subtle" type="button">
-            ⬇️ Exportar 'songs.json'
-          </button>
-          <button id="btn-reset-default-songs" class="btn-subtle" type="button" style="color: var(--color-error);">
-            🔄 Restablecer Oficiales
-          </button>
+        <div class="modal-footer-actions">
+          <button id="btn-export-json" class="btn-subtle" type="button">Exportar songs.json</button>
+          <button id="btn-reset-default-songs" class="btn-subtle btn-danger-ghost" type="button">Restablecer catálogo oficial</button>
         </div>
       </div>
 
       <!-- Pestaña 3: Pegar Texto o JSON -->
       <div class="playlist-tab-content" id="tab-json" role="tabpanel" aria-labelledby="tab-btn-json" hidden>
-        <p style="font-size: var(--text-xs); color: var(--color-secondary); margin-bottom: var(--space-xs);">
-          Pega un catálogo JSON completo o una lista simple de canciones (ej: <code>Artista - Título</code> en cada línea):
+        <p class="modal-section-subtitle">
+          Pega un catálogo JSON válido o líneas con el formato <code>Artista - Título</code>:
         </p>
         <label for="playlist-json-input" class="visually-hidden">Catálogo JSON o lista de canciones en texto</label>
-        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder='[ { "id": "...", "title": "..." } ]&#10;o pega texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights' style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
+        <textarea id="playlist-json-input" class="playlist-input playlist-textarea-mono" rows="8" placeholder='[ { "id": "...", "title": "..." } ]&#10;o texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights'></textarea>
 
         <div id="playlist-json-feedback" class="inline-feedback-banner hidden" role="status" aria-live="polite"></div>
 
         <div class="controls-centered" style="margin-top: var(--space-sm);">
-          <button id="btn-apply-custom-json" class="btn-primary" type="button">
-            ✓ Validar, Guardar y Activar Lista
-          </button>
+          <button id="btn-apply-custom-json" class="btn-primary" type="button">Validar y activar lista</button>
         </div>
       </div>
 
       <!-- Pestaña 4: Guía de Importador CLI YouTube -->
       <div class="playlist-tab-content" id="tab-youtube" role="tabpanel" aria-labelledby="tab-btn-youtube" hidden>
-        <div style="background: rgba(0,0,0,0.5); padding: var(--space-md); border-radius: var(--radius-md); font-size: var(--text-sm); line-height: 1.6;">
-          <p style="font-weight: 700; color: var(--color-accent-light); margin-bottom: 6px;">
-            🚀 Importador Automático de Listas de Reproducción de YouTube
+        <div class="cli-guide-box">
+          <p class="cli-guide-title">Importador CLI de listas públicas de YouTube</p>
+          <p class="cli-guide-desc">
+            Vuelca cualquier playlist pública hacia <code>src/data/songs.json</code> ejecutando el script incluido sin claves de API externas:
           </p>
-          <p style="color: var(--color-secondary); margin-bottom: var(--space-xs);">
-            Puedes volcar automáticamente cualquier lista pública de YouTube hacia <code style="color: var(--color-accent-light); font-family: var(--font-mono);">src/data/songs.json</code> ejecutando el script incluido:
-          </p>
-          <pre style="background: #000; padding: 10px; border-radius: 6px; font-family: var(--font-mono); color: #fff; font-size: 0.8rem; overflow-x: auto; margin-bottom: var(--space-xs);">python3 scripts/import_playlist.py "https://www.youtube.com/playlist?list=ID_DE_TU_PLAYLIST"</pre>
-          <p style="font-size: var(--text-xs); color: var(--color-text-dim);">
-            ✓ Extrae títulos limpios sin etiquetas superfluas<br>
-            ✓ Genera plantillas para curiosidades culturales<br>
-            ✓ Sin claves de API externas (100% Zero-API)
-          </p>
+          <pre class="cli-code-block">python3 scripts/import_playlist.py "https://www.youtube.com/playlist?list=ID_DE_TU_PLAYLIST"</pre>
+          <ul class="cli-benefits-list">
+            <li>Extrae títulos limpios sin etiquetas superfluas</li>
+            <li>Genera la estructura compatible con el esquema verificado</li>
+            <li>Funcionamiento local sin claves de API externas</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -476,117 +512,108 @@
   <!-- MODAL DE FINAL DE PARTIDA -->
   <div class="modal-overlay" id="game-over-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
-      <div id="record-badge" class="brand-badge" style="display: none; align-self: center; font-size: 0.85rem; padding: 4px 14px;">
-        🏆 ¡Nuevo Récord Personal!
-      </div>
-
-      <h2 class="modal-heading" id="modal-title">¡Sesión Completada!</h2>
-      <p style="color: var(--color-secondary); font-size: var(--text-sm);">Has finalizado la lista de reproducción. Aquí tienes tus estadísticas:</p>
+      <p id="record-badge" class="record-kicker" style="display: none;">Nuevo récord personal</p>
+      <h2 class="modal-heading" id="modal-title">Sesión completada</h2>
+      <p class="modal-lead">Has finalizado la lista de reproducción. Resumen de tu partida:</p>
 
       <div class="summary-stats-grid">
         <div class="summary-stat-box">
-          <span class="summary-stat-label">Puntuación Total</span>
-          <span class="summary-stat-val" id="final-score" style="color: var(--color-accent-light);">0</span>
+          <span class="summary-stat-label">Puntuación</span>
+          <span class="summary-stat-val accent" id="final-score">0</span>
         </div>
         <div class="summary-stat-box">
           <span class="summary-stat-label">Precisión</span>
-          <span class="summary-stat-val" id="final-accuracy" style="color: #ffffff;">0%</span>
+          <span class="summary-stat-val" id="final-accuracy">0%</span>
         </div>
         <div class="summary-stat-box">
-          <span class="summary-stat-label">Mejor Racha</span>
-          <span class="summary-stat-val" id="final-streak" style="color: var(--color-warning);">🔥 0</span>
+          <span class="summary-stat-label">Mejor racha</span>
+          <span class="summary-stat-val warning" id="final-streak">0</span>
         </div>
         <div class="summary-stat-box">
-          <span class="summary-stat-label">Tiempo Medio</span>
+          <span class="summary-stat-label">Tiempo medio</span>
           <span class="summary-stat-val" id="final-avg-time">0s</span>
         </div>
       </div>
 
       <div class="controls-centered">
-        <button id="btn-restart" class="btn-primary" type="button">Jugar Otra Partida 🔄</button>
+        <button id="btn-restart" class="btn-primary" type="button">Jugar otra partida</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL DE CONEXIÓN A CHROMECAST Y PANTALLA TV (MISMA RED WI-FI) -->
+  <!-- MODAL DE CONEXIÓN A CHROMECAST Y PANTALLA TV -->
   <div class="modal-overlay" id="cast-modal" role="dialog" aria-modal="true" aria-labelledby="cast-modal-title">
     <div class="modal-card cast-modal-card">
-      <div class="cast-modal-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="modal-header-row">
+        <div class="modal-title-group">
           <span class="cast-header-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
               <line x1="2" y1="20" x2="2.01" y2="20"></line>
             </svg>
           </span>
-          <h2 class="modal-heading" id="cast-modal-title" style="font-size: var(--text-lg);">Enviar a Chromecast / TV</h2>
+          <h2 class="modal-heading" id="cast-modal-title">Enviar a Chromecast / TV</h2>
         </div>
-        <button id="btn-close-cast" class="icon-btn" type="button" aria-label="Cerrar panel de Chromecast">✕</button>
+        <button id="btn-close-cast" class="icon-btn" type="button" aria-label="Cerrar panel de Chromecast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <div class="cast-status-banner" id="cast-status-banner">
-        <span class="ad-status-dot" id="cast-status-dot"></span>
-        <span id="cast-status-text">Asegúrate de que tu móvil/tablet y el Chromecast estén en la misma red Wi-Fi.</span>
+        <span class="ad-status-dot" id="cast-status-dot" aria-hidden="true"></span>
+        <span id="cast-status-text">Asegúrate de que tu dispositivo y el Chromecast estén en la misma red Wi-Fi.</span>
       </div>
 
       <div class="cast-actions-stack">
-        <!-- VÍA 1: TRANSMISIÓN DE VÍDEO Y AUDIO COMPLETO (CHROME TAB CAST / PANTALLA COMPLETA) -->
         <div class="cast-mode-card">
           <div class="cast-mode-title">
-            <span class="cast-badge-rec">⭐ RECOMENDADO PARA VÍDEO Y SONIDO</span>
-            <strong>1. Proyectar Vídeo y Audio en Pantalla TV</strong>
+            <span class="cast-kicker">Recomendado · Vídeo y sonido</span>
+            <strong>1. Proyectar en Pantalla TV</strong>
           </div>
-          <p class="cast-mode-desc">La vía oficial para ver los videoclips en 1080p, escuchar la música por los altavoces del TV y jugar en pantalla gigante:</p>
+          <p class="cast-mode-desc">Adapta la escala para salón y emite imagen y sonido desde el menú Transmitir de Chrome.</p>
           <div class="cast-buttons-row">
             <button id="btn-toggle-tv-mode" class="btn-primary cast-main-btn" type="button">
-              <span>📺</span>
-              <span id="btn-toggle-tv-mode-text">Activar Modo Pantalla TV (Salón)</span>
+              <span id="btn-toggle-tv-mode-text">Activar Modo Pantalla TV</span>
             </button>
             <button id="btn-android-screen-cast" class="btn-subtle cast-secondary-btn" type="button">
-              <span>📱</span>
-              <span>Duplicar Pantalla (Google Home / Smart View)</span>
+              <span>Duplicar pantalla</span>
             </button>
           </div>
-          <p class="cast-mode-hint">💡 En Chrome (móvil o PC): Pulsa el menú <strong>⋮ ➔ Transmitir / Enviar</strong> y elige tu TV para emitir imagen y sonido.</p>
         </div>
 
-        <!-- VÍA 2: PANTALLA DE MARCADOR CHROMECAST DIRECTO (GOOGLE CAST SDK) -->
         <div class="cast-mode-card">
           <div class="cast-mode-title">
-            <strong>2. Pantalla de Marcador Chromecast</strong>
+            <strong>2. Pantalla de marcador Chromecast</strong>
           </div>
-          <p class="cast-mode-desc">Conecta con el receptor de Google Cast. Tu televisor mostrará la ronda en juego y proyectará la carátula oficial en HD al revelar cada respuesta:</p>
+          <p class="cast-mode-desc">Conecta con el receptor de Google Cast para proyectar la ronda y revelar la carátula en HD.</p>
           <button id="btn-connect-chromecast" class="btn-subtle cast-secondary-btn" type="button">
             <google-cast-launcher class="modal-cast-launcher" aria-hidden="true"></google-cast-launcher>
-            <svg class="modal-cast-fallback-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
-              <line x1="2" y1="20" x2="2.01" y2="20"></line>
-            </svg>
-            <span id="btn-connect-chromecast-text">Conectar Marcador Chromecast (Wi-Fi)</span>
+            <span id="btn-connect-chromecast-text">Conectar marcador Chromecast (Wi-Fi)</span>
           </button>
         </div>
 
-        <!-- VÍA 3: TRANSMITIR VÍDEO A LA APP YOUTUBE DEL SMART TV -->
         <div class="cast-mode-card">
           <div class="cast-mode-title">
-            <strong>3. Reproducir en App YouTube TV (4K)</strong>
+            <strong>3. Abrir en YouTube TV</strong>
           </div>
-          <p class="cast-mode-desc">Abre el videoclip actual directamente en YouTube para enviarlo a la app YouTube de tu Smart TV con 1 toque:</p>
+          <p class="cast-mode-desc">Abre el videoclip actual directamente en YouTube para enviarlo a tu Smart TV.</p>
           <a id="btn-open-yt-cast-app" class="btn-subtle cast-secondary-btn" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-            <span>▶</span>
-            <span>Abrir canción actual en YouTube TV</span>
+            <span>Abrir canción actual en YouTube</span>
           </a>
         </div>
       </div>
 
       <div class="cast-instructions-grid">
         <div class="cast-instruction-item">
-          <strong>📱 En Móvil o Tablet (Android / Chrome):</strong>
-          <p>Para ver el vídeo en la TV, usa el menú <strong>⋮ ➔ Transmitir</strong> o el panel superior "Enviar pantalla". Para usar la TV como marcador, pulsa «Conectar Marcador».</p>
+          <strong>Android / Chrome</strong>
+          <p>Usa el menú <strong>⋮ → Transmitir</strong> para enviar la pestaña completa con vídeo y audio al TV.</p>
         </div>
         <div class="cast-instruction-item">
-          <strong>🍎 En iPad / iPhone (AirPlay o YouTube):</strong>
-          <p>Usa <em>«Abrir en YouTube TV»</em> para reproducir en la app de tu televisor, o activa <strong>Duplicar pantalla / AirPlay</strong> desde el Centro de Control de iOS.</p>
+          <strong>iPad / iPhone</strong>
+          <p>Usa <strong>Duplicar pantalla / AirPlay</strong> desde el Centro de Control o abre el vídeo en la app YouTube.</p>
         </div>
       </div>
 
@@ -596,9 +623,9 @@
 
   <!-- DIÁLOGO ACCESIBLE DE CONFIRMACIÓN (REEMPLAZA window.confirm) -->
   <div class="modal-overlay" id="confirm-dialog-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
-    <div class="modal-card" style="max-width: 420px; text-align: left;">
-      <h2 class="modal-heading" id="confirm-dialog-title" style="font-size: var(--text-lg);">Confirmar acción</h2>
-      <p id="confirm-dialog-message" style="color: var(--color-secondary); font-size: var(--text-sm); line-height: 1.5;"></p>
+    <div class="modal-card confirm-modal-card">
+      <h2 class="modal-heading" id="confirm-dialog-title">Confirmar acción</h2>
+      <p id="confirm-dialog-message" class="modal-lead"></p>
       <div class="confirm-dialog-actions">
         <button id="btn-confirm-cancel" class="btn-subtle" type="button">Cancelar</button>
         <button id="btn-confirm-accept" class="btn-primary" type="button">Confirmar</button>

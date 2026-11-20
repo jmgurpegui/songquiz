@@ -1,7 +1,7 @@
 /**
  * @fileoverview Visualizador de espectrograma en tiempo real mediante HTML5 Canvas y Web Audio.
- * Implementa renderizado a 60fps con gradientes de neón, barras redondeadas, físicas de picos
- * flotantes y soporte accesible completo para `prefers-reduced-motion: reduce`.
+ * Paleta de estudio esmeralda/pizarra, físicas de picos suaves y soporte completo para
+ * `prefers-reduced-motion: reduce`.
  */
 
 export class AudioVisualizer {
@@ -21,7 +21,7 @@ export class AudioVisualizer {
 
     // Físicas de picos flotantes
     this.peaks = [];
-    this.peakDecay = 1.8;
+    this.peakDecay = 1.6;
 
     // Preferencia de accesibilidad: movimiento reducido (WCAG 2.1)
     this._motionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
@@ -118,7 +118,7 @@ export class AudioVisualizer {
     const midY = this.height / 2;
     this.ctx.beginPath();
     this.ctx.lineWidth = 1.5;
-    this.ctx.strokeStyle = 'rgba(102, 252, 241, 0.25)';
+    this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.28)';
     this.ctx.moveTo(24, midY);
     this.ctx.lineTo(Math.max(24, this.width - 24), midY);
     this.ctx.stroke();
@@ -153,22 +153,22 @@ export class AudioVisualizer {
   }
 
   /**
-   * Dibuja las barras de frecuencia en tiempo real con picos y gradiente dinámico.
+   * Dibuja las barras de frecuencia en tiempo real con gradiente esmeralda sobrio.
    * @private
    * @param {Uint8Array} freqData
    */
   _drawSpectrum(freqData) {
-    const barCount = 36;
+    const barCount = 40;
     const barSpacing = 4;
     const totalSpacing = barSpacing * (barCount - 1);
-    const barWidth = Math.max(3, (this.width - 40 - totalSpacing) / barCount);
+    const barWidth = Math.max(3, (this.width - 48 - totalSpacing) / barCount);
     const startX = (this.width - (barCount * barWidth + totalSpacing)) / 2;
 
     const gradient = this.ctx.createLinearGradient(0, this.height, 0, 0);
-    gradient.addColorStop(0, '#45a29e');
-    gradient.addColorStop(0.4, '#66fcf1');
-    gradient.addColorStop(0.85, '#ff007a');
-    gradient.addColorStop(1, '#ffffff');
+    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+    gradient.addColorStop(0.55, '#10b981');
+    gradient.addColorStop(0.9, '#34d399');
+    gradient.addColorStop(1, '#a7f3d0');
 
     if (this.peaks.length !== barCount) {
       this.peaks = new Array(barCount).fill(0);
@@ -178,10 +178,10 @@ export class AudioVisualizer {
       const dataIndex = Math.floor(Math.pow(i / barCount, 1.4) * (freqData.length - 1));
       const value = freqData[dataIndex] || 0;
       const percent = value / 255;
-      const barHeight = Math.max(4, percent * (this.height - 30));
+      const barHeight = Math.max(4, percent * (this.height - 36));
 
       const x = startX + i * (barWidth + barSpacing);
-      const y = this.height - barHeight - 10;
+      const y = this.height - barHeight - 12;
 
       if (barHeight >= this.peaks[i]) {
         this.peaks[i] = barHeight;
@@ -192,37 +192,39 @@ export class AudioVisualizer {
       this.ctx.fillStyle = gradient;
       this.ctx.beginPath();
       if (typeof this.ctx.roundRect === 'function') {
-        this.ctx.roundRect(x, y, barWidth, barHeight, [4, 4, 0, 0]);
+        this.ctx.roundRect(x, y, barWidth, barHeight, [3, 3, 0, 0]);
       } else {
         this.ctx.rect(x, y, barWidth, barHeight);
       }
       this.ctx.fill();
 
       if (this.peaks[i] > 4) {
-        const peakY = this.height - this.peaks[i] - 12;
-        this.ctx.fillStyle = '#ff007a';
-        this.ctx.fillRect(x, peakY, barWidth, 3);
+        const peakY = this.height - this.peaks[i] - 14;
+        this.ctx.fillStyle = 'rgba(167, 243, 208, 0.85)';
+        this.ctx.fillRect(x, peakY, barWidth, 2);
       }
     }
   }
 
   /**
-   * Renderiza una sutil onda sinusoidal viva cuando el audio está inactivo o pausado.
+   * Renderiza una sutil onda sinusoidal de estudio cuando el audio local está inactivo.
    * @private
    */
   _drawIdleWave() {
-    this.idleTime += 0.035;
+    this.idleTime += 0.025;
     const midY = this.height / 2;
     const waveCount = 2;
 
     for (let w = 0; w < waveCount; w++) {
       this.ctx.beginPath();
-      this.ctx.lineWidth = w === 0 ? 2 : 1;
-      this.ctx.strokeStyle = w === 0 ? 'rgba(102, 252, 241, 0.35)' : 'rgba(255, 0, 122, 0.2)';
+      this.ctx.lineWidth = w === 0 ? 1.6 : 1;
+      this.ctx.strokeStyle = w === 0
+        ? 'rgba(52, 211, 153, 0.28)'
+        : 'rgba(148, 163, 184, 0.14)';
 
       for (let x = 0; x < this.width; x += 3) {
-        const freq = 0.012 * (w + 1);
-        const amp = 8 * (w + 1);
+        const freq = 0.011 * (w + 1);
+        const amp = 7 * (w + 1);
         const y = midY + Math.sin(x * freq + this.idleTime * (w + 1)) * amp;
 
         if (x === 0) {
