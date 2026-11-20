@@ -29,7 +29,7 @@
     "artist": "Ed Sheeran",
     "genre": "Tropical House / Pop",
     "year": 2017,
-    "audioSrc": "assets/audio/blinding_lights.wav",
+    "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "JGwWNGJdvx8",
     "culturalTrivia": "Puesto #3 en YouTube (>6.760M vistas). Ed Sheeran la concibió inicialmente para Rihanna; su característico riff de marimba interpola rítmicamente 'No Scrubs' de TLC.",
     "rank": 3,
@@ -96,14 +96,16 @@
     "views": "4.64B"
   },
   {
-    "id": "song_175",
-    "title": "Counting Stars / Apologize",
-    "artist": "Timbaland ft. OneRepublic",
-    "genre": "Pop Rock / R&B",
-    "year": 2007,
-    "audioSrc": "assets/audio/shape_of_you.wav",
+    "id": "yt_top_009",
+    "title": "Counting Stars",
+    "artist": "OneRepublic",
+    "genre": "Folk Pop / Pop Rock",
+    "year": 2013,
+    "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "hT_nvWreIhg",
-    "culturalTrivia": "Timbaland añadió su inconfundible percusión R&B y el grito rítmico 'Hey!' a la balada original de Ryan Tedder, batiendo el récord de emisiones radiales en Norteamérica."
+    "culturalTrivia": "Puesto #9 en YouTube (>4.460M vistas). Ryan Tedder la escribió mientras trabajaba en sesiones para Beyoncé en los Hamptons; el videoclip se rodó en la planta baja de un edificio en Nueva Orleans con un caimán real.",
+    "rank": 9,
+    "views": "4.46B"
   },
   {
     "id": "yt_top_010",
@@ -221,7 +223,7 @@
     "year": 2014,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "NUsoVlDFqZg",
-    "culturalTrivia": "Puesto #19 en YouTube (>3.690M vistas).permaneció 41 semanas consecutivas en el #1 del ranking Hot Latin Songs de Billboard y su videoclip fue rodado en las calles de Santo Domingo (República Dominicana).",
+    "culturalTrivia": "Puesto #19 en YouTube (>3.690M vistas). Permaneció 41 semanas consecutivas en el #1 del ranking Hot Latin Songs de Billboard y su videoclip fue rodado en las calles de Santo Domingo (República Dominicana).",
     "rank": 19,
     "views": "3.69B"
   },
@@ -891,7 +893,7 @@
     "artist": "Queen",
     "genre": "Progressive Rock",
     "year": 1975,
-    "audioSrc": "assets/audio/blinding_lights.wav",
+    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "fJ9rUzIMcZQ",
     "culturalTrivia": "Puesto #75 en YouTube (>1.860M vistas). Escrita por Freddie Mercury en 1975; fue el primer vídeo musical grabado antes de los años 90 en superar los mil millones de reproducciones en YouTube.",
     "rank": 75,
@@ -999,7 +1001,7 @@
     "artist": "Michael Jackson",
     "genre": "Post-Disco / Funk",
     "year": 1982,
-    "audioSrc": "assets/audio/blinding_lights.wav",
+    "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "Zi_XLOBDo_Y",
     "culturalTrivia": "Puesto #84 en YouTube (>1.760M vistas). El ingeniero Bruce Swedien mezcló la canción 91 veces antes de elegir la mezcla número 2; las baldosas luminosas de su vídeo cambiaron para siempre la programación de MTV.",
     "rank": 84,
@@ -1023,7 +1025,7 @@
     "artist": "a-ha",
     "genre": "Synth-Pop",
     "year": 1985,
-    "audioSrc": "assets/audio/blinding_lights.wav",
+    "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "djV11Xbc914",
     "culturalTrivia": "Puesto #86 en YouTube (>2.040M vistas). Dirigido por Steve Barron, requirió dibujar a lápiz más de 3.000 fotogramas en rotoscopia durante 16 semanas; es el vídeo de los años 80 más visto de la historia tras 'Axel F'.",
     "rank": 86,
@@ -1241,11 +1243,11 @@
     "id": "song_262",
     "title": "What's Going On?",
     "artist": "Marvin Gaye",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Soul / R&B",
+    "year": 1971,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "o5TmORitlKk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Ken Sands. As the '60s came to a close, Marvin Gaye was forced to ask some serious questions about the world as he found it; the result was the sublimely soulful piece of social commentary, 'What's Going On'."
+    "culturalTrivia": "Publicada en 1971 con ingeniería de Ken Sands, marcó un hito en Motown al abordar conflictos sociales con arreglos de cuerda y voces superpuestas que Marvin Gaye defendió frente al sello."
   },
   {
     "id": "song_106",
@@ -1473,7 +1475,7 @@
     "artist": "Bee Gees",
     "genre": "Disco",
     "year": 1977,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
+    "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "fNFzfwLM72c",
     "culturalTrivia": "Con un tempo de 103 BPM, se utiliza mundialmente en medicina de urgencias para marcar el ritmo de las compresiones cardíacas en la maniobra de RCP; su batería es un bucle de cinta de dos compases de 'Night Fever'."
   },
@@ -1481,11 +1483,11 @@
     "id": "song_270",
     "title": "Hotel California",
     "artist": "The Eagles",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Classic Rock / Soft Rock",
     "year": 1977,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "09839DpTctU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bill Szymczyk. 1977's Hotel California saw The Eagles abandon their country origins in favour of full-blown rock & roll, and made them one of the biggest-selling groups in the world. Producer Bill Szymczyk tells SOS how it happened."
+    "culturalTrivia": "Producida por Bill Szymczyk en 1977, llevó a The Eagles del country rock al estadio global gracias a sus armonías vocales y al legendario duelo de guitarras de Don Felder y Joe Walsh."
   },
   {
     "id": "song_130",
@@ -1801,11 +1803,11 @@
     "id": "song_264",
     "title": "One",
     "artist": "Metallica",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Thrash Metal / Heavy Metal",
+    "year": 1988,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "WM8bTdBs-cw",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Flemming Rasmussen. ...And Justice For All marked a turning point for Metallica — one that would launch the cult band into the mainstream. The man at the controls, Flemming Rasmussen, tells us how it happened."
+    "culturalTrivia": "Grabada en 1988 junto al productor danés Flemming Rasmussen para '...And Justice for All', catapultó a Metallica al gran público y fue su primer videoclip oficial, basado en 'Johnny cogió su fusil'."
   },
   {
     "id": "song_162",
@@ -2181,161 +2183,161 @@
     "id": "song_201",
     "title": "No UFOs",
     "artist": "Model 500",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Detroit Techno / Electronic",
     "year": 1985,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "KNz01ty-kTQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Juan Atkins. Widely credited with not just inventing techno but also coining the name, Juan Atkins tells the story of his genre-defining record, 'No UFOs'."
+    "culturalTrivia": "Editada en 1985 por Juan Atkins bajo el proyecto Model 500, está considerada la piedra fundacional del techno de Detroit, combinando cajas de ritmos analógicas con una estética futurista."
   },
   {
     "id": "song_202",
     "title": "19",
     "artist": "Paul Hardcastle",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Electro / Synth-Pop",
     "year": 1985,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "0sajngb0W6I",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Paul Hardcastle | Engineer: Alvin Clark | Released: 1985. Paul Hardcastle's iconic '19' owes more than a little to serendipity and the limitations of the Emulator II sampler..."
+    "culturalTrivia": "Lanzada en 1985 por Paul Hardcastle con el ingeniero Alvin Clark, aprovechó las limitaciones de memoria del sampler Emulator II para crear su tartamudeo vocal sobre la edad media en Vietnam."
   },
   {
     "id": "song_203",
     "title": "Your Woman",
     "artist": "White Town",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Indie Pop / Electronic",
+    "year": 1997,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "lVL-zZnD3VU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Jyoti Mishra. Recorded completely at home, Jyoti Mishra's irresistibly catchy hit single 'Your Woman' inspired a generation of bedroom producers."
+    "culturalTrivia": "Grabada en 1997 por Jyoti Mishra en un estudio casero de 8 pistas con un presupuesto mínimo, su muestra de trompeta de 1932 alcanzó el #1 británico e inspiró a toda una generación de productores domésticos."
   },
   {
     "id": "song_204",
     "title": "Consumed",
     "artist": "Plastikman",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Minimal Techno / Electronic",
+    "year": 1998,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "k8Td_CCWhIk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Richie Hawtin. Richie Hawtin takes us through a seminal Plastikman album — and its unexpected sequel."
+    "culturalTrivia": "Publicada en 1998 por Richie Hawtin bajo su alias Plastikman, redefinió el techno minimalista usando silencios extensos, subgraves profundos y texturas hipnóticas grabadas en su estudio de Windsor."
   },
   {
     "id": "song_205",
     "title": "Back To Life",
     "artist": "Soul II Soul",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "R&B / British Soul",
+    "year": 1989,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "TB54dZkzZOY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Jazzie B • Nellee Hooper. Soul II Soul's 'Back To Life' was a hit record with a sound all of its own."
+    "culturalTrivia": "Producida en 1989 por Jazzie B y Nellee Hooper con la voz de Caron Wheeler, popularizó el ritmo sincopado del sound system londinense y obtuvo dos premios Grammy internacionales."
   },
   {
     "id": "song_206",
     "title": "IOU",
     "artist": "Freeez",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Electro / Synth-Funk",
+    "year": 1983,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "WZ-1DYwaxrE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. The result of an extraordinary collaboration between Arthur Baker and London band Freeez, 'IOU' was a pioneering hit of the electro genre."
+    "culturalTrivia": "Fruto de la colaboración en 1983 entre el productor neoyorquino Arthur Baker y el grupo británico Freeez, fusionó el brit-funk con sintetizadores y ediciones de cinta pioneras del electro."
   },
   {
     "id": "song_207",
     "title": "Outdoor Miner",
     "artist": "Wire",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Post-Punk / Art Punk",
+    "year": 1978,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "jrwNkcVZOs4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Thorne • Studio: Advision. The three albums Mike Thorne produced for Wire showed that there was much, much more to punk than met the eye."
+    "culturalTrivia": "Producida por Mike Thorne en los estudios Advision en 1978, demostró la ambición melódica de Wire dentro del post-punk con una letra inspirada en el ciclo vital de la mosca minadora."
   },
   {
     "id": "song_208",
     "title": "Walk Like An Egyptian",
     "artist": "The Bangles",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Pop Rock / New Wave",
+    "year": 1986,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "Cv6tuzHUuuk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: David Kahne. 'Walk Like An Egyptian' was a huge hit for the Bangles, but it all started with a demo mix‑up and some very unusual percussion."
+    "culturalTrivia": "Grabada en 1986 con producción de David Kahne tras un malentendido con una maqueta, sus tres vocalistas se repartieron las estrofas y añadieron percusiones inusuales hasta liderar el Billboard Hot 100."
   },
   {
     "id": "song_209",
     "title": "Aja",
     "artist": "Steely Dan",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Jazz Rock / Soft Rock",
+    "year": 1977,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "s98m8iV_yqI",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Gary Katz • Studio: Producers' Workshop. The title track of Steely Dan's Aja is legendary for many reasons, including the spectacular work of Steve Gadd. Who, it turns out, almost didn't make the cut in the album's planned 'rotating list of drummers"
+    "culturalTrivia": "Producida por Gary Katz en 1977, exhibe la obsesión técnica de Steely Dan y un célebre solo de batería de Steve Gadd grabado en apenas dos tomas que hoy se estudia en conservatorios."
   },
   {
     "id": "song_210",
     "title": "Step On",
     "artist": "Happy Mondays",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Madchester / Alternative Dance",
+    "year": 1990,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "6M0x5HKn7iU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Paul Oakenfold & Steve Osborne. Much vaunted as a fusion of indie and dance music, Happy Mondays' joyous version of 'Step On' is greater than the sum of its parts."
+    "culturalTrivia": "Producida en 1990 por Paul Oakenfold y Steve Osborne, transformó el tema 'He's Gonna Step on You Again' de John Kongos en el himno definitivo del movimiento Madchester que unió indie y club."
   },
   {
     "id": "song_211",
     "title": "Alright",
     "artist": "Supergrass",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Britpop / Alternative Rock",
+    "year": 1995,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "qUE4oDunYkc",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Sam Williams | Engineer: John Cornfield. When producer Sam Williams discovered Supergrass, he knew he had to capture the band's infectious energy on tape."
+    "culturalTrivia": "Registrada en 1995 en cinta analógica por Sam Williams y John Cornfield, capturó el desparpajo adolescente de Supergrass con un piano enérgico que se convirtió en símbolo del britpop."
   },
   {
     "id": "song_212",
     "title": "Kashmir",
     "artist": "Led Zeppelin",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Hard Rock / Classic Rock",
+    "year": 1975,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "tzVJPgCn-Z8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Label: Swan Song • Producer: Jimmy Page. Led Zeppelin's 'Kashmir' became a band-defining track, but it started life in an Airstream trailer known as the Ronnie Lane Mobile Studio."
+    "culturalTrivia": "Producida por Jimmy Page en 1975 y esbozada en la unidad móvil de Ronnie Lane, emplea una afinación de guitarra DADGAD y polirritmia ternaria sobre base binaria de enorme fuerza hipnótica."
   },
   {
     "id": "song_213",
     "title": "Linger",
     "artist": "The Cranberries",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Alternative Rock / Dream Pop",
+    "year": 1993,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "G6Kspd394xo",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Stephen Street • Studio: Windmill 2. After a record label bidding war the success of the Cranberries' first single was vital. Fans of the Smiths, they called in producer Stephen Street..."
+    "culturalTrivia": "Producida en 1993 por Stephen Street en los estudios Windmill Lane de Dublín, combinó arreglos de cuerda cristalinos con la voz de Dolores O'Riordan para proyectar internacionalmente a The Cranberries."
   },
   {
     "id": "song_214",
     "title": "Insane In The Brain",
     "artist": "Cypress Hill",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Hip-Hop / West Coast Rap",
     "year": 1993,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "RijB8wnJCN0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1993 • Producer: Cypress Hill • Engineer: Joe Nicolo. Cypress Hill's crossover classic launched the group into the mainstream — and without sampling a single horse..."
+    "culturalTrivia": "Lanzada en 1993 con producción de DJ Muggs e ingeniería de Joe Nicolo, consolidó el hip-hop alternativo; su característico relincho agudo no pertenece a un caballo, sino a una trompeta sampleada."
   },
   {
     "id": "song_215",
     "title": "Only Shallow",
     "artist": "My Bloody Valentine",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Shoegaze / Alternative Rock",
+    "year": 1991,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "eP16c_rZ3Gk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Kevin Shields. It may be famous for its difficult birth, but Loveless was a technical triumph. My Bloody Valentine's Kevin Shields tells us the story behind their breathtakingly original album."
+    "culturalTrivia": "Protagonista de la apertura de 'Loveless' en 1991, Kevin Shields construyó su muro de guitarras mediante palanca de trémolo continua y muestreo de capas, definiendo la estética del shoegaze."
   },
   {
     "id": "song_216",
     "title": "Midnight In A Perfect World",
     "artist": "DJ Shadow",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Trip-Hop / Instrumental Hip-Hop",
+    "year": 1996,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "InFbBlpDTfQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Produced, Engineered, Mixed By DJ Shadow. DJ Shadow's Endtroducing wasn't just a staggering technical achievement. It also reimagined a whole musical genre."
+    "culturalTrivia": "Creada íntegramente en 1996 por DJ Shadow en un sampler Akai MPC60 a partir de discos de vinilo olvidados, abrió el influyente álbum 'Endtroducing.....' y revolucionó el hip-hop instrumental."
   },
   {
     "id": "song_383",
@@ -2351,451 +2353,451 @@
     "id": "song_218",
     "title": "Buffalo Stance",
     "artist": "Neneh Cherry",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Hip-Hop / Dance-Pop",
     "year": 1988,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "JWsRz3TJDEY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tim Simenon & Mark Saunders. Neneh Cherry's breakthrough 1988 single melded hip-hop and cut-and-paste sampling into a perfect pop record."
+    "culturalTrivia": "Producida en 1988 por Tim Simenon y Mark Saunders, mezcló rap británico, referencias al colectivo Buffalo y samples cortados en directo, consolidando el cruce entre cultura club y pop."
   },
   {
     "id": "song_219",
     "title": "Praise You",
     "artist": "Fatboy Slim",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Big Beat / Electronic",
+    "year": 1998,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "ruAi4VBoUBQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Norman Cook. Armed with nothing but an Atari, a pair of S950 samplers and his faithful TB303, Fatboy Slim took the charts of the late 1990s by storm."
+    "culturalTrivia": "Ensamblada por Norman Cook en 1998 con un ordenador Atari, samplers Akai S950 y un sintetizador TB-303, convirtió un sample vocal de Camille Yarbrough en uno de los mayores éxitos del big beat."
   },
   {
     "id": "song_220",
     "title": "Rise",
     "artist": "Public Image Ltd",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Post-Punk / Alternative Rock",
+    "year": 1986,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "GzN4-k4hC3M",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Bill Laswell. In 1985 John Lydon found himself in a New York studio with producer Bill Laswell and a group of session musicians. The result was to become one of PiL's most recognisable tracks."
+    "culturalTrivia": "Grabada en Nueva York junto al productor Bill Laswell y músicos de sesión de primer nivel, fue publicada en 1986 como el mayor éxito comercial de Public Image Ltd y la voz de John Lydon."
   },
   {
     "id": "song_221",
     "title": "The Look Of Love",
     "artist": "ABC",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "New Wave / Synth-Pop",
     "year": 1982,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "bvkUSJpY5lY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineer: Gary Langan. 1982's 'The Look Of Love' paired an ambitious band with an ambitious producer, and the result was a perfect piece of pop music."
+    "culturalTrivia": "Producida en 1982 por Trevor Horn con ingeniería de Gary Langan, fusionó orquestación cinematográfica, sintetizadores de vanguardia y precisión pop para el álbum debut 'The Lexicon of Love'."
   },
   {
     "id": "song_223",
     "title": "Time Of The Season",
     "artist": "The Zombies",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Psychedelic Pop / Rock",
+    "year": 1968,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "qzpPy9hJWA8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: The Zombies • Engineers: Peter Vince, Geoff Emerick. Now considered one of the classic tracks of the 1960s, the Zombies' 'Time Of The Season' almost disappeared without trace..."
+    "culturalTrivia": "Grabada en Abbey Road con ingeniería de Geoff Emerick y Peter Vince, estuvo a punto de quedar olvidada tras la disolución de The Zombies hasta triunfar tardíamente en Estados Unidos en 1969."
   },
   {
     "id": "song_224",
     "title": "Spiral Scratch",
     "artist": "Buzzcocks",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Punk Rock",
+    "year": 1977,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "b8_3Yc9WcI8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Martin Hannett • Engineer: Phil Thompson. Engineer Phil Hampson didn't even like punk rock — yet, with an inexperienced Martin Hannett, he recorded one of the defining records of the era."
+    "culturalTrivia": "Publicada en 1977 en formato EP autoeditado con producción de Martin Hannett, inauguró la ola de sellos independientes británicos y sentó las bases sonoras de la escena punk de Mánchester."
   },
   {
     "id": "song_225",
     "title": "Sweet Jane",
     "artist": "Cowboy Junkies",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1987,
+    "genre": "Alt-Country / Indie Folk",
+    "year": 1988,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "BHRFZFXXEqg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Peter J Moore. In 1987, swimming against the tide of MIDI–powered pop records, Cowboy Junkies went into a church to record an album into a single microphone in a single day."
+    "culturalTrivia": "Grabada por Peter J. Moore en una iglesia de Toronto con un único micrófono ambisónico en una sola jornada, su íntima lectura del clásico de The Velvet Underground fue elogiada por Lou Reed."
   },
   {
     "id": "song_226",
     "title": "Hamburger Lady",
     "artist": "Throbbing Gristle",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Industrial / Experimental",
     "year": 1978,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "I1IXW3FbtEA",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1978 • Producer: Throbbing Gristle. Throbbing Gristle's highly individualist approach to music extended as far as making their own instruments and, ultimately, their own genre."
+    "culturalTrivia": "Publicada en 1978 por Throbbing Gristle, llevó al extremo la experimentación con sintetizadores artesanales y cintas manipuladas, convirtiéndose en obra de referencia del nacimiento del género industrial."
   },
   {
     "id": "song_227",
     "title": "Voodoo Ray",
     "artist": "A Guy Called Gerald",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Acid House / Electronic",
     "year": 1988,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "Ym4L_c-w558",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 1988. Hailed as the first British acid house single, A Guy Called Gerald's sublime 'Voodoo Ray' has since become a classic in its own right."
+    "culturalTrivia": "Editada en 1988 por Gerald Simpson en Mánchester, está reconocida como el primer gran sencillo británico de acid house gracias a sus líneas hipnóticas de Roland TB-303 y voces etéreas."
   },
   {
     "id": "song_228",
     "title": "I Bet You Look Good On The Dancefloor",
     "artist": "Arctic Monkeys",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Indie Rock / Garage Rock",
     "year": 2005,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "pK7egZaT3hs",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Released: 2005 • Producer: Jim Abbiss. In 2005 the only problem facing Arctic Monkeys was how to capture their frenetic live sound in the studio. Producer Jim Abbiss was ready to accept the challenge..."
+    "culturalTrivia": "Producida en 2005 por Jim Abbiss buscando capturar la crudeza eléctrica de sus conciertos en Sheffield, debutó directamente en el #1 del Reino Unido impulsada por el boca a boca en Internet."
   },
   {
     "id": "song_229",
     "title": "Hit The North",
     "artist": "The Fall",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Post-Punk / Indie Rock",
+    "year": 1987,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "4V9c7vR0gP0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Simon Rogers • Engineer: Ian Grimble. In their 39–year career the Fall have always embraced chaos, but perhaps nowhere more so than in the studio."
+    "culturalTrivia": "Grabada en 1987 con Simon Rogers e Ian Grimble, canalizó el estilo imprevisible de Mark E. Smith sobre un ritmo insistente que dio a The Fall uno de sus sencillos más accesibles y recordados."
   },
   {
     "id": "song_230",
     "title": "Shine On You Crazy Diamond",
     "artist": "Pink Floyd",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Progressive Rock",
+    "year": 1975,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "cWGE9Gi0bB8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Pink Floyd • Engineer: Brian Humphries. Engineer Brian Humphries tells the story of recording Pink Floyd's nine-part lamentation to their lost colleague, Syd Barrett."
+    "culturalTrivia": "Registrada en 1975 en Abbey Road con el ingeniero Brian Humphries, esta suite en nueve partes rinde homenaje a Syd Barrett, quien visitó inesperadamente el estudio durante la mezcla de la obra."
   },
   {
     "id": "song_231",
     "title": "Sledgehammer",
     "artist": "Peter Gabriel",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Art Pop / Soul Rock",
+    "year": 1986,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "OJWJE0x7T4Q",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Daniel Lanois • Engineers: Kevin Killen, David Bascombe. When Peter Gabriel made the transition from prog to pop with 'Sledgehammer' he did it on his own exacting terms..."
+    "culturalTrivia": "Producida en 1986 por Daniel Lanois, unió el pulso soul de los metales de Memphis con la flauta Shakuhachi sintetizada; su videoclip en animación stop-motion arrasó con nueve premios MTV."
   },
   {
     "id": "song_232",
     "title": "Papa's Got A Brand New Bag",
     "artist": "James Brown",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Funk / Soul",
+    "year": 1965,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "rnDEr9R0snU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: James Brown • Engineer: Ron Lenhoff. 'Papa's Got A Brand New Bag' was James Brown's statement of intent as he abandoned soulful ballads in favour of a raw and frenetic new sound."
+    "culturalTrivia": "Grabada en una sola toma en 1965 con ingeniería de Ron Lenhoff, desplazó el acento rítmico al primer tiempo del compás ('on the one'), inaugurando formalmente el lenguaje moderno del funk."
   },
   {
     "id": "song_233",
     "title": "Everybody Needs Somebody To Love",
     "artist": "The Blues Brothers",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "R&B / Blues Rock",
+    "year": 1980,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "m1M5Tc7eLCo",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Bob Tischler. His role as producer of The Blues Brothers soundtrack left Bob Tischler in charge of recording some of the best musicians of the 20th century, while managing conflicting shooting schedules and coping with the day-to-day effe"
+    "culturalTrivia": "Producida por Bob Tischler para la película de 1980, reunió a leyendas del soul de Stax y Booker T. & the M.G.'s para electrificar el clásico de Solomon Burke en una vibrante actuación coral."
   },
   {
     "id": "song_234",
     "title": "Pacific State",
     "artist": "808 State",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Acid House / Ambient House",
+    "year": 1989,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "tLxDRePUwEY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: 808 State • Engineer: Graham Massey. Born of the fertile late‑'80s Manchester music scene, 808 State's 'Pacific State' was a landmark in British house music."
+    "culturalTrivia": "Creada en 1989 por 808 State con Graham Massey en Mánchester, combinó percusión Roland TR-808, cantos de aves y saxofón soprano en un himno seminal del rave británico y el ambient house."
   },
   {
     "id": "song_235",
     "title": "My White Bicycle",
     "artist": "Tomorrow",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Psychedelic Rock",
+    "year": 1967,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "Xy23JpVOtGo",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mark Wirtz • Engineer: Geoff Emerick. Tomorrow's pioneering paean to the joys of communal public transport has proved to be a classic of the British psychedelic underground."
+    "culturalTrivia": "Producida en 1967 por Mark Wirtz y grabada por Geoff Emerick en Abbey Road, incorporó técnicas de cinta invertida y guitarras de Steve Howe en un homenaje al programa neerlandés de bicicletas comunitarias."
   },
   {
     "id": "song_236",
     "title": "Learning To Fly",
     "artist": "Tom Petty",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Heartland Rock / Classic Rock",
+    "year": 1991,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "s5BJXwNeKsQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tom Petty, Jeff Lynne • Engineer: Richard Dodd. While Tom Petty and Jeff Lynne's writing partnership was certainly successful, it was the partnership between Jeff Lynne and engineer Richard Dodd that gave the records their distinctive sparkle."
+    "culturalTrivia": "Coproducida en 1991 por Tom Petty y Jeff Lynne con el ingeniero Richard Dodd, brilla por su sencillez armónica de cuatro acordes y unas guitarras acústicas grabadas con nitidez cristalina."
   },
   {
     "id": "song_237",
     "title": "Goldfinger",
     "artist": "Shirley Bassey",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Soundtrack / Orchestral Pop",
+    "year": 1964,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "EnseiOJ2jGQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: John Barry, George Martin. Engineer: Eric Tomlinson.. Engineer Eric Tomlinson recorded a host of classic soundtracks during his 40-year career, not to mention what's..."
+    "culturalTrivia": "Compuesta por John Barry, producida por George Martin y grabada por Eric Tomlinson en 1964, fijó la plantilla sonora de James Bond con metales dramáticos y la inolvidable nota final de Shirley Bassey."
   },
   {
     "id": "song_238",
     "title": "Heroin",
     "artist": "The Velvet Underground",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Art Rock / Proto-Punk",
+    "year": 1967,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "qFLw26BjDZs",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Andy Warhol, Norman Dolph, Tom Wilson • Engineers: John Licata, Ami Hadani. Its status as one of pop's most influential albums is clear, but the circumstances surrounding the creation of The Velvet Underground & Nico have always been clouded. We as"
+    "culturalTrivia": "Grabada para el debut de 1967 apadrinado por Andy Warhol, prescinde del bajo eléctrico para apoyar la voz de Lou Reed sobre la viola disonante de John Cale y un tempo que acelera con la tensión narrativa."
   },
   {
     "id": "song_239",
     "title": "White Riot",
     "artist": "The Clash",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Punk Rock",
+    "year": 1977,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "IvG3is7Bm1w",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Simon Humphrey. When the Clash entered the studio for the first time they were determined not to sacrifice their punk principles, and the fates — not to mention a sympathetic engineer and a negligent record company — were on their side..."
+    "culturalTrivia": "Publicada en 1977 tras una intensa sesión de estudio junto al ingeniero Simon Humphrey, nació tras los disturbios de Notting Hill de 1976 y convirtió a The Clash en voz política del punk británico."
   },
   {
     "id": "song_240",
     "title": "Don't Bring Me Down",
     "artist": "Electric Light Orchestra",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Pop Rock / Classic Rock",
+    "year": 1979,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "z9nkzaOPP6g",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Jeff Lynne • Engineer: Mack. Melding Beatlesque pop melodies with symphonic strings, multi-layered vocals and leader Jeff Lynne's generally overblown production of his own compositions"
+    "culturalTrivia": "Producida en 1979 por Jeff Lynne en Múnich junto al ingeniero Reinhold Mack, prescindió por primera vez de la sección de cuerdas habitual de ELO y utilizó un bucle de batería procesado en cinta."
   },
   {
     "id": "song_241",
     "title": "Sabotage",
     "artist": "Beastie Boys",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Rap Rock / Alternative Hip-Hop",
+    "year": 1994,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "z5rRZdiu1UE",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Beastie Boys & Mario Caldato Jr (Mario C) • Engineer: Mario Caldato Jr. The standout track from the Beastie Boys' smash hit Ill Communication album nearly didn't make it onto the record at all — and when it did, it was the eight-track ADAT mix that"
+    "culturalTrivia": "Grabada en 1994 con Mario Caldato Jr. en formato ADAT de ocho pistas, entró a última hora en 'Ill Communication' y su parodia de series policiales de los 70 dirigida por Spike Jonze marcó época."
   },
   {
     "id": "song_242",
     "title": "Kiss",
     "artist": "Prince",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Funk / Pop",
+    "year": 1986,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "H9tEvfIsDyo",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer & Producer David Z. Originally intended for another group, 'Kiss' was quickly reclaimed by Prince when he heard David Z's arrangement. Despite record company scepticism, the track became his third number one single and rejuvenated his career."
+    "culturalTrivia": "Compuesta en 1986 originalmente para otra banda y arreglada por David Z, Prince eliminó deliberadamente el bajo eléctrico para dejar un pulso seco y minimalista que alcanzó el #1 en Estados Unidos."
   },
   {
     "id": "song_243",
     "title": "Common People",
     "artist": "Pulp",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Britpop / Indie Rock",
+    "year": 1995,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "yuTMWgOduFM",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Chris Thomas • Engineer: David Nicholas. Pulp's infectiously catchy commentary on the joys of class tourism helped propel the group to fame after nearly two decades of obscurity. Engineer David Nicholas tells us how 'Common People' was recorded."
+    "culturalTrivia": "Producida en 1995 por Chris Thomas con el ingeniero David Nicholas, lanzó a Pulp al estrellato tras casi dos décadas de carrera con un crescendo eléctrico y una aguda sátira sobre el turismo de clase."
   },
   {
     "id": "song_244",
     "title": "Tubular Bells",
     "artist": "Mike Oldfield",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Progressive Rock / Instrumental",
+    "year": 1973,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "nbYQYOM66MA",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tom Newman, Simon Heyworth • Engineers: Tom Newman, Simon Heyworth. Forty years after its original release, Mike Oldfield tells us the story of recording his hugely successful debut album, Tubular Bells."
+    "culturalTrivia": "Grabada en 1973 por un Mike Oldfield de 19 años junto a Tom Newman y Simon Heyworth tocando más de veinte instrumentos, inauguró Virgin Records y ganó fama mundial como tema de 'El exorcista'."
   },
   {
     "id": "song_245",
     "title": "Faith",
     "artist": "George Michael",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1986,
+    "genre": "Pop Rock / Rockabilly Pop",
+    "year": 1987,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "6Cs3Pvmmv0E",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: George Michael • Engineer: Chris Porter. Wham! went their separate ways in 1986, but the triumph of George Michael's debut album Faith in 1987 meant that the success of his solo career was never really in doubt."
+    "culturalTrivia": "Autoproducida por George Michael en 1987 con ingeniería de Chris Porter, abre con un órgano que cita 'Freedom' de Wham! antes de estallar en una guitarra rockabilly que lideró el año en ventas."
   },
   {
     "id": "song_246",
     "title": "Stand & Deliver",
     "artist": "Adam & The Ants",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "New Wave / Post-Punk",
+    "year": 1981,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "4B2a6l6wM2k",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Chris Hughes • Engineer: Alan Douglas. To say that producer Chris Hughes was closely involved with Recording Adam & The Ants' biggest records would be a bit of an understatement — he got so involved he joined the band..."
+    "culturalTrivia": "Producida en 1981 por Chris Hughes —quien llegó a integrarse como batería en la banda—, combinó ritmos tribales de doble percusión con estética de bandolero y lideró cinco semanas las listas británicas."
   },
   {
     "id": "song_247",
     "title": "I've Got You Under My Skin",
     "artist": "Frank Sinatra",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Traditional Pop / Swing",
     "year": 1956,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "OqH7VwpSwBo",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Voyle Gilmore • Engineer: John Palladino. In 1956, Frank Sinatra revived his flagging career with an album that would define the swing sound and go on to become one of the most highly regarded in history. John Palladino, now in his 92nd year, was at"
+    "culturalTrivia": "Grabada en 1956 en Capitol Studios con Voyle Gilmore y John Palladino sobre el arreglo de Nelson Riddle, definió el sonido swing moderno y revitalizó definitivamente la carrera de Frank Sinatra."
   },
   {
     "id": "song_248",
     "title": "Closer",
     "artist": "Nine Inch Nails",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Industrial Rock",
+    "year": 1994,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "PTFwQP86BRs",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Trent Reznor, Mark 'Flood' Ellis • Engineer: Sean Beavan. Although the shock value of its lyrics and ensuing censorship earned it notoriety, 'Closer' perfectly exemplifies Trent Reznor's radical use of sampling and singularly focused musical vision"
+    "culturalTrivia": "Producida en 1994 por Trent Reznor y Flood, sampleó el bombo de 'Nightclubbing' de Iggy Pop y llevó el rock industrial al público masivo pese a la censura radiofónica de su estribillo."
   },
   {
     "id": "song_249",
     "title": "Pump Up The Volume",
     "artist": "MARRS",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "House / Sampledelia",
+    "year": 1987,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "BpmmeU_mXyU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Co-producer: Martyn Young • Co-producer/Engineer: John Fryer. The unlikely result of a collaboration between two 4AD bands, the release of 'Pump Up The Volume' by MARRS was a great day for house music and copyright lawyers alike."
+    "culturalTrivia": "Nacida en 1987 de la alianza entre dos grupos del sello 4AD con John Fryer, ensambló más de treinta fragmentos sampleados de funk y hip-hop, alcanzando el #1 británico y abriendo el debate legal del sampling."
   },
   {
     "id": "song_250",
     "title": "Parisienne Walkways",
     "artist": "Gary Moore",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Blues Rock / Hard Rock",
+    "year": 1979,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "vkUpfw4Hf3w",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer & Producer: Chris Tsangarides. 'Parisienne Walkways' showcased Gary Moore's virtuoso guitar work and quickly became his signature song. Its recording also provided a young engineer at Morgan Studios with his first, unexpected production credit."
+    "culturalTrivia": "Grabada en 1979 en Morgan Studios con producción de Chris Tsangarides y voz de Phil Lynott, consagró el lirismo de la guitarra Les Paul de Gary Moore y su célebre nota sostenida en directo."
   },
   {
     "id": "song_251",
     "title": "While My Guitar Gently Weeps",
     "artist": "The Beatles",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Classic Rock",
+    "year": 1968,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "VJDJs9dumZI",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Ken Scott. Recording the  White Album  was a major project by any standards, not least for Ken Scott, who, at the age of just 21, found himself engineering the biggest band in the world..."
+    "culturalTrivia": "Grabada en 1968 para el 'Álbum Blanco' con el joven ingeniero de 21 años Ken Scott, George Harrison invitó a su amigo Eric Clapton a tocar el inolvidable solo de guitarra para desbloquear la sesión."
   },
   {
     "id": "song_252",
     "title": "I Wanna Dance With Somebody",
     "artist": "Whitney Houston",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Dance-Pop / R&B",
+    "year": 1987,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "oKWPYxXkAS0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Narada Michael Walden. 'I Wanna Dance With Somebody' was a huge global hit, but it also represented a tour de force in coaxing the perfect vocal from a singer, as explained by producer Narada Michael Walden."
+    "culturalTrivia": "Producida en 1987 por Narada Michael Walden, combinó cajas de ritmos, sintetizadores brillantes y una interpretación vocal arrolladora de Whitney Houston que le valió su segundo premio Grammy."
   },
   {
     "id": "song_253",
     "title": "Tainted Love",
     "artist": "Soft Cell",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Synth-Pop / New Wave",
+    "year": 1981,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "XZVpR3Pk-r8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Thorne. Soft Cell's cover of 'Tainted Love' not only catapulted the duo to stardom in the UK, but also went on to spend a record-breaking 43 weeks on the American Billboard Hot 100 chart."
+    "culturalTrivia": "Producida en 1981 por Mike Thorne, convirtió un oscuro tema northern soul de Gloria Jones (1964) en un himno electrónico minimalista que permaneció 43 semanas récord en el Billboard Hot 100."
   },
   {
     "id": "song_254",
     "title": "American Pie",
     "artist": "Don McLean",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Folk Rock / Classic Rock",
+    "year": 1971,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "Z4q_MZ7CRvI",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Ed Freeman • Engineer: Tom Flye. The story of Don McLean's 'American Pie' goes from cryptic beginnings to massive chart success, and an eventual position as a perennial US radio favourite."
+    "culturalTrivia": "Producida en 1971 por Ed Freeman con ingeniería de Tom Flye, sus más de ocho minutos recorren alegóricamente la historia del rock estadounidense desde el accidente aéreo de Buddy Holly en 1959."
   },
   {
     "id": "song_255",
     "title": "Nothing Compares 2 U",
     "artist": "Sinéad O'Connor",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Pop Ballad / Alternative",
+    "year": 1990,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "0-EF60neguk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Co-producer & Engineer Chris Birkett. Recording Sinéad O'Connor's breakthrough hit was easy in some ways, but difficult in others — for example, all compression was forbidden..."
+    "culturalTrivia": "Escrita por Prince y grabada en 1990 junto a Chris Birkett sin apenas compresión vocal, destacó por la desnudez emocional de Sinéad O'Connor y un videoclip icónico en primer plano continuo."
   },
   {
     "id": "song_257",
     "title": "Video Killed The Radio Star",
     "artist": "The Buggles",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Synth-Pop / New Wave",
+    "year": 1979,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "W8r-tXRLazs",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineer: Gary Langan. The Buggles' JG Ballard-inspired 'Video Killed The Radio Star' hit the number one spot in no fewer than 16 different countries, and confirmed Trevor Horn in his career as a producer in the process."
+    "culturalTrivia": "Producida en 1979 por Trevor Horn y Gary Langan inspirándose en un relato de J. G. Ballard, fue #1 en dieciséis países y en 1981 se convirtió en el primer videoclip emitido por la cadena MTV."
   },
   {
     "id": "song_258",
     "title": "Ghost Town",
     "artist": "The Specials",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Ska / 2-Tone Dub",
     "year": 1981,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "RZ2oXzrnti4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: John Collins. The haunting dub of 'Ghost Town' perfectly captured the mood of its time, and spent three weeks at the top of the British charts during the turbulent summer of 1981."
+    "culturalTrivia": "Producida en 1981 por John Collins con texturas dub y acordes fantasmales, retrató el desempleo y las tensiones urbanas del Reino Unido mientras lideraba tres semanas la lista de éxitos británica."
   },
   {
     "id": "song_261",
     "title": "Little Fluffy Clouds",
     "artist": "The Orb",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Ambient House / Electronic",
+    "year": 1990,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "2Ng9Pf_p7Fw",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Dr Alex Paterson. Dr Alex Paterson tells us how the Orb's cavalier sampling and devil‑may‑care attitude towards copyright took ambient house from the chill‑out room to the top of the charts."
+    "culturalTrivia": "Creada en 1990 por Alex Paterson (The Orb), entrelazó un fragmento hablado de Rickie Lee Jones describiendo cielos de Arizona con bases house relajadas, llevando el chill-out a las listas pop."
   },
   {
     "id": "song_266",
     "title": "Basket Case",
     "artist": "Green Day",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Pop Punk / Punk Rock",
+    "year": 1994,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "NUTGr5t3Mo8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Engineer: Neill King. 'Do you have the time to listen to me whine?' asked Green Day in the opening lines of their song 'Basket Case'. For 16 million people, the answer was apparently 'yes'..."
+    "culturalTrivia": "Grabada en 1994 con ingeniería de Neill King para el álbum 'Dookie', Billie Joe Armstrong escribió la letra sobre sus propios ataques de ansiedad, impulsando el estallido global del pop punk de los 90."
   },
   {
     "id": "song_277",
     "title": "I Love Rock & Roll",
     "artist": "Joan Jett",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Hard Rock / Classic Rock",
     "year": 1982,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "dGs3vJNg3V4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Ritchie Cordell, Kenny Laguna, Glen Kolotkin • Engineer: Glen Kolotkin. Joan Jett's heartfelt reworking of the Arrows I Love Rock & Roll became an international hit in 1982 and turned her career around. Glen Kolotkin tells us how it happened."
+    "culturalTrivia": "Producida en 1982 por Ritchie Cordell, Kenny Laguna y Glen Kolotkin, la versión de Joan Jett del tema original de The Arrows lideró siete semanas el Billboard Hot 100 tras ser rechazada por 23 sellos."
   },
   {
     "id": "song_280",
     "title": "Radio Free Europe",
     "artist": "REM",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Alternative Rock / Jangle Pop",
+    "year": 1981,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "Ac0aNyoW44o",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: REM, Mitch Easter, Don Dixon. REMs first single wasnt just an embryonic form of the style and sound that would later make them so successful, it was also a gem of the American new wave. But it took a long time coming..."
+    "culturalTrivia": "Grabada inicialmente en 1981 con Mitch Easter y regrabada para 'Murmur' en 1983, el primer sencillo de R.E.M. inauguró el circuito del college rock estadounidense con guitarras arpegiadas y voz críptica."
   },
   {
     "id": "song_281",
     "title": "I Feel Love",
     "artist": "Donna Summer",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Disco / Electronic",
+    "year": 1977,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "Nm-ISatLDG0",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Giorgio Moroder, Pete Bellotte • Engineer: Juergen Koppers. The pioneering electronica of I Feel Love didnt just revolutionise disco, it changed dance music forever. This is the story of how it was made..."
+    "culturalTrivia": "Producida en 1977 en Múnich por Giorgio Moroder y Pete Bellotte con un sintetizador modular Moog secuenciado, prescindió de instrumentos acústicos y sentó las bases del synth-pop, el house y el techno."
   },
   {
     "id": "song_282",
     "title": "You Really Got Me",
     "artist": "The Kinks",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Garage Rock / Proto-Punk",
+    "year": 1964,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "fTTsYbPOgaI",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer & Engineer: Shel Talmy. There are very few records whose influence can be so strongly felt after 45 years as the Kinks You Really Got Me. At the controls was Shel Talmy, who tells us the story of a song that changed pop music."
+    "culturalTrivia": "Producida por Shel Talmy en 1964, Dave Davies rajó con una cuchilla el cono de su pequeño amplificador Elpico para lograr un riff distorsionado pionero que influyó decisivamente en el hard rock y el punk."
   },
   {
     "id": "song_357",
@@ -2811,201 +2813,201 @@
     "id": "song_284",
     "title": "Nights In White Satin",
     "artist": "The Moody Blues",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Symphonic Rock / Progressive Rock",
+    "year": 1967,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "cs4ZGrmHdpM",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Tony Clarke • Engineer: Derek Varnals. Thunderous reverbs, haunting vocals and Mellotron galore: we tell the story of recording the Moody Blues symphonic rock masterpiece, Nights In White Satin."
+    "culturalTrivia": "Producida en 1967 por Tony Clarke con el ingeniero Derek Varnals, integró el sonido orquestal del Mellotron y la London Festival Orchestra, definiendo el rock sinfónico en 'Days of Future Passed'."
   },
   {
     "id": "song_286",
     "title": "Moondance",
     "artist": "Van Morrison",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Jazz Folk / Blue-Eyed Soul",
+    "year": 1970,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "7kfYOGNdJY8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Van Morrison • Engineers: Shelly Yakus, Elliot Scheiner. On his second solo album, Van Morrison took the production reins for the first time. Manning the desk was engineer Shelly Yakus, who tells the story of recording Moondance."
+    "culturalTrivia": "Autoproducida por Van Morrison en 1970 junto al ingeniero Shelly Yakus, combinó swing jazzístico, flauta y soul celta; aunque no se lanzó como sencillo hasta 1977, se volvió su tema más emblemático."
   },
   {
     "id": "song_289",
     "title": "Never Gonna Give You Up",
     "artist": "Rick Astley",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Dance-Pop / Synth-Pop",
     "year": 1987,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "dQw4w9WgXcQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Stock, Aitken and Waterman. Producers Stock, Aitken and Waterman developed a massively successful formula for making pop records — and the story of Rick Astleys 1987 smash hit, Never Gonna Give You Up, is a perfect guide to the SAW assembly line..."
+    "culturalTrivia": "Producida en 1987 por el trío Stock, Aitken y Waterman en Londres, lideró las listas en 25 países con su sonido hi-NRG y décadas después renació como fenómeno cultural de Internet ('rickrolling')."
   },
   {
     "id": "song_290",
     "title": "Rockin' All Over The World",
     "artist": "Status Quo",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Classic Rock / Boogie Rock",
     "year": 1977,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "Khn9yD0d_zU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Pip Williams • Engineer: John Eden. In 1977 Status Quo brought in producer Pip Williams to help them clean up their act. The result was a hit album and a best-selling single — 'Rockin' All Over The World'."
+    "culturalTrivia": "Producida en 1977 por Pip Williams con el ingeniero John Eden, la versión de Status Quo del tema de John Fogerty se convirtió en su himno de estadio y abrió el histórico concierto Live Aid de 1985."
   },
   {
     "id": "song_291",
     "title": "Fairytale Of New York",
     "artist": "The Pogues",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Celtic Punk / Folk Rock",
+    "year": 1987,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "j9jbdgZidu8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Steve Lillywhite • Engineers: Chris Dickie, Steve Lillywhite. A Christmas song was an unexpected move from a group like the Pogues, but the story of heartbreak and pain that is 'Fairytale Of New York' eventually became the band's biggest commercial "
+    "culturalTrivia": "Producida en 1987 por Steve Lillywhite con la participación vocal de Kirsty MacColl, su crudo diálogo de desamor emigrante en Nochebuena se ha consolidado como el villancico alternativo más querido del Reino Unido."
   },
   {
     "id": "song_292",
     "title": "Planet Rock",
     "artist": "Afrika Bambaataa & The Soulsonic Force",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Electro / Old-School Hip-Hop",
+    "year": 1982,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "9lDCYjb8RHk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. For mixing Kraftwerk's synthetic beats and simple melodies with New York rap, 'Planet Rock' and producer Arthur Baker can arguably be credited with creating an entirely new genre: hip-hop. This is how it happened..."
+    "culturalTrivia": "Producida en 1982 por Arthur Baker combinando melodías de Kraftwerk con la caja de ritmos Roland TR-808, fusionó el rap del Bronx con electrónica europea y dio nacimiento al sonido electro-funk."
   },
   {
     "id": "song_293",
     "title": "You Can Call Me Al",
     "artist": "Paul Simon",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Worldbeat / Pop Rock",
+    "year": 1986,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "uq-gYOrU8bA",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Paul Simon • Engineer: Roy Halee. Paul Simon's Graceland album combined a huge mixture of musical styles and was recorded in studios all over the world. The man responsible for putting it all together, both sonically and physically, was Simon's long"
+    "culturalTrivia": "Producida en 1986 por Paul Simon con el ingeniero Roy Halee para 'Graceland', mezcla percusión sudafricana, un solo de bajo tocado al revés por Bakithi Kumalo y el recordado videoclip junto a Chevy Chase."
   },
   {
     "id": "song_294",
     "title": "Whip It",
     "artist": "DEVO",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "New Wave / Synth-Pop",
     "year": 1980,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "j_QLzthSkfM",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Devo, Robert Margouleff • Engineers: Robert Margouleff, Howard Siegel. Armed with a subversive view of society and a command of catchy synth-pop, Devo burst into the charts in 1980 with weird classic 'Whip It'. Producer Robert Margouleff talks de-e"
+    "culturalTrivia": "Coproducida en 1980 por DEVO y Robert Margouleff, combinó percusión metálica, sintetizadores Minimoog y un riff inspirado en 'Oh, Pretty Woman' para convertirse en el mayor éxito del new wave estadounidense."
   },
   {
     "id": "song_295",
     "title": "Hanging On The Telephone",
     "artist": "Blondie",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "New Wave / Power Pop",
+    "year": 1978,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "uWhkbqmnKEs",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Chapman • Engineer: Peter Coleman. The partnership between Blondie and producer Mike Chapman created a perfect pop record - and catapulted the group from the underground to mainstream chart success."
+    "culturalTrivia": "Producida en 1978 por Mike Chapman para 'Parallel Lines', la versión de Blondie del tema de The Nerves añadió el sonido de un teléfono real y catapultó al grupo neoyorquino al éxito internacional."
   },
   {
     "id": "song_296",
     "title": "Nessun Dorma",
     "artist": "Luciano Pavarotti",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Classical / Opera",
     "year": 1972,
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "cWc7vYjgnTs",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Ray Minshull, Michael Woolcock • Engineers: James Lock, Kenneth Wilkinson. Recording opera requires a completely different approach, environment and technique to pop or rock music — a fact that has seldom been better demonstrated than in Pavarotti'"
+    "culturalTrivia": "Grabada en 1972 con la Orquesta Filarmónica de Londres y los ingenieros James Lock y Kenneth Wilkinson, el aria de 'Turandot' interpretada por Luciano Pavarotti trascendió la ópera en el Mundial de Italia 90."
   },
   {
     "id": "song_297",
     "title": "Relax",
     "artist": "Frankie Goes To Hollywood",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Synth-Pop / Hi-NRG",
+    "year": 1983,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "Q3_2entulkw",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Trevor Horn • Engineers: Steve Lipson, Julian Mendelsohn. The debut single from Liverpool's Frankie Goes To Hollywood was the result of adventurous production and enjoyed massive chart success - as well as creating a great deal of controversy."
+    "culturalTrivia": "Producida en 1983 por Trevor Horn con programación Fairlight CMI, su audaz diseño sonoro y la prohibición de emisión por la BBC en enero de 1984 multiplicaron sus ventas hasta convertirla en superventas."
   },
   {
     "id": "song_304",
     "title": "Like A Virgin",
     "artist": "Madonna",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Dance-Pop / Synth-Pop",
     "year": 1984,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "s__rX_WL100",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Nile Rodgers, Madonna, Stephen Bray • Engineer: Jason Corsaro. In mid-1984 Madonna arrived at New York City's Power Station studios with Nile Rodgers to record the album that would make her an international superstar - using cutting-edge 12-bit tec"
+    "culturalTrivia": "Grabada en 1984 en los estudios Power Station de Nueva York con producción de Nile Rodgers e ingeniería de Jason Corsaro, empleó grabación digital de vanguardia y convirtió a Madonna en estrella global."
   },
   {
     "id": "song_305",
     "title": "Go Your Own Way",
     "artist": "Fleetwood Mac",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1976,
+    "genre": "Classic Rock / Soft Rock",
+    "year": 1977,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "6ul-cZyuYq4",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Richard Dashut, Ken Caillat, Fleetwood Mac • Engineers: Ken Caillat, Richard Dashut. In 1976, in the face of deteriorating personal relationships and massive record company pressure, Fleetwood Mac managed to create a record that would go on to sell"
+    "culturalTrivia": "Escrita por Lindsey Buckingham durante su ruptura con Stevie Nicks y producida en 1976-1977 por Ken Caillat y Richard Dashut, impulsó el álbum 'Rumours' hasta superar los 40 millones de copias."
   },
   {
     "id": "song_309",
     "title": "Be My Baby",
     "artist": "The Ronettes",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Pop / Girl Group Soul",
+    "year": 1963,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "NNC0kIzM1Fo",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Phil Spector • Engineer: Larry Levine. Phil Spector was one of the first producers to realise that a recording studio could be an instrument in itself - and the sound he created over 40 years ago has influenced popular music ever since."
+    "culturalTrivia": "Producida en 1963 por Phil Spector con el ingeniero Larry Levine en Gold Star Studios, su célebre 'Muro de Sonido' y el icónico patrón inicial de batería de Hal Blaine transformaron la producción pop."
   },
   {
     "id": "song_316",
     "title": "Layla",
     "artist": "Derek & The Dominos",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Blues Rock / Classic Rock",
+    "year": 1970,
     "audioSrc": "assets/audio/stayin_alive.wav",
     "youtubeId": "Thls_tMx428",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Tom Dowd • Derek & The Dominos. Inspired by a Persian classical poet and a certain Mrs Harrison, 'Layla' went on to become Eric Clapton's most enduring hit."
+    "culturalTrivia": "Coproducida por Tom Dowd en 1970, une el desgarrador riff eléctrico de Eric Clapton y Duane Allman con una extensa coda de piano inspirada en el poema persa 'Layla y Majnun' y en Pattie Boyd."
   },
   {
     "id": "song_317",
     "title": "My Sharona",
     "artist": "The Knack",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Power Pop / New Wave",
     "year": 1979,
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "bbr60I0z228",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Mike Chapman • Engineers: David Tickle, Pete Coleman. In 1979, at the end of a 13-way bidding war, The Knack went into the studio to record their debut single — a debut single that would go gold in seven days and sell six million copies worldwide. T"
+    "culturalTrivia": "Producida por Mike Chapman en 1979, el debut de The Knack obtuvo el disco de oro en solo trece días, lideró seis semanas el Billboard Hot 100 y dejó uno de los riffs de bajo y guitarra más reconocibles del rock."
   },
   {
     "id": "song_318",
     "title": "Run To You",
     "artist": "Bryan Adams",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Rock / Arena Rock",
+    "year": 1984,
     "audioSrc": "assets/audio/blinding_lights.wav",
     "youtubeId": "nCBASt507WA",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Bryan Adams, Bob Clearmountain • Engineer: Bob Clearmountain. The Reckless album was a huge success for Bryan Adams, giving rise to six hit singles — but the first one, 'Run To You', was almost never even recorded."
+    "culturalTrivia": "Coproducida en 1984 por Bryan Adams y Bob Clearmountain para el álbum 'Reckless', estuvo a punto de descartarse tras ser rechazada por Blue Öyster Cult antes de convertirse en un clásico del rock de estadios."
   },
   {
     "id": "song_319",
     "title": "Our House",
     "artist": "Madness",
-    "genre": "Classic Track / Studio Legend",
+    "genre": "Pop / Ska Pop",
     "year": 1982,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "oXA6CLTDurg",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Clive Langer, Alan Winstanley. Producers Clive Langer and Alan Winstanley helped to make Madness one of the most successful British bands of the '80s. Find out how they worked their magic on this 1982 classic pop track..."
+    "culturalTrivia": "Producida en 1982 por Clive Langer y Alan Winstanley, retrató con nostalgia y humor la vida familiar en el norte de Londres y dio a Madness su mayor éxito tanto en el Reino Unido como en Estados Unidos."
   },
   {
     "id": "song_325",
     "title": "All Along The Watchtower",
     "artist": "Jimi Hendrix Experience",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Psychedelic Rock / Classic Rock",
+    "year": 1968,
     "audioSrc": "assets/audio/shape_of_you.wav",
     "youtubeId": "TLV4_xx4Urk",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Chas Chandler, Jimi Hendrix • Engineer: Eddie Kramer. With his searing version of 'All Along The Watchtower', Jimi Hendrix set a standard for Dylan covers that has rarely been equalled. Eddie Kramer was behind the glass as the sessions moved from L"
+    "culturalTrivia": "Grabada en 1968 por Jimi Hendrix junto al ingeniero Eddie Kramer entre Londres y Nueva York, reimaginó el tema de Bob Dylan con cuatro solos eléctricos tan influyentes que el propio Dylan adoptó el arreglo."
   },
   {
     "id": "song_333",
     "title": "True Faith",
     "artist": "New Order",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
+    "genre": "Synth-Pop / Alternative Dance",
+    "year": 1987,
     "audioSrc": "assets/audio/billie_jean.wav",
     "youtubeId": "mfI1S0PKJR8",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producers: Stephen Hague & New Order • Engineer: David Jacob. Producer Stephen Hague took New Order into the studio with an ambitious brief: to write and record a single that would break the band in America."
+    "culturalTrivia": "Coproducida en 1987 por Stephen Hague y New Order para conquistar el mercado estadounidense, fusionó programación secuenciada, melodía melancólica y un videoclip surrealista de Philippe Decouflé."
   },
   {
     "id": "song_161",
@@ -3016,36 +3018,6 @@
     "audioSrc": "assets/audio/take_on_me.wav",
     "youtubeId": "ftjEcrrf7r0",
     "culturalTrivia": "Surgió de una improvisación espontánea en los estudios Hansa de Berlín en un momento en que la banda estuvo a punto de disolverse, salvando la grabación de 'Achtung Baby'."
-  },
-  {
-    "id": "song_206",
-    "title": "IOU",
-    "artist": "Freeez",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "y7ab3PSbvvU",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Arthur Baker. The result of an extraordinary collaboration between Arthur Baker and London band Freeez, 'IOU' was a pioneering hit of the electro genre."
-  },
-  {
-    "id": "song_212",
-    "title": "Kashmir",
-    "artist": "Led Zeppelin",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/bohemian_rhapsody.wav",
-    "youtubeId": "ww9484EM2OQ",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Label: Swan Song • Producer: Jimmy Page. Led Zeppelin's 'Kashmir' became a band-defining track, but it started life in an Airstream trailer known as the Ronnie Lane Mobile Studio."
-  },
-  {
-    "id": "song_213",
-    "title": "Linger",
-    "artist": "The Cranberries",
-    "genre": "Classic Track / Studio Legend",
-    "year": 1985,
-    "audioSrc": "assets/audio/billie_jean.wav",
-    "youtubeId": "gPFP8bdQKJY",
-    "culturalTrivia": "Archivo NotebookLM SongQuiz (Sound On Sound Classic Tracks): Producer: Stephen Street • Studio: Windmill 2. After a record label bidding war the success of the Cranberries' first single was vital. Fans of the Smiths, they called in producer Stephen Street..."
   },
   {
     "id": "song_375",
@@ -3126,5 +3098,15 @@
     "audioSrc": "assets/audio/bohemian_rhapsody.wav",
     "youtubeId": "CocEMWJZ7Gc",
     "culturalTrivia": "Archivo Musical SongQuiz & NotebookLM (2023): \"BZRP Music Sessions #53\" de Bizarrap & Shakira destacó dentro de la escena Electropop / Latin Urbano, consolidándose como uno de los sencillos más influyentes y radiados de su generación."
+  },
+  {
+    "id": "song_175",
+    "title": "Apologize",
+    "artist": "Timbaland ft. OneRepublic",
+    "genre": "Pop Rock / R&B",
+    "year": 2007,
+    "audioSrc": "assets/audio/shape_of_you.wav",
+    "youtubeId": "ZSM3w1v-A_Y",
+    "culturalTrivia": "Timbaland añadió en 2007 su percusión R&B y el grito rítmico 'Hey!' a la balada original de Ryan Tedder, logrando más de diez millones de descargas y batiendo el récord de emisiones radiales en Norteamérica."
   }
 ]

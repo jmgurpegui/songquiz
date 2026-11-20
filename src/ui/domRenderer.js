@@ -1,12 +1,16 @@
 /**
- * @fileoverview Renderizador de interfaz reactivo con diseño estilo Spotify,
- * gestión completa de accesibilidad WCAG 2.1 AA, navegación por teclado,
- * control de foco (focus trap), lector de pantalla (ARIA live) y gestor de playlists.
+ * @fileoverview Renderizador de interfaz reactivo para SongQuiz con diseño oscuro modular,
+ * accesibilidad WCAG 2.1 AA (inert en fondo de modales, WAI-ARIA tabs, alertdialog,
+ * focus trap y atajos seguros sin colisión con modificadores), saneamiento XSS
+ * y soporte completo para Classic Trivia y Lyrics Challenge con andamiaje progresivo.
  */
 
-import { GameStates, GameModes } from '../core/gameState.js';
+import { GameStates, GameModes, LyricsInputLevels } from '../core/gameState.js';
 import { fetchPlaylistFromYouTube, parseTextPlaylist } from '../utils/playlistParser.js';
 import { THEMATIC_PLAYLISTS } from '../data/thematicPlaylists.js';
+import { readStorageRaw, writeStorageJSON, escapeHtml } from '../utils/storageManager.js';
+import { auditSongCatalog, sanitizeImportedCatalog } from '../utils/catalogValidator.js';
+import { buildScaffoldingHint } from '../core/lyricsChallengeEngine.js';
 
 export class DOMRenderer {
   /**
@@ -27,13 +31,18 @@ export class DOMRenderer {
     this.youtubePlayer = youtubePlayer;
     this.castManager = castManager;
 
-    // Estado interno para accesibilidad y modales
-    this._activeModal = null;
-    this._previousFocusedElement = null;
-    this._modalKeyHandler = null;
+    // Pila de modales activos para focus trap e inert seguro (soporta alertdialog sobre modal)
+    this._modalStack = [];
+    this._confirmCallback = null;
 
-    // Estado de minimizado del reproductor (persiste en localStorage)
-    this.isPlayerMinimized = localStorage.getItem('songquiz_player_minimized') === 'true';
+    // Estado pedagógico de la ronda actual en Lyrics Challenge
+    this._lyricsHintLevel = 0;
+    this._lyricsEsRevealed = false;
+    this._isCuriosityExpanded = false;
+
+    // Estado de minimizado del reproductor (persistido mediante storageManager)
+    const rawMin = readStorageRaw('songquiz_player_minimized', 'false');
+    this.isPlayerMinimized = rawMin === 'true';
 
     this._cacheDOMElements();
     this._applyMinimizeState();
@@ -42,7 +51,9 @@ export class DOMRenderer {
     this._bindKeyboardShortcuts();
     this._bindPlaylistManagerEvents();
     this._bindCastEvents();
+    this._bindConfirmDialogEvents();
     this._updateModeButtons();
+    this._updateLyricsLevelButtons();
     this._initDeviceView();
   }
 
@@ -52,6 +63,7 @@ export class DOMRenderer {
    */
   _cacheDOMElements() {
     this.dom = {
+      appContainer: document.getElementById('app-container') || document.querySelector('.app-container'),
       scoreDisplay: document.getElementById('score-display'),
       streakDisplay: document.getElementById('streak-display'),
       streakChip: document.getElementById('streak-chip'),
@@ -95,6 +107,11 @@ export class DOMRenderer {
       btnTapToPlay: document.getElementById('btn-tap-to-play'),
       tapToPlaySub: document.getElementById('tap-to-play-sub'),
 
+      // Banner de audio no disponible (salto sin penalización)
+      audioUnavailableBanner: document.getElementById('audio-unavailable-banner'),
+      audioUnavailableReason: document.getElementById('audio-unavailable-reason'),
+      btnSkipUnavailable: document.getElementById('btn-skip-unavailable'),
+
       // Controles y modal de Chromecast / TV
       btnCast: document.getElementById('btn-cast'),
       castBtnLabel: document.getElementById('cast-btn-label'),
@@ -103,6 +120,7 @@ export class DOMRenderer {
       castStatusBanner: document.getElementById('cast-status-banner'),
       castStatusDot: document.getElementById('cast-status-dot'),
       castStatusText: document.getElementById('cast-status-text'),
+      castInlineHint: document.getElementById('cast-inline-hint'),
       btnConnectChromecast: document.getElementById('btn-connect-chromecast'),
       btnConnectChromecastText: document.getElementById('btn-connect-chromecast-text'),
       btnToggleTvMode: document.getElementById('btn-toggle-tv-mode'),
@@ -114,8 +132,16 @@ export class DOMRenderer {
 
       // Caja de desafío pedagógico Lyrics Challenge
       lyricsChallengeBox: document.getElementById('lyrics-challenge-box'),
+      lyricsDifficultyBadge: document.getElementById('lyrics-difficulty-badge'),
+      btnLyricsLevelRecognition: document.getElementById('btn-lyrics-level-recognition'),
+      btnLyricsLevelGuided: document.getElementById('btn-lyrics-level-guided'),
+      btnLyricsRepeatCue: document.getElementById('btn-lyrics-repeat-cue'),
+      btnLyricsHintEs: document.getElementById('btn-lyrics-hint-es'),
+      btnLyricsHintLetters: document.getElementById('btn-lyrics-hint-letters'),
       verseEnglishText: document.getElementById('verse-english-text'),
       verseSpanishTranslation: document.getElementById('verse-spanish-translation'),
+      lyricsLinguisticNote: document.getElementById('lyrics-linguistic-note'),
+      lyricsInputRow: document.getElementById('lyrics-input-row'),
       lyricsInputField: document.getElementById('lyrics-input-field'),
       btnLyricsSubmit: document.getElementById('btn-lyrics-submit'),
 
@@ -152,16 +178,31 @@ export class DOMRenderer {
       importProgressStatus: document.getElementById('import-progress-status'),
       playlistTableBody: document.getElementById('playlist-table-body'),
       playlistJsonInput: document.getElementById('playlist-json-input'),
+      playlistJsonFeedback: document.getElementById('playlist-json-feedback'),
       btnApplyCustomJson: document.getElementById('btn-apply-custom-json'),
       btnExportJson: document.getElementById('btn-export-json'),
       btnResetDefaultSongs: document.getElementById('btn-reset-default-songs'),
-      playlistCountBadge: document.getElementById('playlist-count-badge')
+      playlistCountBadge: document.getElementById('playlist-count-badge'),
+
+      // Diálogo accesible de confirmación (reemplaza window.confirm)
+      confirmDialogModal: document.getElementById('confirm-dialog-modal'),
+      confirmDialogTitle: document.getElementById('confirm-dialog-title'),
+      confirmDialogMessage: document.getElementById('confirm-dialog-message'),
+      btnConfirmCancel: document.getElementById('btn-confirm-cancel'),
+      btnConfirmAccept: document.getElementById('btn-confirm-accept')
     };
   }
 
   /**
+   * Devuelve el modal en la cima de la pila o null.
+   * @private
+   */
+  get _activeModal() {
+    return this._modalStack.length > 0 ? this._modalStack[this._modalStack.length - 1].element : null;
+  }
+
+  /**
    * Aplica el estado visual de minimizado en el escenario del reproductor.
-   * En modo minimizado, el vídeo queda completamente oculto previniendo spoilers de títulos.
    * @private
    */
   _applyMinimizeState() {
@@ -180,15 +221,14 @@ export class DOMRenderer {
   }
 
   /**
-   * Comunica mensajes a lectores de pantalla (NVDA, JAWS, VoiceOver) mediante ARIA Live.
-   * @param {string} message - Texto descriptivo.
-   * @param {boolean} [isAlert=false] - Si es true, usa aria-live="assertive" (interrumpe la lectura para alertas críticas).
+   * Comunica mensajes a lectores de pantalla mediante ARIA Live.
+   * @param {string} message
+   * @param {boolean} [isAlert=false]
    */
   announce(message, isAlert = false) {
     const region = isAlert ? this.dom.a11yAlert : this.dom.a11yAnnouncer;
     if (!region) return;
 
-    // Limpiar brevemente para garantizar que el lector perciba el cambio de texto
     region.textContent = '';
     setTimeout(() => {
       region.textContent = message;
@@ -196,17 +236,96 @@ export class DOMRenderer {
   }
 
   /**
-   * Enlaza eventos de clic de los botones principales y selector de modos.
+   * Muestra un aviso inline accesible (reemplazo de window.alert).
+   * @param {HTMLElement|null} el
+   * @param {string} message
+   * @param {'error'|'warning'|'success'} [tone='warning']
+   * @private
+   */
+  _showInlineFeedback(el, message, tone = 'warning') {
+    if (!el) return;
+    el.textContent = message;
+    el.className = `inline-feedback-banner ${tone}`;
+    el.classList.remove('hidden');
+    this.announce(message, tone === 'error');
+  }
+
+  /**
+   * Oculta un aviso inline.
+   * @param {HTMLElement|null} el
+   * @private
+   */
+  _hideInlineFeedback(el) {
+    if (!el) return;
+    el.textContent = '';
+    el.classList.add('hidden');
+  }
+
+  /**
+   * Enlaza eventos del diálogo accesible `role="alertdialog"`.
+   * @private
+   */
+  _bindConfirmDialogEvents() {
+    this.dom.btnConfirmCancel?.addEventListener('click', () => {
+      this._closeConfirmDialog();
+    });
+
+    this.dom.btnConfirmAccept?.addEventListener('click', () => {
+      const cb = this._confirmCallback;
+      this._closeConfirmDialog();
+      if (typeof cb === 'function') cb();
+    });
+
+    this.dom.confirmDialogModal?.addEventListener('click', (e) => {
+      if (e.target === this.dom.confirmDialogModal) {
+        this._closeConfirmDialog();
+      }
+    });
+  }
+
+  /**
+   * Abre un diálogo de confirmación accesible (reemplaza window.confirm).
+   * @param {{ title: string, message: string, confirmLabel?: string, onConfirm: () => void }} config
+   * @private
+   */
+  _openConfirmDialog({ title, message, confirmLabel = 'Confirmar', onConfirm }) {
+    if (!this.dom.confirmDialogModal) return;
+    this._confirmCallback = onConfirm;
+    if (this.dom.confirmDialogTitle) this.dom.confirmDialogTitle.textContent = title;
+    if (this.dom.confirmDialogMessage) this.dom.confirmDialogMessage.textContent = message;
+    if (this.dom.btnConfirmAccept) this.dom.btnConfirmAccept.textContent = confirmLabel;
+
+    this.dom.confirmDialogModal.classList.add('open');
+    this._trapFocusInModal(this.dom.confirmDialogModal);
+    this.announce(`${title}. ${message}`, true);
+  }
+
+  _closeConfirmDialog() {
+    this._confirmCallback = null;
+    if (this.dom.confirmDialogModal?.classList.contains('open')) {
+      this.dom.confirmDialogModal.classList.remove('open');
+      this._releaseFocusTrap(this.dom.confirmDialogModal);
+    }
+  }
+
+  /**
+   * Enlaza eventos de clic de los botones principales, selector de modos y Lyrics Challenge.
    * @private
    */
   _bindDOMEvents() {
     this.dom.btnStart?.addEventListener('click', () => {
-      this.dom.startScreen.classList.add('visually-hidden');
+      this.dom.startScreen?.classList.add('visually-hidden');
       this.gameLogic.startRound();
     });
 
     this.dom.btnNext?.addEventListener('click', () => {
       this.gameLogic.nextRound();
+    });
+
+    this.dom.btnSkipUnavailable?.addEventListener('click', () => {
+      this._hideAudioUnavailableBanner();
+      this.announce('Pista saltada sin penalización.');
+      this.gameLogic.skipRoundWithoutPenalty();
     });
 
     this.dom.btnToggleCuriosity?.addEventListener('click', () => {
@@ -215,7 +334,7 @@ export class DOMRenderer {
 
     this.dom.btnRestart?.addEventListener('click', () => {
       this._releaseFocusTrap(this.dom.gameOverModal);
-      this.dom.gameOverModal.classList.remove('open');
+      this.dom.gameOverModal?.classList.remove('open');
       this.gameLogic.startNewGame(this.gameLogic.allSongs, this.gameLogic.isOrderedMode);
     });
 
@@ -232,9 +351,7 @@ export class DOMRenderer {
     this.dom.btnToggleMinimize?.addEventListener('click', () => {
       this.isPlayerMinimized = !this.isPlayerMinimized;
       this._applyMinimizeState();
-      try {
-        localStorage.setItem('songquiz_player_minimized', String(this.isPlayerMinimized));
-      } catch {}
+      writeStorageJSON('songquiz_player_minimized', this.isPlayerMinimized);
       this.announce(this.isPlayerMinimized ? 'Reproductor minimizado (modo audio puro sin spoilers)' : 'Reproductor expandido (vídeo visible)');
     });
 
@@ -265,7 +382,7 @@ export class DOMRenderer {
       this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
     });
 
-    // Desbloqueo de reproducción en Chrome móvil: el toque del usuario concede el permiso de autoplay
+    // Desbloqueo de reproducción en Chrome móvil
     this._tapAttempts = 0;
     this.dom.btnTapToPlay?.addEventListener('click', () => {
       this._tapAttempts += 1;
@@ -283,7 +400,6 @@ export class DOMRenderer {
         const s = this.gameState.status;
         if (s !== GameStates.PLAYING && s !== GameStates.AWAITING_AUDIO && s !== GameStates.ROUND_OVER) return;
         if (this._tapAttempts >= 1) {
-          // Segundo intento: mostrar el vídeo para que el usuario pulse el ▶ nativo de YouTube
           this.dom.audioStage?.classList.add('needs-native-tap');
           if (this.isPlayerMinimized) {
             this.isPlayerMinimized = false;
@@ -298,6 +414,7 @@ export class DOMRenderer {
       this.youtubePlayer.onPlaying(() => {
         this._tapAttempts = 0;
         this._hideTapToPlay();
+        this._hideAudioUnavailableBanner();
         this.dom.audioStage?.classList.remove('needs-native-tap');
         if (this.dom.playPauseIcon) this.dom.playPauseIcon.textContent = '⏸';
         if (this.dom.playPauseLabel) this.dom.playPauseLabel.textContent = 'Pausar';
@@ -322,30 +439,82 @@ export class DOMRenderer {
       this._closePlaylistModal();
     });
 
-    // Selector de modo de juego (Classic vs Lyrics Challenge)
-    this.dom.btnModeClassic?.addEventListener('click', () => {
+    // Selector de modo de juego (Classic vs Lyrics Challenge con carga diferida)
+    this.dom.btnModeClassic?.addEventListener('click', async () => {
       if (this.gameState.gameMode !== GameModes.CLASSIC) {
-        this.gameState.setGameMode(GameModes.CLASSIC);
+        const res = await this.gameLogic.switchGameMode(GameModes.CLASSIC);
         this._updateModeButtons();
-        this.announce('Modo cambiado a Classic Trivia');
-        this._handleModeSwitched();
+        if (res.ok) {
+          this.announce(`Modo Classic Trivia activado con ${res.trackCount} canciones.`);
+        }
       }
     });
 
-    this.dom.btnModeLyrics?.addEventListener('click', () => {
+    this.dom.btnModeLyrics?.addEventListener('click', async () => {
       if (this.gameState.gameMode !== GameModes.LYRICS) {
-        this.gameState.setGameMode(GameModes.LYRICS);
+        const res = await this.gameLogic.switchGameMode(GameModes.LYRICS);
         this._updateModeButtons();
-        this.announce('Modo cambiado a Lyrics Challenge');
-        this._handleModeSwitched();
+        if (res.ok) {
+          this.announce(`Modo Lyrics Challenge activado con ${res.trackCount} retos de letras en inglés.`);
+        } else {
+          this.announce(`No se pudo activar Lyrics Challenge: ${res.error || 'Error al cargar banco de letras.'}`, true);
+        }
       }
+    });
+
+    // Andamiaje progresivo de Lyrics Challenge: nivel reconocimiento vs escritura guiada
+    this.dom.btnLyricsLevelRecognition?.addEventListener('click', () => {
+      this.gameState.setLyricsLevel(LyricsInputLevels.RECOGNITION);
+      this._updateLyricsLevelButtons();
+      this._applyLyricsLevelLayout();
+      this.announce('Nivel Opciones activado: selecciona entre 4 palabras.');
+    });
+
+    this.dom.btnLyricsLevelGuided?.addEventListener('click', () => {
+      this.gameState.setLyricsLevel(LyricsInputLevels.GUIDED);
+      this._updateLyricsLevelButtons();
+      this._applyLyricsLevelLayout();
+      this.dom.lyricsInputField?.focus();
+      this.announce('Nivel Escritura guiada activado: escribe la palabra que falta en inglés.');
+    });
+
+    this.dom.btnLyricsRepeatCue?.addEventListener('click', () => {
+      this.gameLogic.repeatLyricsCue();
+      this.announce('Repitiendo fragmento del verso.');
+    });
+
+    this.dom.btnLyricsHintEs?.addEventListener('click', () => {
+      if (!this.gameState.lyricsChallengeData) return;
+      this._lyricsEsRevealed = !this._lyricsEsRevealed;
+      this.dom.verseSpanishTranslation?.classList.toggle('hidden', !this._lyricsEsRevealed);
+      this.dom.btnLyricsHintEs?.setAttribute('aria-pressed', String(this._lyricsEsRevealed));
+      if (this._lyricsEsRevealed) {
+        this.announce(`Traducción en español: ${this.gameState.lyricsChallengeData.verseEs}`);
+      }
+    });
+
+    this.dom.btnLyricsHintLetters?.addEventListener('click', () => {
+      const ld = this.gameState.lyricsChallengeData;
+      if (!ld || this.gameState.status === GameStates.ROUND_OVER) return;
+      this._lyricsHintLevel = Math.min(2, this._lyricsHintLevel + 1);
+      const hintMask = buildScaffoldingHint(ld.targetWord, /** @type {1|2} */ (this._lyricsHintLevel));
+      const blankEl = document.getElementById('lyrics-blank-token');
+      if (blankEl) {
+        blankEl.textContent = hintMask;
+      }
+      if (this.dom.btnLyricsHintLetters) {
+        this.dom.btnLyricsHintLetters.textContent = this._lyricsHintLevel >= 2 ? '💡 Pista máx.' : '💡 Más pista';
+        this.dom.btnLyricsHintLetters.disabled = this._lyricsHintLevel >= 2;
+      }
+      this.announce(`Pista nivel ${this._lyricsHintLevel}: ${hintMask}`);
     });
 
     // Envío por teclado en Lyrics Challenge
     const submitTypedAnswer = () => {
       const val = this.dom.lyricsInputField?.value.trim();
       if (val && (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO)) {
-        this.gameLogic.submitAnswer(val);
+        const hintsUsed = this._lyricsHintLevel + (this._lyricsEsRevealed ? 1 : 0);
+        this.gameLogic.submitAnswer(val, { hintsUsed });
       }
     };
 
@@ -375,17 +544,38 @@ export class DOMRenderer {
   }
 
   /**
-   * Responde al cambio voluntario de modo reiniciando la ronda actual si está jugando.
+   * Actualiza los botones del nivel de andamiaje de Lyrics Challenge.
    * @private
    */
-  _handleModeSwitched() {
-    if (
-      this.gameState.status === GameStates.PLAYING ||
-      this.gameState.status === GameStates.AWAITING_AUDIO ||
-      this.gameState.status === GameStates.ROUND_OVER
-    ) {
-      this.gameLogic.startRound();
+  _updateLyricsLevelButtons() {
+    const isRecognition = this.gameState.lyricsLevel === LyricsInputLevels.RECOGNITION;
+    if (this.dom.btnLyricsLevelRecognition) {
+      this.dom.btnLyricsLevelRecognition.classList.toggle('active', isRecognition);
+      this.dom.btnLyricsLevelRecognition.setAttribute('aria-checked', String(isRecognition));
     }
+    if (this.dom.btnLyricsLevelGuided) {
+      this.dom.btnLyricsLevelGuided.classList.toggle('active', !isRecognition);
+      this.dom.btnLyricsLevelGuided.setAttribute('aria-checked', String(!isRecognition));
+    }
+  }
+
+  /**
+   * Muestra u oculta la cuadrícula de opciones o el campo de escritura guiada según el nivel activo.
+   * @private
+   */
+  _applyLyricsLevelLayout() {
+    const isLyricsActive = this.gameState.gameMode === GameModes.LYRICS && Boolean(this.gameState.lyricsChallengeData);
+    if (!isLyricsActive) {
+      this.dom.lyricsChallengeBox?.classList.add('hidden');
+      this.dom.lyricsInputRow?.classList.add('hidden');
+      this.dom.optionsGrid?.classList.remove('hidden');
+      return;
+    }
+
+    this.dom.lyricsChallengeBox?.classList.remove('hidden');
+    const isGuided = this.gameState.lyricsLevel === LyricsInputLevels.GUIDED;
+    this.dom.lyricsInputRow?.classList.toggle('hidden', !isGuided);
+    this.dom.optionsGrid?.classList.toggle('hidden', isGuided);
   }
 
   /**
@@ -393,12 +583,8 @@ export class DOMRenderer {
    * @private
    */
   _initDeviceView() {
-    let saved = 'pc';
-    try {
-      saved = localStorage.getItem('songquiz_device_view') || 'pc';
-    } catch {}
-
-    this._setDeviceView(saved, false);
+    const rawSaved = readStorageRaw('songquiz_device_view', 'pc').replace(/^"|"$/g, '');
+    this._setDeviceView(rawSaved || 'pc', false);
 
     this.dom.deviceButtons?.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -428,9 +614,7 @@ export class DOMRenderer {
       btn.setAttribute('aria-checked', String(isActive));
     });
 
-    try {
-      localStorage.setItem('songquiz_device_view', currentMode);
-    } catch {}
+    writeStorageJSON('songquiz_device_view', currentMode);
 
     if (notify) {
       const labels = {
@@ -454,13 +638,12 @@ export class DOMRenderer {
   }
 
   /**
-   * Gestión del modal importador de playlist con Focus Trap.
+   * Gestión del modal importador de playlist con WAI-ARIA tabs, validación y avisos inline.
    * @private
    */
   _bindPlaylistManagerEvents() {
     this._renderThematicPlaylists();
 
-    // Píldoras de selección rápida de listas temáticas en la pantalla principal
     this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         const themeId = pill.dataset.themeId;
@@ -494,18 +677,21 @@ export class DOMRenderer {
           throw new Error('No se encontraron canciones en la lista.');
         }
 
-        this.gameLogic.setCustomPlaylist(songs, false, false);
+        const storageRes = this.gameLogic.setCustomPlaylist(songs, false, false);
         this._renderPlaylistTable();
-        this.announce(`Lista importada con éxito: ${songs.length} pistas activadas.`);
+        const quotaNote = storageRes.errorCode === 'QUOTA_EXCEEDED'
+          ? ' (Aviso: cuota de almacenamiento llena; activa solo en esta sesión).'
+          : '';
+        this.announce(`Lista importada con éxito: ${songs.length} pistas activadas.${quotaNote}`);
 
         if (this.dom.importProgressStatus) {
-          this.dom.importProgressStatus.textContent = `✅ ¡Éxito! ${songs.length} pistas extraídas y activadas en el juego.`;
-          this.dom.importProgressStatus.style.color = 'var(--spotify-green)';
+          this.dom.importProgressStatus.textContent = `✅ ¡Éxito! ${songs.length} pistas extraídas y activadas.${quotaNote}`;
+          this.dom.importProgressStatus.style.color = storageRes.ok ? 'var(--spotify-green)' : 'var(--color-warning)';
         }
 
         setTimeout(() => {
           this._closePlaylistModal();
-          this.dom.startScreen.classList.remove('visually-hidden');
+          this.dom.startScreen?.classList.remove('visually-hidden');
         }, 1200);
       } catch (err) {
         console.error('Error al importar playlist:', err);
@@ -516,7 +702,7 @@ export class DOMRenderer {
         this.announce(`Error al importar: ${err.message}`, true);
       } finally {
         this.dom.btnFetchYoutubePlaylist.disabled = false;
-        this.dom.btnFetchYoutubePlaylist.textContent = '⬇️ Extraer Canciones y Activar';
+        this.dom.btnFetchYoutubePlaylist.textContent = '⬇️ Extraer y Activar';
       }
     });
 
@@ -532,56 +718,128 @@ export class DOMRenderer {
       this.announce('Archivo songs.json descargado.');
     });
 
+    // Validación con catalogValidator.js y avisos inline (sin window.alert)
     this.dom.btnApplyCustomJson?.addEventListener('click', () => {
+      this._hideInlineFeedback(this.dom.playlistJsonFeedback);
       try {
-        const text = this.dom.playlistJsonInput.value.trim();
-        if (!text) return;
+        const text = this.dom.playlistJsonInput?.value.trim() || '';
+        if (!text) {
+          this._showInlineFeedback(
+            this.dom.playlistJsonFeedback,
+            'Introduce un array JSON o líneas con el formato "Artista - Título".',
+            'warning'
+          );
+          return;
+        }
 
         let parsed = [];
+        let strictAudit = null;
         if (text.startsWith('[')) {
           parsed = JSON.parse(text);
+          strictAudit = auditSongCatalog(parsed, { strictSchema: true, requireYoutubeId: false });
         } else {
           parsed = parseTextPlaylist(text);
         }
 
-        if (!Array.isArray(parsed) || parsed.length === 0) {
-          alert('No se detectaron canciones válidas en el texto o JSON introducido.');
+        const { songs: sanitized, report } = sanitizeImportedCatalog(parsed);
+        if (sanitized.length === 0 || !report.isValid) {
+          const detail = (strictAudit?.errors?.length ? strictAudit.errors : report.errors).slice(0, 3).join(' ');
+          this._showInlineFeedback(
+            this.dom.playlistJsonFeedback,
+            `Catálogo no válido: ${detail || 'no se detectaron canciones válidas.'}`,
+            'error'
+          );
           return;
         }
 
-        this.gameLogic.setCustomPlaylist(parsed, false, false);
-        this._closePlaylistModal();
-        this.dom.startScreen.classList.remove('visually-hidden');
-        this.announce(`Lista personalizada activada con ${parsed.length} canciones.`);
-      } catch (err) {
-        alert('Error al procesar el catálogo: ' + err.message);
-      }
-    });
-
-    this.dom.btnResetDefaultSongs?.addEventListener('click', () => {
-      if (confirm('¿Restablecer el catálogo a las canciones oficiales por defecto?')) {
-        this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, false);
-        this.dom.startScreen?.classList.remove('visually-hidden');
+        const storageRes = this.gameLogic.setCustomPlaylist(sanitized, false, false);
         this._renderPlaylistTable();
-        this.announce('Catálogo restablecido al oficial por defecto.');
+
+        if (storageRes.errorCode === 'QUOTA_EXCEEDED') {
+          this._showInlineFeedback(
+            this.dom.playlistJsonFeedback,
+            `Lista activada con ${sanitized.length} canciones en memoria de sesión (localStorage superó su cuota).`,
+            'warning'
+          );
+        } else if (strictAudit && strictAudit.warnings.length > 0) {
+          this._showInlineFeedback(
+            this.dom.playlistJsonFeedback,
+            `Lista guardada con ${sanitized.length} canciones (${strictAudit.warnings.length} avisos menores de calidad).`,
+            'success'
+          );
+        } else {
+          this._closePlaylistModal();
+        }
+
+        this.dom.startScreen?.classList.remove('visually-hidden');
+        this.announce(`Lista personalizada activada con ${sanitized.length} canciones.`);
+      } catch (err) {
+        this._showInlineFeedback(
+          this.dom.playlistJsonFeedback,
+          `Error al procesar el catálogo: ${err.message}`,
+          'error'
+        );
       }
     });
 
-    const tabBtns = document.querySelectorAll('.playlist-tab-btn');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.dataset.tab;
-        document.querySelectorAll('.playlist-tab-content').forEach(c => {
-          c.style.display = c.id === target ? 'block' : 'none';
-        });
+    // Confirmación accesible role="alertdialog" (sin window.confirm)
+    this.dom.btnResetDefaultSongs?.addEventListener('click', () => {
+      this._openConfirmDialog({
+        title: 'Restablecer catálogo oficial',
+        message: 'Se eliminará la lista personalizada guardada localmente y volverá a activarse el catálogo oficial verificado.',
+        confirmLabel: 'Sí, restablecer',
+        onConfirm: () => {
+          this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, false);
+          this.dom.startScreen?.classList.remove('visually-hidden');
+          this._renderPlaylistTable();
+          this.announce('Catálogo restablecido al oficial por defecto.');
+        }
+      });
+    });
+
+    // WAI-ARIA Tabs (clic + teclado ArrowLeft/ArrowRight/Home/End)
+    const tabBtns = Array.from(document.querySelectorAll('.playlist-tab-btn'));
+    const activateTab = (targetBtn, shouldFocus = false) => {
+      const targetPanelId = targetBtn.dataset.tab;
+      tabBtns.forEach((btn) => {
+        const isSelected = btn === targetBtn;
+        btn.classList.toggle('active', isSelected);
+        btn.setAttribute('aria-selected', String(isSelected));
+        btn.setAttribute('tabindex', isSelected ? '0' : '-1');
+      });
+
+      document.querySelectorAll('.playlist-tab-content').forEach((panel) => {
+        panel.hidden = panel.id !== targetPanelId;
+      });
+
+      if (shouldFocus) {
+        targetBtn.focus();
+      }
+    };
+
+    tabBtns.forEach((btn, idx) => {
+      btn.addEventListener('click', () => activateTab(btn, false));
+      btn.addEventListener('keydown', (e) => {
+        let nextIdx = idx;
+        if (e.key === 'ArrowRight') {
+          nextIdx = (idx + 1) % tabBtns.length;
+        } else if (e.key === 'ArrowLeft') {
+          nextIdx = (idx - 1 + tabBtns.length) % tabBtns.length;
+        } else if (e.key === 'Home') {
+          nextIdx = 0;
+        } else if (e.key === 'End') {
+          nextIdx = tabBtns.length - 1;
+        } else {
+          return;
+        }
+        e.preventDefault();
+        activateTab(tabBtns[nextIdx], true);
       });
     });
   }
 
   /**
-   * Renderiza las tarjetas de listas populares por temática en YouTube Music dentro del modal.
+   * Renderiza las tarjetas de listas temáticas con escape XSS estricto.
    * @private
    */
   _renderThematicPlaylists() {
@@ -591,19 +849,21 @@ export class DOMRenderer {
     THEMATIC_PLAYLISTS.forEach(pl => {
       const card = document.createElement('div');
       card.className = 'thematic-card';
+
+      const safeUrl = /^https?:\/\//i.test(pl.youtubeUrl || '') ? pl.youtubeUrl : '#';
       card.innerHTML = `
         <div>
           <div class="thematic-card-header">
-            <span class="thematic-card-title">${pl.name}</span>
-            <span class="brand-badge" style="font-size: 0.65rem;">${pl.badge}</span>
+            <span class="thematic-card-title">${escapeHtml(pl.name)}</span>
+            <span class="brand-badge" style="font-size: 0.65rem;">${escapeHtml(pl.badge)}</span>
           </div>
-          <p class="thematic-card-desc" style="margin-top: 4px;">${pl.description}</p>
+          <p class="thematic-card-desc" style="margin-top: 4px;">${escapeHtml(pl.description)}</p>
         </div>
         <div class="thematic-card-actions">
-          <a href="${pl.youtubeUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 0.72rem; color: var(--color-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Abrir lista en YouTube Music">
+          <a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.72rem; color: var(--color-secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Abrir lista en YouTube Music">
             <span>🔗 YouTube Music</span>
           </a>
-          <button type="button" class="btn-spotify-subtle btn-load-theme" data-theme-id="${pl.id}" style="padding: 5px 12px; font-size: 0.72rem; border-color: var(--spotify-green); color: var(--spotify-green-light);">
+          <button type="button" class="btn-spotify-subtle btn-load-theme" data-theme-id="${escapeHtml(pl.id)}" style="padding: 5px 12px; font-size: 0.72rem; border-color: var(--spotify-green); color: var(--spotify-green-light);">
             ▶ Jugar (${pl.songs.length})
           </button>
         </div>
@@ -621,12 +881,10 @@ export class DOMRenderer {
 
   /**
    * Activa una lista temática predefinida y actualiza la partida en curso.
-   * Si la lista tiene `ordered: true` (ej. Top 100 YouTube), reproduce en orden estricto #1 a #100.
    * @param {string} themeId
    * @private
    */
   _activateThematicPlaylist(themeId) {
-    // Actualizar estado activo de las píldoras superiores
     this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach(p => {
       p.classList.toggle('active', p.dataset.themeId === themeId);
     });
@@ -647,12 +905,12 @@ export class DOMRenderer {
       this.dom.roundIndicator.textContent = `${prefix} / ${this.gameState.totalRounds}`;
     }
 
-    // Asegurar que la pantalla de inicio esté oculta
     this.dom.startScreen?.classList.add('visually-hidden');
   }
 
   _openPlaylistModal() {
     this._renderPlaylistTable();
+    this._hideInlineFeedback(this.dom.playlistJsonFeedback);
     if (this.dom.importProgressStatus) {
       this.dom.importProgressStatus.textContent = '';
     }
@@ -673,7 +931,9 @@ export class DOMRenderer {
   }
 
   _closeCurrentModal() {
-    if (this.dom.playlistModal?.classList.contains('open')) {
+    if (this.dom.confirmDialogModal?.classList.contains('open')) {
+      this._closeConfirmDialog();
+    } else if (this.dom.playlistModal?.classList.contains('open')) {
       this._closePlaylistModal();
     } else if (this.dom.castModal?.classList.contains('open')) {
       this._closeCastModal();
@@ -685,7 +945,7 @@ export class DOMRenderer {
   }
 
   /**
-   * Enlaza eventos para enviar a Chromecast en la misma red Wi-Fi y controlar el Modo Pantalla TV.
+   * Enlaza eventos para Chromecast y Modo Pantalla TV sin window.alert.
    * @private
    */
   _bindCastEvents() {
@@ -727,7 +987,11 @@ export class DOMRenderer {
         this.castManager.openAndroidScreenCast();
         this.announce('Abriendo Google Home para transmitir pantalla completa al TV.');
       } else {
-        alert('En tu móvil, desliza el panel de ajustes rápidos superior y pulsa "Transmitir / Enviar pantalla" (o Smart View) para duplicar la pantalla completa con audio y vídeo en tu TV.');
+        this._showInlineFeedback(
+          this.dom.castInlineHint,
+          'En tu móvil, desliza el panel de ajustes rápidos superior y pulsa "Transmitir / Enviar pantalla" (o Smart View) para duplicar audio y vídeo en tu TV.',
+          'warning'
+        );
       }
     });
 
@@ -737,7 +1001,7 @@ export class DOMRenderer {
       if (this.dom.btnToggleTvModeText) {
         this.dom.btnToggleTvModeText.textContent = active
           ? '✅ Modo Pantalla TV Activo (Pulsa para salir)'
-          : 'Activar Modo Pantalla TV (Salón / Duplicar Pestaña)';
+          : 'Activar Modo Pantalla TV (Salón)';
       }
       this.announce(active ? 'Modo Pantalla TV activado' : 'Modo Pantalla TV desactivado');
     });
@@ -760,7 +1024,7 @@ export class DOMRenderer {
         if (this.dom.btnConnectChromecastText) {
           this.dom.btnConnectChromecastText.textContent = isConnected
             ? `Desconectar (${deviceName})`
-            : 'Buscar Chromecast en mi red Wi-Fi';
+            : 'Conectar Marcador Chromecast (Wi-Fi)';
         }
       });
     }
@@ -775,7 +1039,20 @@ export class DOMRenderer {
     this.dom.btnTapToPlay?.classList.add('hidden');
   }
 
+  _showAudioUnavailableBanner(reason) {
+    if (this.dom.audioUnavailableReason) {
+      this.dom.audioUnavailableReason.textContent = reason;
+    }
+    this.dom.audioUnavailableBanner?.classList.remove('hidden');
+    this.announce(`${reason} Puedes saltar esta pista sin penalización.`, true);
+  }
+
+  _hideAudioUnavailableBanner() {
+    this.dom.audioUnavailableBanner?.classList.add('hidden');
+  }
+
   _openCastModal() {
+    this._hideInlineFeedback(this.dom.castInlineHint);
     if (this.castManager && this.dom.castStatusText && !this.castManager.isConnected) {
       this.dom.castStatusText.textContent = this.castManager.getSupportSummary();
     }
@@ -793,19 +1070,29 @@ export class DOMRenderer {
   }
 
   /**
-   * Implementa el atrapamiento accesible de foco (Focus Trap) dentro de modales (WCAG 2.1 AA).
+   * Implementa atrapamiento de foco (Focus Trap) y aplica `inert = true` en `.app-container` (WCAG 2.1 AA).
    * @private
-   * @param {HTMLElement} modalElement
+   * @param {HTMLElement|null} modalElement
    */
   _trapFocusInModal(modalElement) {
     if (!modalElement) return;
-    this._activeModal = modalElement;
-    this._previousFocusedElement = document.activeElement;
+
+    // Si había un modal inferior abierto, marcarlo como inert temporalmente
+    const prevTop = this._modalStack[this._modalStack.length - 1];
+    if (prevTop?.element && prevTop.element !== modalElement) {
+      prevTop.element.inert = true;
+    }
+
+    if (this.dom.appContainer) {
+      this.dom.appContainer.inert = true;
+    }
+
+    const previousFocusedElement = document.activeElement;
 
     const getFocusables = () => {
       return Array.from(modalElement.querySelectorAll(
         'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )).filter(el => el.offsetParent !== null);
+      )).filter(el => el.offsetParent !== null && !el.closest('[hidden]'));
     };
 
     const focusables = getFocusables();
@@ -813,8 +1100,8 @@ export class DOMRenderer {
       setTimeout(() => focusables[0].focus(), 50);
     }
 
-    this._modalKeyHandler = (e) => {
-      if (e.key === 'Escape') {
+    const keyHandler = (e) => {
+      if (e.key === 'Escape' && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         this._closeCurrentModal();
         return;
@@ -832,35 +1119,47 @@ export class DOMRenderer {
             e.preventDefault();
             last.focus();
           }
-        } else {
-          if (document.activeElement === last || !modalElement.contains(document.activeElement)) {
-            e.preventDefault();
-            first.focus();
-          }
+        } else if (document.activeElement === last || !modalElement.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
         }
       }
     };
 
-    modalElement.addEventListener('keydown', this._modalKeyHandler);
+    modalElement.addEventListener('keydown', keyHandler);
+    this._modalStack.push({ element: modalElement, keyHandler, previousFocusedElement });
   }
 
   /**
-   * Libera el atrapamiento de foco y devuelve el foco al elemento disparador.
+   * Libera el atrapamiento de foco, restaura `inert = false` cuando no quedan modales
+   * y devuelve el foco al elemento disparador.
    * @private
-   * @param {HTMLElement} modalElement
+   * @param {HTMLElement|null} modalElement
    */
   _releaseFocusTrap(modalElement) {
-    if (this._modalKeyHandler && modalElement) {
-      modalElement.removeEventListener('keydown', this._modalKeyHandler);
-      this._modalKeyHandler = null;
+    const idx = this._modalStack.findIndex(item => item.element === modalElement);
+    if (idx === -1) return;
+
+    const [entry] = this._modalStack.splice(idx, 1);
+    entry.element.removeEventListener('keydown', entry.keyHandler);
+    entry.element.inert = false;
+
+    const newTop = this._modalStack[this._modalStack.length - 1];
+    if (newTop?.element) {
+      newTop.element.inert = false;
+    } else if (this.dom.appContainer) {
+      this.dom.appContainer.inert = false;
     }
-    if (this._previousFocusedElement && typeof this._previousFocusedElement.focus === 'function') {
-      this._previousFocusedElement.focus();
-      this._previousFocusedElement = null;
+
+    if (entry.previousFocusedElement && typeof entry.previousFocusedElement.focus === 'function') {
+      entry.previousFocusedElement.focus();
     }
-    this._activeModal = null;
   }
 
+  /**
+   * Renderiza la tabla de canciones activas escapando cada celda contra XSS.
+   * @private
+   */
   _renderPlaylistTable() {
     if (!this.dom.playlistTableBody) return;
     this.dom.playlistTableBody.innerHTML = '';
@@ -870,21 +1169,23 @@ export class DOMRenderer {
       this.dom.playlistCountBadge.textContent = `${songs.length} canciones`;
     }
 
+    const fragment = document.createDocumentFragment();
     songs.forEach((song, idx) => {
       const tr = document.createElement('tr');
       const hasTrivia = Boolean(song.culturalTrivia);
       const rankLabel = song.rank ? `#${song.rank}` : `${idx + 1}`;
 
       tr.innerHTML = `
-        <td style="color: var(--color-text-dim); font-family: var(--font-mono);">${rankLabel}</td>
-        <td style="font-weight: 700;">${song.title}</td>
-        <td style="color: var(--color-secondary);">${song.artist}</td>
-        <td><span class="genre-pill" style="margin: 0; font-size: 0.7rem;">${song.genre || 'General'}</span></td>
-        <td style="text-align: center; font-family: var(--font-mono); color: var(--color-secondary);">${song.year || '—'}</td>
+        <td style="color: var(--color-text-dim); font-family: var(--font-mono);">${escapeHtml(rankLabel)}</td>
+        <td style="font-weight: 700;">${escapeHtml(song.title)}</td>
+        <td style="color: var(--color-secondary);">${escapeHtml(song.artist)}</td>
+        <td><span class="genre-pill" style="margin: 0; font-size: 0.7rem;">${escapeHtml(song.genre || 'General')}</span></td>
+        <td style="text-align: center; font-family: var(--font-mono); color: var(--color-secondary);">${escapeHtml(song.year || '—')}</td>
         <td style="text-align: center;">${hasTrivia ? '✅' : '⚠️'}</td>
       `;
-      this.dom.playlistTableBody.appendChild(tr);
+      fragment.appendChild(tr);
     });
+    this.dom.playlistTableBody.appendChild(fragment);
   }
 
   /**
@@ -901,11 +1202,20 @@ export class DOMRenderer {
       this._updateModeButtons();
     });
 
+    this.gameState.addEventListener('lyricsLevelChange', () => {
+      this._updateLyricsLevelButtons();
+      this._applyLyricsLevelLayout();
+    });
+
+    this.gameState.addEventListener('audioUnavailable', (e) => {
+      const { reason } = e.detail || {};
+      this._showAudioUnavailableBanner(reason || 'No se pudo reproducir el audio oficial de esta pista.');
+    });
+
     this.gameState.addEventListener('timeTick', (e) => {
       const { timeRemaining, maxTime } = e.detail;
       this._updateTimer(timeRemaining, maxTime);
 
-      // Alerta sonora y textual a lectores de pantalla cuando restan exactamente 5 segundos
       if (timeRemaining === 5) {
         this.announce('Atención: quedan 5 segundos', true);
       }
@@ -944,9 +1254,7 @@ export class DOMRenderer {
   }
 
   /**
-   * Actualiza los controles visuales de pre-roll / pausa anti-anuncio y estado del cronómetro.
-   * Mientras está en AWAITING_AUDIO (!isTimerRunning), muestra la píldora flotante sobre el reproductor
-   * y permite pulsar "Saltar anuncio" manteniendo oculta la franja superior del título.
+   * Actualiza controles visuales de pre-roll / pausa y estado del cronómetro.
    * @param {boolean} isTimerRunning
    * @private
    */
@@ -975,8 +1283,8 @@ export class DOMRenderer {
         this.dom.stageTitle.textContent = 'Preparando canción...';
         this.dom.stageSubtitle.textContent = 'Sincronizando audio o esperando fin de anuncio...';
       } else if (this.gameState.gameMode === GameModes.LYRICS) {
-        this.dom.stageTitle.textContent = 'Completa la Letra (Listen & Fill)';
-        this.dom.stageSubtitle.textContent = 'Escucha el fragmento y selecciona la palabra que falta...';
+        this.dom.stageTitle.textContent = 'Completa la Letra (Lyrics Challenge)';
+        this.dom.stageSubtitle.textContent = 'Escucha el verso y completa la palabra en inglés que falta...';
       } else {
         this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
         this.dom.stageSubtitle.textContent = 'Escucha con atención las frecuencias...';
@@ -985,6 +1293,11 @@ export class DOMRenderer {
   }
 
   _onStateChange(state, payload) {
+    // Las transiciones exclusivas de temporizador no deben redibujar opciones ni resetear pistas
+    if (payload?.timerOnly) {
+      return;
+    }
+
     switch (state) {
       case GameStates.AWAITING_AUDIO:
       case GameStates.PLAYING:
@@ -998,26 +1311,91 @@ export class DOMRenderer {
       case GameStates.GAME_OVER:
         this._renderGameOverState(payload);
         break;
+
+      case GameStates.IDLE:
+        this._hideAudioUnavailableBanner();
+        break;
     }
   }
 
   /**
-   * Configura la interfaz al iniciar una ronda activa con accesibilidad WAI-ARIA (radiogroup) y Roving Tabindex.
-   * Las 4 opciones de respuesta cambian completamente en cada canción.
+   * Renderiza el bloque pedagógico de Lyrics Challenge con escape XSS estricto.
+   * @param {Object|null} lyricsData
    * @private
    */
-  _renderPlayingState({ options, roundNumber, totalRounds, isOrderedMode, song }) {
+  _renderLyricsChallengeBox(lyricsData) {
+    this._lyricsHintLevel = 0;
+    this._lyricsEsRevealed = false;
+
+    if (!lyricsData || this.gameState.gameMode !== GameModes.LYRICS) {
+      this._applyLyricsLevelLayout();
+      return;
+    }
+
+    if (this.dom.lyricsDifficultyBadge) {
+      this.dom.lyricsDifficultyBadge.textContent = lyricsData.difficulty || 'B1';
+    }
+
+    if (this.dom.verseEnglishText) {
+      const parts = String(lyricsData.verseEn || '').split('{{blank}}');
+      if (parts.length >= 2) {
+        const prefix = escapeHtml(parts[0]);
+        const suffix = escapeHtml(parts.slice(1).join(''));
+        this.dom.verseEnglishText.innerHTML = `${prefix}<span id="lyrics-blank-token" class="lyrics-blank-token">____</span>${suffix}`;
+      } else {
+        this.dom.verseEnglishText.textContent = lyricsData.verseEn || '';
+      }
+    }
+
+    if (this.dom.verseSpanishTranslation) {
+      this.dom.verseSpanishTranslation.textContent = `🇪🇸 ${lyricsData.verseEs || ''}`;
+      this.dom.verseSpanishTranslation.classList.add('hidden');
+    }
+
+    if (this.dom.lyricsLinguisticNote) {
+      this.dom.lyricsLinguisticNote.textContent = '';
+      this.dom.lyricsLinguisticNote.classList.add('hidden');
+    }
+
+    if (this.dom.btnLyricsHintEs) {
+      this.dom.btnLyricsHintEs.setAttribute('aria-pressed', 'false');
+    }
+
+    if (this.dom.btnLyricsHintLetters) {
+      this.dom.btnLyricsHintLetters.textContent = '💡 Pista';
+      this.dom.btnLyricsHintLetters.disabled = false;
+    }
+
+    if (this.dom.lyricsInputField) {
+      this.dom.lyricsInputField.value = '';
+      this.dom.lyricsInputField.disabled = false;
+    }
+
+    if (this.dom.btnLyricsSubmit) {
+      this.dom.btnLyricsSubmit.disabled = false;
+    }
+
+    this._applyLyricsLevelLayout();
+  }
+
+  /**
+   * Configura la interfaz al iniciar una ronda activa con accesibilidad WAI-ARIA y escape XSS.
+   * @private
+   */
+  _renderPlayingState({ options = [], roundNumber, totalRounds, isOrderedMode, song, lyricsData = null, gameMode }) {
     this._hideTapToPlay();
+    this._hideAudioUnavailableBanner();
     this.dom.audioStage?.classList.remove('needs-native-tap');
     this.dom.discoveryPanel?.classList.remove('active');
     this._setCuriosityExpanded(false);
     this.dom.btnNext?.classList.add('hidden');
     this.dom.startScreen?.classList.add('visually-hidden');
 
-    this.dom.statusMsg.textContent = '';
-    this.dom.statusMsg.className = 'status-msg';
+    if (this.dom.statusMsg) {
+      this.dom.statusMsg.textContent = '';
+      this.dom.statusMsg.className = 'status-msg';
+    }
 
-    // Iniciar en modo espera anti-anuncio para poder saltar la publicidad de YouTube antes de que corra el tiempo
     if (this.dom.audioStage) {
       this.dom.audioStage.classList.remove('revealed');
     }
@@ -1028,7 +1406,7 @@ export class DOMRenderer {
     }
 
     if (this.dom.btnOpenYtCastApp && song?.youtubeId) {
-      this.dom.btnOpenYtCastApp.href = `https://www.youtube.com/watch?v=${song.youtubeId}`;
+      this.dom.btnOpenYtCastApp.href = `https://www.youtube.com/watch?v=${encodeURIComponent(song.youtubeId)}`;
     }
 
     if (this.dom.playPauseIcon) {
@@ -1038,7 +1416,6 @@ export class DOMRenderer {
       this.dom.playPauseLabel.textContent = 'Audio';
     }
 
-    // Sincronizar nueva ronda con Chromecast si está activo en la red Wi-Fi (modo sin spoilers en TV)
     this.castManager?.syncRoundStart({
       song,
       roundNumber,
@@ -1048,39 +1425,49 @@ export class DOMRenderer {
       options
     });
 
-    if (this.dom.minimizedTitle) {
+    if (this.dom.minimizedTitle && this.dom.minimizedSubtitle) {
       this.dom.minimizedTitle.textContent = '🎧 Modo Audio Puro (Adivinando...)';
       this.dom.minimizedSubtitle.textContent = 'Vídeo y título ocultos para evitar spoilers';
     }
 
     if (this.dom.roundIndicator) {
-      if (isOrderedMode || song?.rank) {
+      if (gameMode === GameModes.LYRICS) {
+        this.dom.roundIndicator.textContent = `Lyrics ${roundNumber} / ${totalRounds}`;
+      } else if (isOrderedMode || song?.rank) {
         this.dom.roundIndicator.textContent = `Top 100 YT • #${song?.rank || roundNumber} / ${totalRounds}`;
       } else {
         this.dom.roundIndicator.textContent = `Pista ${roundNumber} / ${totalRounds}`;
       }
     }
 
-    this.dom.stageOverlay.classList.remove('hidden');
+    this.dom.stageOverlay?.classList.remove('hidden');
 
-    if (this.gameLogic.isTimerRunning) {
-      this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
-      this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
-        ? `Puesto #${song.rank} más reproducido en YouTube (${song.views || 'Top Histórico'})`
-        : 'Escucha con atención las frecuencias...';
-    } else {
-      this.dom.stageTitle.textContent = 'Preparando canción...';
-      this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
-        ? `Puesto #${song.rank} en YouTube • Sincronizando audio o esperando fin de anuncio...`
-        : 'Sincronizando audio o esperando fin de anuncio...';
+    if (this.dom.stageTitle && this.dom.stageSubtitle) {
+      if (this.gameLogic.isTimerRunning) {
+        this.dom.stageTitle.textContent = gameMode === GameModes.LYRICS
+          ? 'Completa la Letra (Lyrics Challenge)'
+          : '¿Qué canción está sonando?';
+        this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
+          ? `Puesto #${song.rank} más reproducido en YouTube (${song.views || 'Top Histórico'})`
+          : 'Escucha con atención...';
+      } else {
+        this.dom.stageTitle.textContent = 'Preparando canción...';
+        this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
+          ? `Puesto #${song.rank} en YouTube • Sincronizando audio o esperando fin de anuncio...`
+          : 'Sincronizando audio o esperando fin de anuncio...';
+      }
     }
 
     this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción. Pulsa S si ya suena la música.`);
-
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
 
-    // Inyectar las 4 opciones de respuesta en cuadrícula 2x2 con foco visual directo en el título de la canción
+    // Renderizar Lyrics Challenge si corresponde
+    this._renderLyricsChallengeBox(lyricsData);
+
+    // Inyectar las 4 opciones de respuesta en cuadrícula 2x2 con escape XSS estricto
+    if (!this.dom.optionsGrid) return;
     this.dom.optionsGrid.innerHTML = '';
+
     options.forEach((optText, index) => {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
@@ -1091,14 +1478,14 @@ export class DOMRenderer {
       btn.dataset.index = String(index);
       btn.dataset.option = optText;
 
-      let labelHtml = `<span class="option-title-main">${optText}</span>`;
+      let labelHtml = `<span class="option-title-main">${escapeHtml(optText)}</span>`;
       if (optText.includes(' - ')) {
         const sepIdx = optText.lastIndexOf(' - ');
         const songTitle = optText.slice(0, sepIdx).trim();
         const songArtist = optText.slice(sepIdx + 3).trim();
         labelHtml = `
-          <span class="option-title-main">${songTitle}</span>
-          <span class="option-artist-sub">${songArtist}</span>
+          <span class="option-title-main">${escapeHtml(songTitle)}</span>
+          <span class="option-artist-sub">${escapeHtml(songArtist)}</span>
         `;
       }
 
@@ -1111,7 +1498,6 @@ export class DOMRenderer {
         this._selectOption(btn, optText);
       });
 
-      // Navegación accesible por flechas (ArrowUp/Down/Left/Right)
       btn.addEventListener('keydown', (e) => {
         const buttons = Array.from(this.dom.optionsGrid.querySelectorAll('.option-btn'));
         let nextIndex = index;
@@ -1141,31 +1527,54 @@ export class DOMRenderer {
   _selectOption(btn, optText) {
     const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
     buttons.forEach(b => b.setAttribute('aria-checked', b === btn ? 'true' : 'false'));
-    this.gameLogic.submitAnswer(optText);
+    const hintsUsed = this.gameState.gameMode === GameModes.LYRICS
+      ? this._lyricsHintLevel + (this._lyricsEsRevealed ? 1 : 0)
+      : 0;
+    this.gameLogic.submitAnswer(optText, { hintsUsed });
   }
 
   /**
-   * Revela la información de la ronda, habilita el botón CTA "Siguiente Canción" junto al temporizador
-   * y muestra la tarjeta horizontal plegable "Curiosidad Musical".
+   * Revela la información de la ronda, nota lingüística y curiosidad musical escapando todo HTML.
    * @private
    */
-  _renderRoundOverState({ selectedOption, isCorrect, correctAnswer, song, pointsEarned, speedBonus = 0, speedBadge = '', multiplier = 1, isTimeout, gameMode, lyricsData }) {
-    const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
-    const clean = (s) => (s || '').replace(/^[^\w]+|[^\w]+$/g, '').toLowerCase();
+  _renderRoundOverState({
+    selectedOption,
+    isCorrect,
+    correctAnswer,
+    song,
+    pointsEarned,
+    speedBonus = 0,
+    speedBadge = '',
+    multiplier = 1,
+    isTimeout,
+    gameMode,
+    lyricsData,
+    evaluation
+  }) {
+    this._hideAudioUnavailableBanner();
+
+    const buttons = this.dom.optionsGrid?.querySelectorAll('.option-btn') || [];
+    const norm = (s) => String(s || '').trim().toLowerCase();
 
     buttons.forEach((btn) => {
       btn.disabled = true;
-      const opt = clean(btn.dataset.option);
-      if (opt === clean(correctAnswer)) {
+      const opt = norm(btn.dataset.option);
+      if (opt === norm(correctAnswer)) {
         btn.classList.add('correct');
         btn.setAttribute('aria-checked', 'true');
-      } else if (opt === clean(selectedOption) && !isCorrect) {
+      } else if (opt === norm(selectedOption) && !isCorrect) {
         btn.classList.add('wrong');
       }
     });
 
     if (this.dom.lyricsInputField) {
       this.dom.lyricsInputField.disabled = true;
+    }
+    if (this.dom.btnLyricsSubmit) {
+      this.dom.btnLyricsSubmit.disabled = true;
+    }
+    if (this.dom.btnLyricsHintLetters) {
+      this.dom.btnLyricsHintLetters.disabled = true;
     }
 
     const blankEl = document.getElementById('lyrics-blank-token');
@@ -1174,45 +1583,62 @@ export class DOMRenderer {
       blankEl.className = isCorrect ? 'lyrics-blank-token revealed-correct' : 'lyrics-blank-token revealed-wrong';
     }
 
-    if (isTimeout) {
-      this.dom.statusMsg.innerHTML = `
-        <div class="score-feedback-card wrong">
-          <span>⏰ ¡Tiempo agotado! Respuesta: <strong>"${correctAnswer}"</strong></span>
-        </div>
-      `;
-      this.announce(`Tiempo agotado. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para pasar a la siguiente pista.`, true);
-    } else if (isCorrect) {
-      const extraWord = gameMode === GameModes.LYRICS ? `"${correctAnswer}" • ` : '';
-      const bonusHtml = speedBonus > 0 ? `<span class="score-speed-tag">${speedBadge} +${speedBonus}</span>` : '';
-      const streakHtml = multiplier > 1 ? `<span class="score-streak-tag">x${multiplier} Racha 🔥</span>` : '';
-
-      this.dom.statusMsg.innerHTML = `
-        <div class="score-feedback-card correct">
-          <span>¡Correcto! ${extraWord}</span>
-          <span class="score-points-badge">+${pointsEarned} pts</span>
-          ${bonusHtml}
-          ${streakHtml}
-        </div>
-      `;
-      this.announce(`¡Correcto! Respuesta acertada: ${correctAnswer}. Has obtenido ${pointsEarned} puntos (${speedBadge} +${speedBonus} por tiempo). Pulsa Enter para continuar.`);
-    } else {
-      this.dom.statusMsg.innerHTML = `
-        <div class="score-feedback-card wrong">
-          <span>¡Incorrecto! Era <strong>"${correctAnswer}"</strong> 🎶</span>
-        </div>
-      `;
-      this.announce(`Incorrecto. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para continuar.`);
+    // Revelar siempre la traducción al español y la nota lingüística al terminar ronda en Lyrics Challenge
+    if (gameMode === GameModes.LYRICS && lyricsData) {
+      this.dom.verseSpanishTranslation?.classList.remove('hidden');
+      if (this.dom.lyricsLinguisticNote && lyricsData.linguisticNote) {
+        this.dom.lyricsLinguisticNote.textContent = `📚 Clave lingüística: ${lyricsData.linguisticNote}`;
+        this.dom.lyricsLinguisticNote.classList.remove('hidden');
+      }
     }
 
-    this.dom.stageTitle.textContent = `${song.title}`;
-    this.dom.stageSubtitle.textContent = `${song.artist} • ${song.year || ''}`;
+    const safeCorrect = escapeHtml(correctAnswer);
+    const safeSpeedBadge = escapeHtml(speedBadge);
 
-    if (this.dom.minimizedTitle) {
+    if (this.dom.statusMsg) {
+      if (isTimeout) {
+        this.dom.statusMsg.innerHTML = `
+          <div class="score-feedback-card wrong">
+            <span>⏰ ¡Tiempo agotado! Respuesta: <strong>"${safeCorrect}"</strong></span>
+          </div>
+        `;
+        this.announce(`Tiempo agotado. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para pasar a la siguiente pista.`, true);
+      } else if (isCorrect) {
+        const evalHeadline = evaluation?.matchType === 'fuzzy'
+          ? `¡Casi exacto! "${safeCorrect}" • `
+          : gameMode === GameModes.LYRICS
+            ? `"${safeCorrect}" • `
+            : '';
+        const bonusHtml = speedBonus > 0 ? `<span class="score-speed-tag">${safeSpeedBadge} +${speedBonus}</span>` : '';
+        const streakHtml = multiplier > 1 ? `<span class="score-streak-tag">x${multiplier} Racha 🔥</span>` : '';
+
+        this.dom.statusMsg.innerHTML = `
+          <div class="score-feedback-card correct">
+            <span>¡Correcto! ${evalHeadline}</span>
+            <span class="score-points-badge">+${pointsEarned} pts</span>
+            ${bonusHtml}
+            ${streakHtml}
+          </div>
+        `;
+        this.announce(`${evaluation?.feedback || `¡Correcto! Respuesta: ${correctAnswer}.`} Has obtenido ${pointsEarned} puntos. Pulsa Enter para continuar.`);
+      } else {
+        this.dom.statusMsg.innerHTML = `
+          <div class="score-feedback-card wrong">
+            <span>¡Incorrecto! Era <strong>"${safeCorrect}"</strong> 🎶</span>
+          </div>
+        `;
+        this.announce(`Incorrecto. La respuesta correcta era: ${correctAnswer}. Pulsa Enter para continuar.`);
+      }
+    }
+
+    if (this.dom.stageTitle) this.dom.stageTitle.textContent = `${song.title}`;
+    if (this.dom.stageSubtitle) this.dom.stageSubtitle.textContent = `${song.artist} • ${song.year || ''}`;
+
+    if (this.dom.minimizedTitle && this.dom.minimizedSubtitle) {
       this.dom.minimizedTitle.textContent = `${song.title} - ${song.artist} 🎵`;
       this.dom.minimizedSubtitle.textContent = 'Audio en reproducción • Pulsa "Expandir vídeo" para ver el videoclip';
     }
 
-    // Revelar el vídeo interactivo de YouTube y el botón CTA "Siguiente Canción" junto al temporizador
     if (this.dom.audioStage) {
       this.dom.audioStage.classList.remove('ad-skip-mode');
       this.dom.audioStage.classList.add('revealed');
@@ -1222,16 +1648,14 @@ export class DOMRenderer {
     }
     this.dom.btnNext?.classList.remove('hidden');
 
-    if (this.dom.timerStatusDot) {
-      this.dom.timerStatusDot.classList.remove('paused');
-    }
+    this.dom.timerStatusDot?.classList.remove('paused');
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = `🎵 ${song.title} — ${song.artist}`;
     }
 
     if (this.dom.btnYtExternal) {
       if (song.youtubeId) {
-        this.dom.btnYtExternal.href = `https://www.youtube.com/watch?v=${song.youtubeId}`;
+        this.dom.btnYtExternal.href = `https://www.youtube.com/watch?v=${encodeURIComponent(song.youtubeId)}`;
         this.dom.btnYtExternal.style.display = 'inline-flex';
       } else {
         this.dom.btnYtExternal.style.display = 'none';
@@ -1252,7 +1676,6 @@ export class DOMRenderer {
     this._setCuriosityExpanded(false);
     this.dom.discoveryPanel?.classList.add('active');
 
-    // Sincronizar revelación de canción, carátula y curiosidad musical en la TV / Chromecast
     this.castManager?.syncRoundReveal({
       song,
       isCorrect,
@@ -1265,16 +1688,16 @@ export class DOMRenderer {
   }
 
   _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime }) {
-    this.dom.finalScore.textContent = finalScore;
-    this.dom.finalAccuracy.textContent = `${accuracy}%`;
-    this.dom.finalStreak.textContent = `🔥 ${maxStreak}`;
-    this.dom.finalAvgTime.textContent = `${avgTime}s`;
+    if (this.dom.finalScore) this.dom.finalScore.textContent = String(finalScore);
+    if (this.dom.finalAccuracy) this.dom.finalAccuracy.textContent = `${accuracy}%`;
+    if (this.dom.finalStreak) this.dom.finalStreak.textContent = `🔥 ${maxStreak}`;
+    if (this.dom.finalAvgTime) this.dom.finalAvgTime.textContent = `${avgTime}s`;
 
     if (this.dom.recordBadge) {
       this.dom.recordBadge.style.display = isNewRecord ? 'inline-block' : 'none';
     }
 
-    this.dom.gameOverModal.classList.add('open');
+    this.dom.gameOverModal?.classList.add('open');
     this._trapFocusInModal(this.dom.gameOverModal);
     this.announce(`Fin de la sesión. Puntuación final: ${finalScore} puntos. Precisión del ${accuracy} por ciento. Pulsa Enter para jugar otra partida.`);
   }
@@ -1300,17 +1723,13 @@ export class DOMRenderer {
 
   _updateScoreAndStreak(score, streak) {
     if (this.dom.scoreDisplay) {
-      this.dom.scoreDisplay.textContent = score;
+      this.dom.scoreDisplay.textContent = String(score);
     }
     if (this.dom.streakDisplay) {
-      this.dom.streakDisplay.textContent = streak;
+      this.dom.streakDisplay.textContent = String(streak);
     }
     if (this.dom.streakChip) {
-      if (streak >= 2) {
-        this.dom.streakChip.classList.add('active');
-      } else {
-        this.dom.streakChip.classList.remove('active');
-      }
+      this.dom.streakChip.classList.toggle('active', streak >= 2);
     }
   }
 
@@ -1322,17 +1741,15 @@ export class DOMRenderer {
   }
 
   /**
-   * Sistema integral de atajos de teclado accesibles:
-   * 1-4 (normal y numpad): Selección directa de opciones.
-   * Espacio: Alternar reproducción/pausa de audio.
-   * Enter / N: Siguiente pista o reiniciar.
-   * Escape: Cerrar modales activos y devolver el foco.
-   * M: Silenciar/activar audio.
+   * Atajos de teclado accesibles exigiendo ausencia de modificadores (Ctrl/Meta/Alt)
+   * para no interceptar atajos nativos del navegador.
    * @private
    */
   _bindKeyboardShortcuts() {
     window.addEventListener('keydown', async (e) => {
-      // Si hay un modal abierto, Escape y Tab tienen prioridad en el modal
+      // No interceptar combinaciones con modificadores del sistema/navegador
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
       if (this._activeModal) {
         if (e.key === 'Escape') {
           e.preventDefault();
@@ -1341,16 +1758,16 @@ export class DOMRenderer {
         return;
       }
 
-      const isInput = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+      const tag = e.target?.tagName || '';
+      const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || Boolean(e.target?.isContentEditable);
 
-      // Escape general
       if (e.key === 'Escape') {
         this._closeCurrentModal();
         return;
       }
 
-      // Tecla Espacio: Reproducir / Pausar audio (previniendo scroll vertical)
-      if ((e.code === 'Space' || e.key === ' ') && !isInput) {
+      // Espacio: Reproducir / Pausar audio (evitando interferir con inputs o botones enfocados)
+      if ((e.code === 'Space' || e.key === ' ') && !isInput && tag !== 'BUTTON' && tag !== 'A') {
         e.preventDefault();
         if (
           this.gameState.status === GameStates.PLAYING ||
@@ -1368,11 +1785,12 @@ export class DOMRenderer {
         return;
       }
 
-      // Si el usuario escribe en el input de lyrics, no interceptar números ni texto
       if (isInput) return;
 
-      // Tecla S: Forzar el arranque inmediato del temporizador en 120s exactos cancelando la espera de anuncio
-      if (e.key.toLowerCase() === 's') {
+      const lowerKey = e.key.toLowerCase();
+
+      // Tecla S: Iniciar cronómetro manualmente
+      if (lowerKey === 's') {
         if (
           this.gameState.status === GameStates.AWAITING_AUDIO ||
           (this.gameState.status === GameStates.PLAYING && !this.gameLogic.isTimerRunning)
@@ -1384,16 +1802,17 @@ export class DOMRenderer {
         return;
       }
 
-      // Teclas 1, 2, 3, 4 (teclado alfanumérico estándar y numpad)
+      // Teclas 1-4 (cuando las opciones están visibles)
       const numKeys = {
-        '1': 0, 'Digit1': 0, 'Numpad1': 0,
-        '2': 1, 'Digit2': 1, 'Numpad2': 1,
-        '3': 2, 'Digit3': 2, 'Numpad3': 2,
-        '4': 3, 'Digit4': 3, 'Numpad4': 3
+        '1': 0, Digit1: 0, Numpad1: 0,
+        '2': 1, Digit2: 1, Numpad2: 1,
+        '3': 2, Digit3: 2, Numpad3: 2,
+        '4': 3, Digit4: 3, Numpad4: 3
       };
 
-      if (numKeys.hasOwnProperty(e.code) || numKeys.hasOwnProperty(e.key)) {
-        if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO) {
+      if (Object.prototype.hasOwnProperty.call(numKeys, e.code) || Object.prototype.hasOwnProperty.call(numKeys, e.key)) {
+        const gridHidden = this.dom.optionsGrid?.classList.contains('hidden');
+        if (!gridHidden && (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO)) {
           e.preventDefault();
           const optionIndex = numKeys[e.code] !== undefined ? numKeys[e.code] : numKeys[e.key];
           const buttons = this.dom.optionsGrid.querySelectorAll('.option-btn');
@@ -1404,47 +1823,42 @@ export class DOMRenderer {
         return;
       }
 
-      // Tecla Enter o N: Siguiente canción o Reiniciar
-      if (e.key === 'Enter' || e.key.toLowerCase() === 'n') {
+      // Enter o N: Siguiente canción o reiniciar
+      if (e.key === 'Enter' || lowerKey === 'n') {
         if (this.gameState.status === GameStates.ROUND_OVER) {
           e.preventDefault();
           this.gameLogic.nextRound();
         } else if (this.gameState.status === GameStates.GAME_OVER) {
           e.preventDefault();
           this.dom.btnRestart?.click();
-        } else if (this.gameState.status === GameStates.IDLE) {
+        } else if (this.gameState.status === GameStates.IDLE && lowerKey === 'n') {
           e.preventDefault();
           this.dom.btnStart?.click();
         }
         return;
       }
 
-      // Tecla M: Alternar silencio
-      if (e.key.toLowerCase() === 'm') {
+      if (lowerKey === 'm') {
         e.preventDefault();
         this.dom.btnMute?.click();
         return;
       }
 
-      // Tecla V: Minimizar / Expandir reproductor (Anti-spoilers)
-      if (e.key.toLowerCase() === 'v') {
+      if (lowerKey === 'v') {
         e.preventDefault();
         this.dom.btnToggleMinimize?.click();
         return;
       }
 
-      // Tecla C: Abrir panel de envío a Chromecast / TV
-      if (e.key.toLowerCase() === 'c') {
+      if (lowerKey === 'c') {
         e.preventDefault();
         this._openCastModal();
         return;
       }
 
-      // Tecla D: Alternar simulador de dispositivos (PC / Tablet / Móvil)
-      if (e.key.toLowerCase() === 'd' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      if (lowerKey === 'd') {
         e.preventDefault();
         this._cycleDeviceView();
-        return;
       }
     });
   }

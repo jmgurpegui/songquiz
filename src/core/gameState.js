@@ -1,8 +1,9 @@
 /**
- * @fileoverview Máquina de estados finitos (FSM) y contenedor reactivo de estado para SongQuiz.
- * Emplea la API nativa EventTarget para emisión desacoplada de eventos sin librerías externas.
- * Soporta modos de juego: Classic Trivia y Lyrics Challenge.
+ * @fileoverview Máquina de estados finitos (FSM) estricta y contenedor reactivo de estado para SongQuiz.
+ * Emplea EventTarget nativo, bloquea transiciones ilegales y persiste preferencias mediante storageManager.
  */
+
+import { readStorageRaw, readStorageJSON, writeStorageJSON } from '../utils/storageManager.js';
 
 export const GameStates = Object.freeze({
   IDLE: 'IDLE',
@@ -17,6 +18,44 @@ export const GameModes = Object.freeze({
   LYRICS: 'LYRICS'
 });
 
+export const LyricsInputLevels = Object.freeze({
+  RECOGNITION: 'recognition',
+  GUIDED: 'guided'
+});
+
+const GAME_MODE_STORAGE_KEY = 'songquiz_game_mode';
+const LYRICS_LEVEL_STORAGE_KEY = 'songquiz_lyrics_level';
+
+/** Mapa de transiciones permitidas por la FSM. Toda transición fuera de este grafo es rechazada. */
+const VALID_TRANSITIONS = Object.freeze({
+  [GameStates.IDLE]: [GameStates.IDLE, GameStates.AWAITING_AUDIO, GameStates.PLAYING],
+  [GameStates.AWAITING_AUDIO]: [
+    GameStates.IDLE,
+    GameStates.AWAITING_AUDIO,
+    GameStates.PLAYING,
+    GameStates.ROUND_OVER,
+    GameStates.GAME_OVER
+  ],
+  [GameStates.PLAYING]: [
+    GameStates.IDLE,
+    GameStates.AWAITING_AUDIO,
+    GameStates.PLAYING,
+    GameStates.ROUND_OVER,
+    GameStates.GAME_OVER
+  ],
+  [GameStates.ROUND_OVER]: [
+    GameStates.IDLE,
+    GameStates.AWAITING_AUDIO,
+    GameStates.PLAYING,
+    GameStates.GAME_OVER
+  ],
+  [GameStates.GAME_OVER]: [
+    GameStates.IDLE,
+    GameStates.AWAITING_AUDIO,
+    GameStates.PLAYING
+  ]
+});
+
 export class GameState extends EventTarget {
   constructor() {
     super();
@@ -26,6 +65,9 @@ export class GameState extends EventTarget {
 
     /** @type {keyof typeof GameModes} */
     this.gameMode = this._loadSavedGameMode();
+
+    /** @type {'recognition'|'guided'} */
+    this.lyricsLevel = this._loadSavedLyricsLevel();
 
     /** @type {Array<Object>} */
     this.playlist = [];
@@ -48,37 +90,64 @@ export class GameState extends EventTarget {
     this.timeRemaining = 120;
     this.maxRoundTime = 120;
 
-    /** @type {Array<{songId: string, correct: boolean, timeSpent: number, points: number}>} */
+    /** @type {Array<{songId: string, correct: boolean, timeSpent: number, points: number, mode: string}>} */
     this.history = [];
   }
 
   /**
-   * Carga el modo guardado en localStorage o usa CLASSIC por defecto.
+   * Carga el modo guardado (compatible con formato JSON y cadenas heredadas).
    * @private
+   * @returns {keyof typeof GameModes}
    */
   _loadSavedGameMode() {
-    try {
-      const saved = localStorage.getItem('songquiz_game_mode');
-      if (saved && Object.values(GameModes).includes(saved)) {
-        return saved;
-      }
-    } catch {}
+    const jsonVal = readStorageJSON(GAME_MODE_STORAGE_KEY, null, (v) => Object.values(GameModes).includes(v));
+    if (jsonVal) return jsonVal;
+
+    const rawVal = readStorageRaw(GAME_MODE_STORAGE_KEY, '');
+    if (Object.values(GameModes).includes(rawVal)) {
+      return rawVal;
+    }
     return GameModes.CLASSIC;
   }
 
   /**
-   * Cambia el modo de juego activo.
+   * Carga el nivel de andamiaje guardado para Lyrics Challenge.
+   * @private
+   * @returns {'recognition'|'guided'}
+   */
+  _loadSavedLyricsLevel() {
+    return readStorageJSON(
+      LYRICS_LEVEL_STORAGE_KEY,
+      LyricsInputLevels.RECOGNITION,
+      (v) => Object.values(LyricsInputLevels).includes(v)
+    );
+  }
+
+  /**
+   * Cambia el modo de juego activo y persiste la preferencia.
    * @param {keyof typeof GameModes} mode
    */
   setGameMode(mode) {
     if (!Object.values(GameModes).includes(mode)) return;
     this.gameMode = mode;
-    try {
-      localStorage.setItem('songquiz_game_mode', mode);
-    } catch {}
+    writeStorageJSON(GAME_MODE_STORAGE_KEY, mode);
 
     this.dispatchEvent(new CustomEvent('modeChange', {
       detail: { mode: this.gameMode }
+    }));
+  }
+
+  /**
+   * Cambia el nivel de andamiaje en Lyrics Challenge ('recognition' o 'guided').
+   * @param {'recognition'|'guided'} level
+   */
+  setLyricsLevel(level) {
+    if (!Object.values(LyricsInputLevels).includes(level)) return;
+    this.lyricsLevel = level;
+    writeStorageJSON(LYRICS_LEVEL_STORAGE_KEY, level);
+
+    this.dispatchEvent(new CustomEvent('lyricsLevelChange', {
+      detail: { level: this.lyricsLevel }
     }));
   }
 
@@ -97,21 +166,18 @@ export class GameState extends EventTarget {
   }
 
   /**
-   * Transiciona a un nuevo estado de juego emitiendo el evento correspondiente.
+   * Valida y ejecuta una transición de estado de la FSM.
+   * Bloquea cualquier transición no permitida devolviendo `false` sin mutar `this.status`.
+   *
    * @param {keyof typeof GameStates} nextState
    * @param {Object} [payload={}]
+   * @returns {boolean} True si la transición fue aplicada; false si fue bloqueada.
    */
   transition(nextState, payload = {}) {
-    const validTransitions = {
-      [GameStates.IDLE]: [GameStates.AWAITING_AUDIO, GameStates.PLAYING],
-      [GameStates.AWAITING_AUDIO]: [GameStates.PLAYING, GameStates.ROUND_OVER, GameStates.GAME_OVER, GameStates.AWAITING_AUDIO],
-      [GameStates.PLAYING]: [GameStates.AWAITING_AUDIO, GameStates.ROUND_OVER, GameStates.GAME_OVER, GameStates.PLAYING],
-      [GameStates.ROUND_OVER]: [GameStates.AWAITING_AUDIO, GameStates.PLAYING, GameStates.GAME_OVER],
-      [GameStates.GAME_OVER]: [GameStates.IDLE, GameStates.AWAITING_AUDIO, GameStates.PLAYING]
-    };
-
-    if (!validTransitions[this.status]?.includes(nextState)) {
-      console.warn(`Transición de estado no válida: de ${this.status} a ${nextState}`);
+    const allowed = VALID_TRANSITIONS[this.status];
+    if (!allowed || !allowed.includes(nextState)) {
+      console.warn(`Transición de estado bloqueada: de ${this.status} a ${nextState}`);
+      return false;
     }
 
     const prevState = this.status;
@@ -125,23 +191,55 @@ export class GameState extends EventTarget {
         ...payload
       }
     }));
+
+    return true;
   }
 
   /**
    * Inicia oficialmente la cuenta atrás de la ronda una vez sincronizado el audio real
    * o tras pulsar el botón manual de salto de anuncio.
+   *
+   * @returns {boolean} True si pudo iniciar el temporizador.
    */
   startTimer() {
-    this.timeRemaining = this.maxRoundTime;
-    if (this.status === GameStates.AWAITING_AUDIO) {
-      this.status = GameStates.PLAYING;
+    if (this.status !== GameStates.AWAITING_AUDIO && this.status !== GameStates.PLAYING) {
+      return false;
     }
+
+    this.timeRemaining = this.maxRoundTime;
+
+    if (this.status === GameStates.AWAITING_AUDIO) {
+      const moved = this.transition(GameStates.PLAYING, {
+        timerOnly: true,
+        timeRemaining: this.timeRemaining,
+        maxTime: this.maxRoundTime
+      });
+      if (!moved) return false;
+    }
+
     this.dispatchEvent(new CustomEvent('startTimer', {
       detail: {
         timeRemaining: this.timeRemaining,
         maxTime: this.maxRoundTime
       }
     }));
+
+    return true;
+  }
+
+  /**
+   * Pausa la ronda volviendo de manera controlada a AWAITING_AUDIO mediante la FSM.
+   * @param {Object} [payload={}]
+   * @returns {boolean}
+   */
+  pauseToAwaitingAudio(payload = {}) {
+    if (this.status !== GameStates.PLAYING && this.status !== GameStates.AWAITING_AUDIO) {
+      return false;
+    }
+    return this.transition(GameStates.AWAITING_AUDIO, {
+      timerOnly: true,
+      ...payload
+    });
   }
 
   /**
@@ -151,13 +249,17 @@ export class GameState extends EventTarget {
   initGame(shuffledSongs) {
     this.playlist = [...shuffledSongs];
     this.currentIndex = 0;
+    this.currentSong = null;
+    this.currentOptions = [];
+    this.correctAnswer = '';
     this.score = 0;
     this.streak = 0;
     this.maxStreak = 0;
     this.history = [];
     this.timeRemaining = this.maxRoundTime;
-    this.status = GameStates.IDLE;
     this.lyricsChallengeData = null;
+
+    this.transition(GameStates.IDLE, { isReset: true });
 
     this.dispatchEvent(new CustomEvent('gameInit', {
       detail: { totalSongs: this.playlist.length, gameMode: this.gameMode }
@@ -219,9 +321,6 @@ export class GameState extends EventTarget {
    */
   advanceRound() {
     this.currentIndex += 1;
-    if (this.currentIndex < this.playlist.length) {
-      return true;
-    }
-    return false;
+    return this.currentIndex < this.playlist.length;
   }
 }

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Visualizador de espectrograma en tiempo real mediante HTML5 Canvas y Web Audio.
- * Implementa renderizado a 60fps con gradientes de neón, barras redondeadas y físicas de picos flotantes.
+ * Implementa renderizado a 60fps con gradientes de neón, barras redondeadas, físicas de picos
+ * flotantes y soporte accesible completo para `prefers-reduced-motion: reduce`.
  */
 
 export class AudioVisualizer {
@@ -22,11 +23,43 @@ export class AudioVisualizer {
     this.peaks = [];
     this.peakDecay = 1.8;
 
+    // Preferencia de accesibilidad: movimiento reducido (WCAG 2.1)
+    this._motionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : null;
+    this.prefersReducedMotion = Boolean(this._motionQuery?.matches);
+
     this._handleResize = this._handleResize.bind(this);
     this._renderLoop = this._renderLoop.bind(this);
+    this._handleMotionChange = this._handleMotionChange.bind(this);
 
     window.addEventListener('resize', this._handleResize);
+    if (this._motionQuery) {
+      if (typeof this._motionQuery.addEventListener === 'function') {
+        this._motionQuery.addEventListener('change', this._handleMotionChange);
+      } else if (typeof this._motionQuery.addListener === 'function') {
+        this._motionQuery.addListener(this._handleMotionChange);
+      }
+    }
     this._handleResize();
+  }
+
+  /**
+   * Responde dinámicamente a cambios en la preferencia del sistema `prefers-reduced-motion`.
+   * @param {MediaQueryListEvent} e
+   * @private
+   */
+  _handleMotionChange(e) {
+    this.prefersReducedMotion = Boolean(e.matches);
+    if (this.prefersReducedMotion) {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+      this._drawStaticReducedFrame();
+    } else if (this.isRunning && !this.animationId) {
+      this.animationId = requestAnimationFrame(this._renderLoop);
+    }
   }
 
   /**
@@ -38,18 +71,28 @@ export class AudioVisualizer {
     const dpr = window.devicePixelRatio || 1;
     this.canvas.width = Math.floor(rect.width * dpr);
     this.canvas.height = Math.floor(rect.height * dpr);
-    this.ctx.scale(dpr, dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.width = rect.width;
     this.height = rect.height;
+
+    if (this.prefersReducedMotion && this.isRunning) {
+      this._drawStaticReducedFrame();
+    }
   }
 
   /**
-   * Inicia el bucle de renderizado.
+   * Inicia el bucle de renderizado (o pinta un fotograma estático si hay movimiento reducido).
    */
   start() {
     if (this.isRunning) return;
     this.isRunning = true;
     this._handleResize();
+
+    if (this.prefersReducedMotion) {
+      this._drawStaticReducedFrame();
+      return;
+    }
+
     this.animationId = requestAnimationFrame(this._renderLoop);
   }
 
@@ -65,18 +108,34 @@ export class AudioVisualizer {
   }
 
   /**
+   * Dibuja un espectro estático sobrio cuando el usuario prefiere movimiento reducido.
+   * @private
+   */
+  _drawStaticReducedFrame() {
+    if (!this.ctx || !this.width || !this.height) return;
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
+    const midY = this.height / 2;
+    this.ctx.beginPath();
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeStyle = 'rgba(102, 252, 241, 0.25)';
+    this.ctx.moveTo(24, midY);
+    this.ctx.lineTo(Math.max(24, this.width - 24), midY);
+    this.ctx.stroke();
+  }
+
+  /**
    * Bucle principal de animación a 60fps.
    * @private
    */
   _renderLoop() {
-    if (!this.isRunning) return;
+    if (!this.isRunning || this.prefersReducedMotion) return;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     const freqData = this.audioEngine.getFrequencyData();
     let hasSignal = false;
 
-    // Comprobar si hay señal activa de audio
     for (let i = 0; i < freqData.length; i++) {
       if (freqData[i] > 5) {
         hasSignal = true;
@@ -105,7 +164,6 @@ export class AudioVisualizer {
     const barWidth = Math.max(3, (this.width - 40 - totalSpacing) / barCount);
     const startX = (this.width - (barCount * barWidth + totalSpacing)) / 2;
 
-    // Crear gradiente de neón (Cian base -> Magenta en picos)
     const gradient = this.ctx.createLinearGradient(0, this.height, 0, 0);
     gradient.addColorStop(0, '#45a29e');
     gradient.addColorStop(0.4, '#66fcf1');
@@ -117,7 +175,6 @@ export class AudioVisualizer {
     }
 
     for (let i = 0; i < barCount; i++) {
-      // Mapeo no lineal para equilibrar graves y agudos
       const dataIndex = Math.floor(Math.pow(i / barCount, 1.4) * (freqData.length - 1));
       const value = freqData[dataIndex] || 0;
       const percent = value / 255;
@@ -126,14 +183,12 @@ export class AudioVisualizer {
       const x = startX + i * (barWidth + barSpacing);
       const y = this.height - barHeight - 10;
 
-      // Actualizar física del pico flotante
       if (barHeight >= this.peaks[i]) {
         this.peaks[i] = barHeight;
       } else {
         this.peaks[i] = Math.max(0, this.peaks[i] - this.peakDecay);
       }
 
-      // Dibujar barra redondeada
       this.ctx.fillStyle = gradient;
       this.ctx.beginPath();
       if (typeof this.ctx.roundRect === 'function') {
@@ -143,7 +198,6 @@ export class AudioVisualizer {
       }
       this.ctx.fill();
 
-      // Dibujar cápsula flotante en la cima
       if (this.peaks[i] > 4) {
         const peakY = this.height - this.peaks[i] - 12;
         this.ctx.fillStyle = '#ff007a';
@@ -187,5 +241,12 @@ export class AudioVisualizer {
   destroy() {
     this.stop();
     window.removeEventListener('resize', this._handleResize);
+    if (this._motionQuery) {
+      if (typeof this._motionQuery.removeEventListener === 'function') {
+        this._motionQuery.removeEventListener('change', this._handleMotionChange);
+      } else if (typeof this._motionQuery.removeListener === 'function') {
+        this._motionQuery.removeListener(this._handleMotionChange);
+      }
+    }
   }
 }

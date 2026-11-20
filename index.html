@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="SongQuiz - Trivia musical interactiva con 500 canciones, Top 100 YouTube, diseño móvil/tablet y soporte Chromecast.">
+  <meta name="description" content="SongQuiz - Trivia musical interactiva con 291 canciones verificadas, Top 100 YouTube, modo Lyrics Challenge, diseño móvil/tablet y soporte Chromecast.">
   <meta name="theme-color" content="#121212">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -41,7 +41,7 @@
   <div id="a11y-announcer" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
   <div id="a11y-alert" class="visually-hidden" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
-  <div class="app-container">
+  <div class="app-container" id="app-container">
     <!-- CABECERA COMPACTA CON IDENTIDAD PROPIA -->
     <header class="app-header">
       <div class="header-left">
@@ -54,6 +54,18 @@
           </svg>
           <span class="brand-title">SongQuiz</span>
         </a>
+
+        <!-- Selector de Modo de Juego: Classic Trivia vs Lyrics Challenge -->
+        <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
+          <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Modo clásico: adivina la canción y el artista">
+            <span>🎵</span>
+            <span>Classic</span>
+          </button>
+          <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Modo pedagógico: completa la letra en inglés con traducción y pistas">
+            <span>📝</span>
+            <span>Lyrics</span>
+          </button>
+        </div>
 
         <!-- Conexión directa con el cuaderno NotebookLM SongQuiz (Catálogo Maestro Verificado) -->
         <a href="https://notebooklm.google.com/notebook/3926d997-19b3-45b1-80da-ff8e01a86e55" target="_blank" rel="noopener noreferrer" class="brand-badge" title="Conectado con cuaderno NotebookLM SongQuiz (Catálogo Maestro Verificado)" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
@@ -253,6 +265,60 @@
           </div>
         </div>
 
+        <!-- BANNER DE AUDIO NO DISPONIBLE (SALTO SIN PENALIZACIÓN) -->
+        <div class="audio-unavailable-banner hidden" id="audio-unavailable-banner" role="alert">
+          <div class="audio-unavailable-info">
+            <span aria-hidden="true">⚠️</span>
+            <span id="audio-unavailable-reason">No se pudo cargar el audio oficial de esta pista.</span>
+          </div>
+          <button id="btn-skip-unavailable" class="btn-skip-safe" type="button">
+            Saltar sin penalización ⏭️
+          </button>
+        </div>
+
+        <!-- CAJA DE DESAFÍO PEDAGÓGICO "LYRICS CHALLENGE" (CARGA DIFERIDA) -->
+        <section class="lyrics-challenge-box hidden" id="lyrics-challenge-box" aria-label="Desafío pedagógico Lyrics Challenge">
+          <div class="lyrics-toolbar">
+            <div class="lyrics-toolbar-left">
+              <span class="challenge-badge">Lyrics Challenge</span>
+              <span class="genre-pill" id="lyrics-difficulty-badge">B1</span>
+              <div class="lyrics-level-switcher" role="radiogroup" aria-label="Nivel de andamiaje">
+                <button id="btn-lyrics-level-recognition" class="lyrics-level-btn active" type="button" role="radio" aria-checked="true">
+                  Opciones
+                </button>
+                <button id="btn-lyrics-level-guided" class="lyrics-level-btn" type="button" role="radio" aria-checked="false">
+                  Escritura guiada
+                </button>
+              </div>
+            </div>
+            <div class="lyrics-toolbar-right">
+              <button id="btn-lyrics-repeat-cue" class="lyrics-action-chip" type="button" title="Repetir fragmento del verso">
+                ↺ Verso
+              </button>
+              <button id="btn-lyrics-hint-es" class="lyrics-action-chip" type="button" aria-pressed="false" title="Mostrar traducción al español como pista">
+                🇪🇸 Traducción
+              </button>
+              <button id="btn-lyrics-hint-letters" class="lyrics-action-chip" type="button" title="Mostrar pista progresiva de letras">
+                💡 Pista
+              </button>
+            </div>
+          </div>
+
+          <div class="verse-quote-box">
+            <div class="verse-english-row">
+              <p class="verse-english-text" id="verse-english-text"></p>
+            </div>
+            <p class="verse-spanish-translation hidden" id="verse-spanish-translation"></p>
+            <p class="lyrics-linguistic-note hidden" id="lyrics-linguistic-note"></p>
+          </div>
+
+          <div class="lyrics-input-row hidden" id="lyrics-input-row">
+            <label for="lyrics-input-field" class="visually-hidden">Escribe la palabra en inglés que falta</label>
+            <input type="text" id="lyrics-input-field" class="lyrics-input-field" autocomplete="off" spellcheck="false" placeholder="Escribe la palabra que falta en inglés y pulsa Enter...">
+            <button id="btn-lyrics-submit" class="btn-primary btn-cta-inline" type="button">Comprobar</button>
+          </div>
+        </section>
+
         <!-- Cuadrícula 2x2 de Opciones (mínimo 56px, acabado translúcido blur 12px, foco en el título) -->
         <div class="options-grid" id="options-grid" role="radiogroup" aria-label="Opciones de respuesta disponibles">
           <!-- Inyectado dinámicamente por domRenderer.js -->
@@ -302,16 +368,16 @@
         <button id="btn-close-importer" class="icon-btn" type="button" aria-label="Cerrar modal">✕</button>
       </div>
 
-      <!-- Pestañas del Gestor -->
-      <div class="playlist-tabs">
-        <button class="playlist-tab-btn active" data-tab="tab-link">🎵 Temáticas & Enlace</button>
-        <button class="playlist-tab-btn" data-tab="tab-list">📋 Lista Activa</button>
-        <button class="playlist-tab-btn" data-tab="tab-json">📥 Pegar Texto / JSON</button>
-        <button class="playlist-tab-btn" data-tab="tab-youtube">⚡ Script CLI</button>
+      <!-- Pestañas del Gestor (WAI-ARIA Tablist) -->
+      <div class="playlist-tabs" role="tablist" aria-label="Secciones del gestor de playlists">
+        <button id="tab-btn-link" class="playlist-tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="tab-link" tabindex="0" data-tab="tab-link">🎵 Temáticas & Enlace</button>
+        <button id="tab-btn-list" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-list" tabindex="-1" data-tab="tab-list">📋 Lista Activa</button>
+        <button id="tab-btn-json" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-json" tabindex="-1" data-tab="tab-json">📥 Pegar Texto / JSON</button>
+        <button id="tab-btn-youtube" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-youtube" tabindex="-1" data-tab="tab-youtube">⚡ Script CLI</button>
       </div>
 
       <!-- Pestaña 1: Listas Populares por Temática e Importación por Enlace -->
-      <div class="playlist-tab-content" id="tab-link">
+      <div class="playlist-tab-content" id="tab-link" role="tabpanel" aria-labelledby="tab-btn-link">
         <div class="thematic-playlists-section">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
             <span style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-accent-light);">
@@ -337,11 +403,11 @@
           </button>
         </div>
 
-        <div id="import-progress-status" style="min-height: 1.4rem; font-size: var(--text-xs); color: var(--color-accent-light); font-weight: 600;"></div>
+        <div id="import-progress-status" role="status" aria-live="polite" style="min-height: 1.4rem; font-size: var(--text-xs); color: var(--color-accent-light); font-weight: 600;"></div>
       </div>
 
       <!-- Pestaña 2: Lista de Canciones Activas -->
-      <div class="playlist-tab-content" id="tab-list" style="display: none;">
+      <div class="playlist-tab-content" id="tab-list" role="tabpanel" aria-labelledby="tab-btn-list" hidden>
         <div class="playlist-table-container">
           <table class="playlist-table">
             <thead>
@@ -371,21 +437,24 @@
       </div>
 
       <!-- Pestaña 3: Pegar Texto o JSON -->
-      <div class="playlist-tab-content" id="tab-json" style="display: none;">
+      <div class="playlist-tab-content" id="tab-json" role="tabpanel" aria-labelledby="tab-btn-json" hidden>
         <p style="font-size: var(--text-xs); color: var(--color-secondary); margin-bottom: var(--space-xs);">
           Pega un catálogo JSON completo o una lista simple de canciones (ej: <code>Artista - Título</code> en cada línea):
         </p>
-        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder="[ { 'id': '...', 'title': '...' } ]&#10;o pega texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights" style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
+        <label for="playlist-json-input" class="visually-hidden">Catálogo JSON o lista de canciones en texto</label>
+        <textarea id="playlist-json-input" class="playlist-input" rows="8" placeholder='[ { "id": "...", "title": "..." } ]&#10;o pega texto simple:&#10;Queen - Bohemian Rhapsody&#10;The Weeknd - Blinding Lights' style="font-family: var(--font-mono); font-size: 0.78rem;"></textarea>
+
+        <div id="playlist-json-feedback" class="inline-feedback-banner hidden" role="status" aria-live="polite"></div>
 
         <div class="controls-centered" style="margin-top: var(--space-sm);">
           <button id="btn-apply-custom-json" class="btn-primary" type="button">
-            ✓ Guardar y Activar Lista
+            ✓ Validar, Guardar y Activar Lista
           </button>
         </div>
       </div>
 
       <!-- Pestaña 4: Guía de Importador CLI YouTube -->
-      <div class="playlist-tab-content" id="tab-youtube" style="display: none;">
+      <div class="playlist-tab-content" id="tab-youtube" role="tabpanel" aria-labelledby="tab-btn-youtube" hidden>
         <div style="background: rgba(0,0,0,0.5); padding: var(--space-md); border-radius: var(--radius-md); font-size: var(--text-sm); line-height: 1.6;">
           <p style="font-weight: 700; color: var(--color-accent-light); margin-bottom: 6px;">
             🚀 Importador Automático de Listas de Reproducción de YouTube
@@ -519,6 +588,20 @@
           <strong>🍎 En iPad / iPhone (AirPlay o YouTube):</strong>
           <p>Usa <em>«Abrir en YouTube TV»</em> para reproducir en la app de tu televisor, o activa <strong>Duplicar pantalla / AirPlay</strong> desde el Centro de Control de iOS.</p>
         </div>
+      </div>
+
+      <div id="cast-inline-hint" class="inline-feedback-banner hidden" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- DIÁLOGO ACCESIBLE DE CONFIRMACIÓN (REEMPLAZA window.confirm) -->
+  <div class="modal-overlay" id="confirm-dialog-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
+    <div class="modal-card" style="max-width: 420px; text-align: left;">
+      <h2 class="modal-heading" id="confirm-dialog-title" style="font-size: var(--text-lg);">Confirmar acción</h2>
+      <p id="confirm-dialog-message" style="color: var(--color-secondary); font-size: var(--text-sm); line-height: 1.5;"></p>
+      <div class="confirm-dialog-actions">
+        <button id="btn-confirm-cancel" class="btn-subtle" type="button">Cancelar</button>
+        <button id="btn-confirm-accept" class="btn-primary" type="button">Confirmar</button>
       </div>
     </div>
   </div>

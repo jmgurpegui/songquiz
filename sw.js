@@ -3,7 +3,7 @@
  * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios estáticos.
  */
 
-const CACHE_NAME = 'songquiz-v3.2.2';
+const CACHE_NAME = 'songquiz-v3.3.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -12,15 +12,19 @@ const PRECACHE_ASSETS = [
   './src/styles/variables.css',
   './src/styles/main.css',
   './src/data/songs.json',
+  './src/data/lyricsBank.json',
   './src/data/thematicPlaylists.js',
   './src/utils/random.js',
   './src/utils/playlistParser.js',
+  './src/utils/storageManager.js',
+  './src/utils/catalogValidator.js',
   './src/audio/soundFX.js',
   './src/audio/audioEngine.js',
   './src/audio/youtubePlayer.js',
   './src/audio/castManager.js',
   './src/ui/visualizer.js',
   './src/core/gameState.js',
+  './src/core/lyricsChallengeEngine.js',
   './src/core/gameLogic.js',
   './src/ui/domRenderer.js',
   './src/main.js',
@@ -62,7 +66,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
   const isSameOrigin = url.origin === self.location.origin;
-  const isCodeOrData = isSameOrigin && /\.(html|js|css|json)$/i.test(url.pathname) || url.pathname.endsWith('/');
+  const isCodeOrData = (isSameOrigin && /\.(html|js|css|json)$/i.test(url.pathname)) || url.pathname.endsWith('/');
 
   if (isCodeOrData) {
     // Network-First para garantizar que móvil, tablet y escritorio carguen siempre la última versión

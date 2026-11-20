@@ -1,8 +1,47 @@
 /**
  * @fileoverview Motor de integración oficial con YouTube IFrame API para SongQuiz.
  * Permite reproducir vídeos y audios oficiales de YouTube con controles completos,
- * salto de anuncios e intros (+15s / -10s), soporte de escucha continua y eventos de sincronización.
+ * salto de anuncios e intros (+15s / -10s), salto directo a verso (seekTo) y
+ * verificación de audio local auténtico para evitar fallbacks engañosos.
  */
+
+/**
+ * Mapa de pistas locales auténticas empaquetadas en `assets/audio/`.
+ * Cualquier canción cuyo título no corresponda a su archivo `.wav` NO debe reproducir
+ * ese archivo como sustituto al fallar YouTube.
+ */
+const AUTHENTIC_LOCAL_AUDIO_MAP = Object.freeze({
+  'assets/audio/blinding_lights.wav': ['blinding lights'],
+  'assets/audio/shape_of_you.wav': ['shape of you'],
+  'assets/audio/bohemian_rhapsody.wav': ['bohemian rhapsody'],
+  'assets/audio/billie_jean.wav': ['billie jean'],
+  'assets/audio/stayin_alive.wav': ["stayin' alive", 'stayin alive'],
+  'assets/audio/take_on_me.wav': ['take on me']
+});
+
+/**
+ * Comprueba si `song.audioSrc` corresponde realmente a la canción indicada
+ * (o a un archivo personalizado ajeno a los 6 `.wav` de demostración).
+ *
+ * @param {Object|null|undefined} song
+ * @returns {boolean} True únicamente si el audio local es auténtico para esa pista.
+ */
+export function hasAuthenticLocalAudio(song) {
+  if (!song || typeof song.audioSrc !== 'string' || !song.audioSrc.trim()) {
+    return false;
+  }
+
+  const normalizedSrc = song.audioSrc.trim().replace(/^\.\//, '');
+  const expectedTitles = AUTHENTIC_LOCAL_AUDIO_MAP[normalizedSrc];
+
+  // Si apunta a un audio propio distinto de los 6 .wav de muestra, se considera auténtico
+  if (!expectedTitles) {
+    return true;
+  }
+
+  const normalizedTitle = String(song.title || '').trim().toLowerCase();
+  return expectedTitles.includes(normalizedTitle);
+}
 
 export class YouTubePlayerEngine {
   constructor() {
@@ -36,18 +75,43 @@ export class YouTubePlayerEngine {
 
   /**
    * Carga la API de YouTube de forma asíncrona e inicializa el reproductor en el DOM.
-   * @param {string} containerId - ID del contenedor div (ej. 'ytplayer').
+   * @param {string} [containerId='ytplayer'] - ID del contenedor div.
    * @returns {Promise<void>}
    */
   init(containerId = 'ytplayer') {
     if (this._readyPromise) return this._readyPromise;
 
     this._readyPromise = new Promise((resolve, reject) => {
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        this._readyPromise = null;
+        reject(new Error('Sin conexión de red para cargar YouTube IFrame API.'));
+        return;
+      }
+
+      const timeoutId = setTimeout(() => {
+        if (!this.isReady) {
+          this._readyPromise = null;
+          reject(new Error('Tiempo de espera agotado al cargar YouTube IFrame API.'));
+        }
+      }, 10000);
+
+      const finishResolve = () => {
+        clearTimeout(timeoutId);
+        resolve();
+      };
+
+      const finishReject = (err) => {
+        clearTimeout(timeoutId);
+        this._readyPromise = null;
+        reject(err);
+      };
+
       if (!window.YT || !window.YT.Player) {
         const existingTag = document.querySelector('script[src*="youtube.com/iframe_api"]');
         if (!existingTag) {
           const tag = document.createElement('script');
           tag.src = 'https://www.youtube.com/iframe_api';
+          tag.onerror = () => finishReject(new Error('No se pudo descargar YouTube IFrame API.'));
           const firstScriptTag = document.getElementsByTagName('script')[0];
           firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         }
@@ -55,10 +119,10 @@ export class YouTubePlayerEngine {
         const prevApiReady = window.onYouTubeIframeAPIReady;
         window.onYouTubeIframeAPIReady = () => {
           if (typeof prevApiReady === 'function') prevApiReady();
-          this._createPlayer(containerId, resolve, reject);
+          this._createPlayer(containerId, finishResolve, finishReject);
         };
       } else {
-        this._createPlayer(containerId, resolve, reject);
+        this._createPlayer(containerId, finishResolve, finishReject);
       }
     });
 
@@ -91,7 +155,6 @@ export class YouTubePlayerEngine {
         events: {
           onReady: () => {
             this.isReady = true;
-            // Asegurar la delegación de autoplay/fullscreen al iframe (Chrome Android la exige)
             try {
               const iframe = typeof this.player.getIframe === 'function' ? this.player.getIframe() : null;
               if (iframe) {
@@ -120,8 +183,9 @@ export class YouTubePlayerEngine {
           onError: (event) => {
             console.warn('YouTube Player error code:', event.data);
             this._clearPlaybackWatcher();
+            this._clearBlockedCheck();
             if (typeof this._onErrorCb === 'function') {
-              this._onErrorCb(event.data);
+              this._onErrorCb(event.data, this.currentVideoId);
             }
           }
         }
@@ -133,8 +197,7 @@ export class YouTubePlayerEngine {
 
   /**
    * Watcher de sincronización Pre-Roll que evalúa player.getCurrentTime() cada 250ms
-   * tras recibir YT.PlayerState.PLAYING. Dispara onAudioActuallyPlaying únicamente
-   * cuando getCurrentTime() > 0.8 segundos y no hay un anuncio pre-roll activo.
+   * tras recibir YT.PlayerState.PLAYING.
    * @private
    */
   _startPlaybackWatcher() {
@@ -155,14 +218,13 @@ export class YouTubePlayerEngine {
         const videoData = typeof this.player.getVideoData === 'function' ? this.player.getVideoData() : null;
         const loadedVideoId = videoData?.video_id || '';
 
-        // Si loadedVideoId difiere de currentVideoId, YouTube está reproduciendo un anuncio en el iframe
         const isAdActive = Boolean(loadedVideoId && this.currentVideoId && loadedVideoId !== this.currentVideoId);
 
         if (!isAdActive && currentTime > 0.8) {
           this._audioStartedForCurrentTrack = true;
           this._clearPlaybackWatcher();
           if (typeof this._onAudioActuallyPlayingCb === 'function') {
-            this._onAudioActuallyPlayingCb(currentTime);
+            this._onAudioActuallyPlayingCb(currentTime, this.currentVideoId);
           }
         }
       } catch (e) {
@@ -195,11 +257,13 @@ export class YouTubePlayerEngine {
     this._audioStartedForCurrentTrack = false;
     this.currentVideoId = videoId;
 
+    const safeStart = Number.isFinite(startSeconds) ? Math.max(0, startSeconds) : 0;
+
     try {
       if (typeof this.player.loadVideoById === 'function') {
         this.player.loadVideoById({
           videoId: videoId,
-          startSeconds: startSeconds
+          startSeconds: safeStart
         });
         if (!this.isMuted && typeof this.player.unMute === 'function') {
           this.player.unMute();
@@ -208,12 +272,12 @@ export class YouTubePlayerEngine {
       }
     } catch (e) {
       console.warn('Error al cargar vídeo en YT.Player:', e);
+      throw e;
     }
   }
 
   /**
-   * Programa una comprobación: si tras unos segundos el vídeo no está sonando ni cargando,
-   * el navegador (Chrome móvil, Safari iOS) ha bloqueado el autoplay y hace falta un toque del usuario.
+   * Programa una comprobación para detectar bloqueo de autoplay en móvil/iOS.
    * @private
    */
   _scheduleBlockedCheck(delayMs = 3500) {
@@ -222,7 +286,6 @@ export class YouTubePlayerEngine {
       this._blockedCheckTimer = null;
       if (!this.player || typeof this.player.getPlayerState !== 'function') return;
       const state = this.player.getPlayerState();
-      // 1 = PLAYING, 3 = BUFFERING
       if (state !== 1 && state !== 3 && typeof this._onPlaybackBlockedCb === 'function') {
         this._onPlaybackBlockedCb(state);
       }
@@ -238,8 +301,7 @@ export class YouTubePlayerEngine {
   }
 
   /**
-   * Fuerza la reproducción con sonido. Debe llamarse dentro de un gesto del usuario (toque/clic)
-   * para que Chrome móvil conceda el permiso de autoplay al iframe de YouTube.
+   * Fuerza la reproducción con sonido tras gesto explícito del usuario.
    */
   forcePlay() {
     if (!this.player) return;
@@ -258,7 +320,7 @@ export class YouTubePlayerEngine {
   }
 
   /**
-   * Callback cuando se detecta que el navegador bloqueó la reproducción automática.
+   * Callback cuando el navegador bloquea la reproducción automática.
    * @param {function(number): void} cb
    */
   onPlaybackBlocked(cb) {
@@ -275,19 +337,32 @@ export class YouTubePlayerEngine {
 
   /**
    * Adelanta o retrocede la reproducción un número determinado de segundos.
-   * Ideal para saltar introducciones largas y llegar a la letra de la canción.
-   * @param {number} deltaSeconds - Segundos a desplazar (ej. +15 o -10).
+   * @param {number} deltaSeconds
    */
   seekBy(deltaSeconds) {
     if (!this.player || !this.isReady) return;
     try {
       const current = typeof this.player.getCurrentTime === 'function' ? this.player.getCurrentTime() : 0;
       const target = Math.max(0, current + deltaSeconds);
-      if (typeof this.player.seekTo === 'function') {
-        this.player.seekTo(target, true);
-      }
+      this.seekTo(target);
     } catch (e) {
       console.warn('Error al desplazar tiempo en YouTube:', e);
+    }
+  }
+
+  /**
+   * Sitúa la reproducción en un segundo concreto (útil para repetir el verso en Lyrics Challenge).
+   * @param {number} targetSeconds
+   */
+  seekTo(targetSeconds) {
+    if (!this.player || !this.isReady) return;
+    try {
+      const safeTarget = Math.max(0, Number(targetSeconds) || 0);
+      if (typeof this.player.seekTo === 'function') {
+        this.player.seekTo(safeTarget, true);
+      }
+    } catch (e) {
+      console.warn('Error al saltar al segundo indicado en YouTube:', e);
     }
   }
 
@@ -314,12 +389,12 @@ export class YouTubePlayerEngine {
     if (this.player && typeof this.player.pauseVideo === 'function') {
       try {
         this.player.pauseVideo();
-      } catch (e) {}
+      } catch {}
     }
   }
 
   /**
-   * Detiene el vídeo.
+   * Detiene el vídeo y limpia los temporizadores internos.
    */
   stop() {
     this._clearPlaybackWatcher();
@@ -327,7 +402,7 @@ export class YouTubePlayerEngine {
     if (this.player && typeof this.player.stopVideo === 'function') {
       try {
         this.player.stopVideo();
-      } catch (e) {}
+      } catch {}
     }
   }
 
@@ -339,10 +414,9 @@ export class YouTubePlayerEngine {
     if (this.isPlaying) {
       this.pause();
       return false;
-    } else {
-      this.play();
-      return true;
     }
+    this.play();
+    return true;
   }
 
   /**
@@ -402,15 +476,15 @@ export class YouTubePlayerEngine {
 
   /**
    * Asigna callback para errores de YouTube (101, 150, etc.).
-   * @param {function(number): void} cb
+   * @param {function(number, string|null): void} cb
    */
   onError(cb) {
     this._onErrorCb = cb;
   }
 
   /**
-   * Asigna callback para cuando el audio real de la canción supera 0.7s tras posibles anuncios pre-roll.
-   * @param {function(number): void} cb
+   * Asigna callback para cuando el audio real de la canción supera 0.8s tras posibles anuncios pre-roll.
+   * @param {function(number, string|null): void} cb
    */
   onAudioActuallyPlaying(cb) {
     this._onAudioActuallyPlayingCb = cb;
