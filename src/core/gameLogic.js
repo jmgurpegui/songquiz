@@ -26,7 +26,7 @@ export const STORAGE_KEYS = Object.freeze({
 });
 
 const MAX_TRACKED_SONG_IDS = 300;
-const LYRICS_BANK_URL = './src/data/lyricsBank.json';
+const LYRICS_BANK_URL = new URL('../data/lyricsBank.json', import.meta.url).href;
 
 /**
  * Crea una estructura limpia de progreso del jugador.

@@ -3,31 +3,14 @@
  * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios e iconos.
  */
 
-const CACHE_NAME = 'songquiz-v3.7.2';
+const CACHE_NAME = 'songquiz-v3.8.1';
 
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './src/styles/variables.css',
-  './src/styles/main.css',
   './src/data/songs.json',
   './src/data/lyricsBank.json',
-  './src/data/thematicPlaylists.js',
-  './src/utils/random.js',
-  './src/utils/playlistParser.js',
-  './src/utils/storageManager.js',
-  './src/utils/catalogValidator.js',
-  './src/utils/pwaManager.js',
-  './src/audio/soundFX.js',
-  './src/audio/audioEngine.js',
-  './src/audio/mediaResolver.js',
-  './src/ui/visualizer.js',
-  './src/core/gameState.js',
-  './src/core/lyricsChallengeEngine.js',
-  './src/core/gameLogic.js',
-  './src/ui/domRenderer.js',
-  './src/main.js',
   './assets/icons/favicon.svg',
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg',
@@ -46,7 +29,20 @@ const PRECACHE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .then((cache) =>
+        Promise.allSettled(
+          PRECACHE_ASSETS.map((assetUrl) =>
+            fetch(assetUrl, { cache: 'no-cache' })
+              .then((res) => {
+                if (res && res.ok) {
+                  return cache.put(assetUrl, res);
+                }
+                return undefined;
+              })
+              .catch(() => undefined)
+          )
+        )
+      )
       .then(() => self.skipWaiting())
   );
 });

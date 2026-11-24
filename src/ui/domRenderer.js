@@ -8,7 +8,7 @@
 import { GameStates, GameModes, LyricsInputLevels } from '../core/gameState.js';
 import { fetchPlaylistFromYouTube, parseTextPlaylist } from '../utils/playlistParser.js';
 import { THEMATIC_PLAYLISTS } from '../data/thematicPlaylists.js';
-import { readStorageRaw, writeStorageJSON, escapeHtml } from '../utils/storageManager.js';
+import { removeStorageKey, escapeHtml } from '../utils/storageManager.js';
 import { auditSongCatalog, sanitizeImportedCatalog } from '../utils/catalogValidator.js';
 import { buildScaffoldingHint } from '../core/lyricsChallengeEngine.js';
 import { localMediaLibrary, buildYoutubeThumbnailUrl, buildExternalYoutubeUrl } from '../audio/mediaResolver.js';
@@ -54,7 +54,7 @@ export class DOMRenderer {
     this._bindPWAEvents();
     this._updateModeButtons();
     this._updateLyricsLevelButtons();
-    this._initDeviceView();
+    this._initAutoDeviceDetection();
   }
 
   /**
@@ -68,18 +68,18 @@ export class DOMRenderer {
       streakDisplay: document.getElementById('streak-display'),
       streakChip: document.getElementById('streak-chip'),
       roundIndicator: document.getElementById('round-indicator'),
-      btnMute: document.getElementById('btn-mute'),
       btnOpenImporter: document.getElementById('btn-open-importer'),
-      deviceSwitcher: document.getElementById('device-switcher'),
-      deviceButtons: document.querySelectorAll('.device-btn'),
 
       // Regiones de anuncios accesibles ARIA Live
       a11yAnnouncer: document.getElementById('a11y-announcer'),
       a11yAlert: document.getElementById('a11y-alert'),
 
-      // Selector de modo y listas temáticas
+      // Selector de modo, popover explicativo y listas temáticas
       btnModeClassic: document.getElementById('btn-mode-classic'),
       btnModeLyrics: document.getElementById('btn-mode-lyrics'),
+      btnModeInfo: document.getElementById('btn-mode-info'),
+      btnCloseModeInfo: document.getElementById('btn-close-mode-info'),
+      modeInfoPopover: document.getElementById('mode-info-popover'),
       themePillsBar: document.getElementById('theme-pills-bar'),
       thematicPlaylistsGrid: document.getElementById('thematic-playlists-grid'),
 
@@ -443,13 +443,6 @@ export class DOMRenderer {
       this.gameLogic.startNewGame(this.gameLogic.allSongs, this.gameLogic.isOrderedMode);
     });
 
-    this.dom.btnMute?.addEventListener('click', () => {
-      const isMuted = this.audioEngine.toggleMute();
-      this.soundFX.toggleMute();
-      this._updateMuteIcon(isMuted);
-      this.announce(isMuted ? 'Sonido silenciado' : 'Sonido activado');
-    });
-
     this.dom.btnToggleMinimize?.addEventListener('click', () => {
       if (!this.isLocalVideoRound || this.gameState.status !== GameStates.ROUND_OVER) return;
       this.isPostRevealMinimized = !this.isPostRevealMinimized;
@@ -500,6 +493,7 @@ export class DOMRenderer {
 
     // Selector de modo de juego (Classic vs Lyrics Challenge con carga diferida)
     this.dom.btnModeClassic?.addEventListener('click', async () => {
+      this._setModeInfoOpen(false);
       if (this.gameState.gameMode !== GameModes.CLASSIC) {
         const res = await this.gameLogic.switchGameMode(GameModes.CLASSIC);
         this._updateModeButtons();
@@ -510,6 +504,7 @@ export class DOMRenderer {
     });
 
     this.dom.btnModeLyrics?.addEventListener('click', async () => {
+      this._setModeInfoOpen(false);
       if (this.gameState.gameMode !== GameModes.LYRICS) {
         const res = await this.gameLogic.switchGameMode(GameModes.LYRICS);
         this._updateModeButtons();
@@ -518,6 +513,29 @@ export class DOMRenderer {
         } else {
           this.announce(`No se pudo activar Lyrics Challenge: ${res.error || 'Error al cargar banco de letras.'}`, true);
         }
+      }
+    });
+
+    // Popover comparativo entre Classic y Lyrics
+    this.dom.btnModeInfo?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isCurrentlyOpen = !this.dom.modeInfoPopover?.classList.contains('hidden');
+      this._setModeInfoOpen(!isCurrentlyOpen);
+    });
+
+    this.dom.btnCloseModeInfo?.addEventListener('click', () => {
+      this._setModeInfoOpen(false);
+      this.dom.btnModeInfo?.focus();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (
+        this.dom.modeInfoPopover &&
+        !this.dom.modeInfoPopover.classList.contains('hidden') &&
+        !this.dom.modeInfoPopover.contains(e.target) &&
+        !this.dom.btnModeInfo?.contains(e.target)
+      ) {
+        this._setModeInfoOpen(false);
       }
     });
 
@@ -659,62 +677,41 @@ export class DOMRenderer {
   }
 
   /**
-   * Inicializa el simulador de dispositivos interactivo (PC / Tablet / Móvil).
+   * Abre o cierra el popover explicativo de diferencias entre Classic y Lyrics.
+   * @param {boolean} isOpen
    * @private
    */
-  _initDeviceView() {
-    const rawSaved = readStorageRaw('songquiz_device_view', 'pc').replace(/^"|"$/g, '');
-    this._setDeviceView(rawSaved || 'pc', false);
-
-    this.dom.deviceButtons?.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const dev = btn.dataset.device;
-        if (dev) {
-          this._setDeviceView(dev, true);
-        }
-      });
-    });
+  _setModeInfoOpen(isOpen) {
+    if (!this.dom.modeInfoPopover) return;
+    this.dom.modeInfoPopover.classList.toggle('hidden', !isOpen);
+    this.dom.btnModeInfo?.setAttribute('aria-expanded', String(isOpen));
   }
 
   /**
-   * Aplica el modo de visualización de pantalla al contenedor principal.
-   * @param {'pc'|'tablet'|'mobile'} mode
-   * @param {boolean} [notify=true]
+   * Detecta automáticamente el tipo de dispositivo (móvil, tablet o escritorio) según el viewport
+   * real y actualiza `data-device-view` al redimensionar o girar la pantalla.
    * @private
    */
-  _setDeviceView(mode, notify = true) {
-    const validModes = ['pc', 'tablet', 'mobile'];
-    const currentMode = validModes.includes(mode) ? mode : 'pc';
+  _initAutoDeviceDetection() {
+    // Limpiar cualquier preferencia heredada del simulador manual
+    removeStorageKey('songquiz_device_view');
 
-    document.body.setAttribute('data-device-view', currentMode);
+    const mobileMq = window.matchMedia('(max-width: 640px)');
+    const tabletMq = window.matchMedia('(max-width: 1024px)');
 
-    this.dom.deviceButtons?.forEach(btn => {
-      const isActive = btn.dataset.device === currentMode;
-      btn.classList.toggle('active', isActive);
-      btn.setAttribute('aria-checked', String(isActive));
-    });
+    const applyAutoDevice = () => {
+      const detected = mobileMq.matches ? 'mobile' : (tabletMq.matches ? 'tablet' : 'pc');
+      document.body.setAttribute('data-device-view', detected);
+    };
 
-    writeStorageJSON('songquiz_device_view', currentMode);
+    applyAutoDevice();
 
-    if (notify) {
-      const labels = {
-        pc: 'Modo PC / Pantalla Completa activado',
-        tablet: 'Modo Tablet (768px) activado',
-        mobile: 'Modo Móvil (390px) activado'
-      };
-      this.announce(labels[currentMode] || currentMode);
+    if (typeof mobileMq.addEventListener === 'function') {
+      mobileMq.addEventListener('change', applyAutoDevice);
+      tabletMq.addEventListener('change', applyAutoDevice);
+    } else {
+      window.addEventListener('resize', applyAutoDevice);
     }
-  }
-
-  /**
-   * Alterna cíclicamente entre PC -> Tablet -> Móvil (atajo tecla D).
-   * @private
-   */
-  _cycleDeviceView() {
-    const modes = ['pc', 'tablet', 'mobile'];
-    const current = document.body.getAttribute('data-device-view') || 'pc';
-    const nextIdx = (modes.indexOf(current) + 1) % modes.length;
-    this._setDeviceView(modes[nextIdx], true);
   }
 
   /**
@@ -1870,13 +1867,6 @@ export class DOMRenderer {
     }
   }
 
-  _updateMuteIcon(isMuted) {
-    if (!this.dom.btnMute) return;
-    this.dom.btnMute.innerHTML = isMuted
-      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path></svg>`
-      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
-  }
-
   /**
    * Atajos de teclado accesibles exigiendo ausencia de modificadores (Ctrl/Meta/Alt)
    * para no interceptar atajos nativos del navegador.
@@ -1899,6 +1889,7 @@ export class DOMRenderer {
       const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || Boolean(e.target?.isContentEditable);
 
       if (e.key === 'Escape') {
+        this._setModeInfoOpen(false);
         this._closeCurrentModal();
         return;
       }
@@ -1973,17 +1964,6 @@ export class DOMRenderer {
           this.dom.btnStart?.click();
         }
         return;
-      }
-
-      if (lowerKey === 'm') {
-        e.preventDefault();
-        this.dom.btnMute?.click();
-        return;
-      }
-
-      if (lowerKey === 'd') {
-        e.preventDefault();
-        this._cycleDeviceView();
       }
     });
   }

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="SongQuiz — Trivia musical interactiva sin anuncios con 291 canciones verificadas, previews oficiales de 30 s, carga local de MP3/MP4 y modo Lyrics Challenge.">
-  <meta name="theme-color" content="#090b10">
+  <meta name="theme-color" content="#121212">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="SongQuiz">
@@ -47,51 +47,76 @@
         <span class="brand-title">SongQuiz</span>
       </a>
 
-      <!-- Zona 2: Selector de Modo (Classic vs Lyrics) -->
-      <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
-        <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Modo clásico: adivina la canción y el artista">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <!-- Zona 2: Selector de Modo (Classic vs Lyrics) con explicación práctica -->
+      <div class="mode-selector-wrap">
+        <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
+          <button id="btn-mode-classic" class="mode-btn active" type="button" role="radio" aria-checked="true" title="Classic: escucha 30 s y adivina canción y artista">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span class="mode-btn-copy">
+              <span class="mode-btn-title">Classic</span>
+              <span class="mode-btn-desc">Adivina canción y artista</span>
+            </span>
+          </button>
+          <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Lyrics: escucha el verso y completa la palabra en inglés">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span class="mode-btn-copy">
+              <span class="mode-btn-title">Lyrics</span>
+              <span class="mode-btn-desc">Completa la letra en inglés</span>
+            </span>
+          </button>
+        </div>
+
+        <button id="btn-mode-info" class="mode-info-trigger" type="button" aria-label="Ver diferencias entre modo Classic y Lyrics" aria-expanded="false" aria-controls="mode-info-popover" title="¿Qué diferencia hay entre Classic y Lyrics?">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="3"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
           </svg>
-          <span>Classic</span>
         </button>
-        <button id="btn-mode-lyrics" class="mode-btn" type="button" role="radio" aria-checked="false" title="Modo pedagógico: completa la letra en inglés con traducción y pistas">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-          </svg>
-          <span>Lyrics</span>
-        </button>
+
+        <div id="mode-info-popover" class="mode-info-popover hidden" role="dialog" aria-label="Diferencias entre Classic y Lyrics">
+          <div class="mode-info-header">
+            <span class="mode-info-heading">Diferencia entre modos</span>
+            <button id="btn-close-mode-info" class="mode-info-close" type="button" aria-label="Cerrar explicación">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="mode-info-grid">
+            <div class="mode-info-item">
+              <div class="mode-info-title-row">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <strong>Classic · Trivia musical</strong>
+              </div>
+              <p>Escucha 30 s de la pista y elige <strong>título y artista</strong> entre 4 opciones. Suma bonus por velocidad, racha y descubre curiosidades tras responder.</p>
+            </div>
+            <div class="mode-info-item">
+              <div class="mode-info-title-row">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <strong>Lyrics · Práctica de inglés</strong>
+              </div>
+              <p>Escucha el verso real y <strong>completa la palabra que falta</strong> (con 4 opciones o escribiendo). Incluye traducción al español, pistas y nota lingüística.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Zona 3: Utilidades de Sesión -->
       <div class="header-actions">
-        <div class="device-switcher" id="device-switcher" role="radiogroup" aria-label="Simulador de dispositivo (Atajo: tecla D)">
-          <button id="btn-device-pc" class="device-btn active" data-device="pc" type="button" role="radio" aria-checked="true" title="Vista escritorio (Atajo: D)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-            <span>PC</span>
-          </button>
-          <button id="btn-device-tablet" class="device-btn" data-device="tablet" type="button" role="radio" aria-checked="false" title="Vista Tablet (768px)">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
-              <line x1="12" y1="18" x2="12.01" y2="18"></line>
-            </svg>
-            <span>Tablet</span>
-          </button>
-          <button id="btn-device-mobile" class="device-btn" data-device="mobile" type="button" role="radio" aria-checked="false" title="Vista Móvil (412px)">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-              <line x1="12" y1="18" x2="12.01" y2="18"></line>
-            </svg>
-            <span>Móvil</span>
-          </button>
-        </div>
-
         <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas temáticas, cargar tus MP3/MP4 locales o importar listas">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -111,13 +136,6 @@
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           <span class="btn-label-text">Instalar</span>
-        </button>
-
-        <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-          </svg>
         </button>
       </div>
     </header>
@@ -419,7 +437,7 @@
           <line x1="10" y1="14" x2="21" y2="3"></line>
         </svg>
       </a>
-      <span class="footer-shortcuts" aria-hidden="true">1–4 Responder · Espacio Audio · M Silencio</span>
+      <span class="footer-shortcuts" aria-hidden="true">1–4 Responder · Espacio Audio</span>
     </footer>
   </div>
 

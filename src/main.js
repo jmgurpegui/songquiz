@@ -36,7 +36,11 @@ async function bootstrap() {
   }
 
   try {
-    const response = await fetch('./src/data/songs.json');
+    const bundledSongsUrl = new URL('./data/songs.json', import.meta.url).href;
+    let response = await fetch(bundledSongsUrl);
+    if (!response.ok) {
+      response = await fetch('./src/data/songs.json');
+    }
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

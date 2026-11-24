@@ -5,29 +5,29 @@
  */
 
 :root {
-  /* 60% Lienzo dominante (Obsidiana neutra fría, <5% saturación) */
-  --color-bg-base: #090b10;
-  --color-bg-dark: #05070a;
+  /* 60% Lienzo dominante (Carbón mate estilo Spotify #121212) */
+  --color-bg-base: #121212;
+  --color-bg-dark: #000000;
 
-  /* 30% Superficies estructurales (delta de luminosidad controlado <= 12%) */
-  --color-surface: #11141c;
-  --color-surface-elevated: #161b26;
-  --color-surface-hover: #1d2433;
-  --color-surface-active: #252e41;
-  --color-surface-well: #0c0f16;
+  /* 30% Superficies estructurales elevadas estilo Spotify */
+  --color-surface: #181818;
+  --color-surface-elevated: #242424;
+  --color-surface-hover: #2a2a2a;
+  --color-surface-active: #333333;
+  --color-surface-well: #121212;
 
-  /* Bordes hairline */
+  /* Bordes hairline discretos */
   --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
   --color-border-subtle: rgba(255, 255, 255, 0.05);
 
-  /* 10% Presupuesto de acento único (Esmeralda de estudio) */
-  --color-accent: #10b981;
-  --color-accent-light: #34d399;
-  --color-accent-dark: #059669;
-  --color-accent-tint: rgba(16, 185, 129, 0.12);
-  --color-accent-border: rgba(16, 185, 129, 0.36);
-  --color-accent-ink: #041d15;
+  /* 10% Presupuesto de acento único (Verde Spotify) */
+  --color-accent: #1db954;
+  --color-accent-light: #1ed760;
+  --color-accent-dark: #169c46;
+  --color-accent-tint: rgba(29, 185, 84, 0.14);
+  --color-accent-border: rgba(29, 185, 84, 0.42);
+  --color-accent-ink: #000000;
   --color-border-focus: var(--color-accent-light);
 
   /* Aliases heredados para compatibilidad con estilos inline/JS */
@@ -38,9 +38,9 @@
   --color-primary-dim: var(--color-accent-light);
 
   /* Semántica de estado (siempre acompañada de texto o icono) */
-  --color-success: #10b981;
-  --color-success-bg: rgba(16, 185, 129, 0.14);
-  --color-success-border: rgba(52, 211, 153, 0.55);
+  --color-success: #1db954;
+  --color-success-bg: rgba(29, 185, 84, 0.14);
+  --color-success-border: rgba(30, 215, 96, 0.55);
 
   --color-error: #f43f5e;
   --color-error-bg: rgba(244, 63, 94, 0.14);
@@ -50,14 +50,14 @@
   --color-warning-bg: rgba(245, 158, 11, 0.12);
   --color-warning-border: rgba(245, 158, 11, 0.42);
 
-  /* Jerarquía tipográfica con compensación óptica en modo oscuro (WCAG AA/AAA) */
-  --color-text-main: #f8fafc;
-  --color-secondary: #94a3b8;
-  --color-text-muted: #cbd5e1;
-  --color-text-dim: #64748b;
+  /* Jerarquía tipográfica estilo Spotify (WCAG AA/AAA) */
+  --color-text-main: #ffffff;
+  --color-secondary: #b3b3b3;
+  --color-text-muted: #e5e5e5;
+  --color-text-dim: #727272;
 
   /* Superficies especiales */
-  --lyrics-surface: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 20, 28, 0.96) 100%);
+  --lyrics-surface: linear-gradient(180deg, rgba(29, 185, 84, 0.1) 0%, rgba(24, 24, 24, 0.98) 100%);
 
   /* Tipografía: 2 familias (Display + Body) + 1 Monospace para telemetría */
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
