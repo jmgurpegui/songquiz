@@ -461,8 +461,11 @@ export class DOMRenderer {
       this.audioEngine.initContext();
       try {
         const isPlaying = await this.audioEngine.togglePlayPause();
+        if (!isPlaying && this.gameLogic.isTimerRunning) {
+          this.gameLogic.pauseRoundTimer(true);
+        }
         this._setPlayPauseButtonState(isPlaying);
-        this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
+        this.announce(isPlaying ? 'Audio en reproducción. Cronómetro en marcha.' : 'Audio en pausa. Tiempo detenido.');
       } catch {
         this._showTapToPlay();
       }
@@ -1305,11 +1308,13 @@ export class DOMRenderer {
     });
 
     this.gameState.addEventListener('timerStateChange', (e) => {
-      const { isTimerRunning } = e.detail;
-      this._updateTimerControlState(isTimerRunning);
+      const { isTimerRunning, pausedByUser = false } = e.detail;
+      this._updateTimerControlState(isTimerRunning, pausedByUser);
       if (isTimerRunning) {
         this._hideTapToPlay();
         this._setPlayPauseButtonState(true);
+      } else if (pausedByUser) {
+        this._setPlayPauseButtonState(false);
       }
     });
   }
@@ -1336,25 +1341,36 @@ export class DOMRenderer {
   }
 
   /**
-   * Actualiza el estado visual del cronómetro de la ronda.
+   * Actualiza el estado visual del cronómetro y la barra de avance de la ronda.
    * @param {boolean} isTimerRunning
+   * @param {boolean} [pausedByUser=false]
    * @private
    */
-  _updateTimerControlState(isTimerRunning) {
+  _updateTimerControlState(isTimerRunning, pausedByUser = false) {
     if (this.dom.curtainEq) {
       this.dom.curtainEq.classList.toggle('paused', !isTimerRunning);
     }
     if (this.dom.timerStatusDot) {
       this.dom.timerStatusDot.classList.toggle('paused', !isTimerRunning);
     }
+    if (this.dom.timerBar) {
+      this.dom.timerBar.classList.toggle('paused', !isTimerRunning && pausedByUser);
+    }
     if (this.dom.timerStatusLabel) {
-      this.dom.timerStatusLabel.textContent = isTimerRunning
-        ? 'Tiempo en marcha · 0:30'
-        : 'Cargando audio sin anuncios';
+      if (isTimerRunning) {
+        this.dom.timerStatusLabel.textContent = 'Tiempo en marcha · 0:30';
+      } else if (pausedByUser) {
+        this.dom.timerStatusLabel.textContent = 'Canción en pausa · Tiempo detenido';
+      } else {
+        this.dom.timerStatusLabel.textContent = 'Cargando audio sin anuncios';
+      }
     }
 
     if (this.dom.stageTitle && this.dom.stageSubtitle && this.gameState.status !== GameStates.ROUND_OVER) {
-      if (!isTimerRunning) {
+      if (!isTimerRunning && pausedByUser) {
+        this.dom.stageTitle.textContent = 'Canción en pausa';
+        this.dom.stageSubtitle.textContent = 'Pulsa el botón central o Espacio para continuar';
+      } else if (!isTimerRunning) {
         this.dom.stageTitle.textContent = 'Preparando canción...';
         this.dom.stageSubtitle.textContent = 'Obteniendo audio limpio sin anuncios';
       } else if (this.gameState.gameMode === GameModes.LYRICS) {
@@ -1904,8 +1920,11 @@ export class DOMRenderer {
         ) {
           try {
             const isPlaying = await this.audioEngine.togglePlayPause();
+            if (!isPlaying && this.gameLogic.isTimerRunning) {
+              this.gameLogic.pauseRoundTimer(true);
+            }
             this._setPlayPauseButtonState(isPlaying);
-            this.announce(isPlaying ? 'Audio reanudado' : 'Audio pausado');
+            this.announce(isPlaying ? 'Audio reanudado. Cronómetro en marcha.' : 'Audio pausado. Tiempo detenido.');
           } catch {
             this._showTapToPlay();
           }

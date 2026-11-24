@@ -76,6 +76,8 @@ export class GameLogic {
     this.isLocalMediaSession = false;
     this.timerInterval = null;
     this.roundStartTime = 0;
+    this._accumulatedElapsedMs = 0;
+    this._roundTimerStartedOnce = false;
     this.isTimerRunning = false;
 
     /** Metadatos multimedia resueltos para la ronda activa (carátula HD, fuente, enlace YT). */
@@ -91,16 +93,36 @@ export class GameLogic {
     /** @type {Promise<Map<string, Object>>|null} */
     this._lyricsBankPromise = null;
 
-    // Evento al iniciar reproducción real de audio/vídeo
+    // Evento al iniciar o reanudar reproducción real de audio/vídeo
     this.audioEngine.onPlaying(() => {
-      if (this.gameState.status === GameStates.AWAITING_AUDIO) {
-        this.gameState.startTimer();
+      if (
+        this.gameState.status === GameStates.AWAITING_AUDIO ||
+        (this.gameState.status === GameStates.PLAYING && !this.isTimerRunning)
+      ) {
+        this.startRoundTimer(!this._roundTimerStartedOnce);
+      }
+    });
+
+    // Evento al pausar o detener el audio: congelar la barra de avance y el cronómetro al instante
+    this.audioEngine.onPause(() => {
+      if (
+        (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO) &&
+        this.isTimerRunning
+      ) {
+        this.pauseRoundTimer(true);
+      }
+    });
+
+    // Evento si el stream entra en buffering: pausar el avance hasta que vuelva el sonido
+    this.audioEngine.onWaiting(() => {
+      if (this.gameState.status === GameStates.PLAYING && this.isTimerRunning) {
+        this.pauseRoundTimer(false);
       }
     });
 
     // Evento startTimer desde la FSM
     this.gameState.addEventListener('startTimer', () => {
-      this.startRoundTimer(true);
+      this.startRoundTimer(!this._roundTimerStartedOnce);
     });
   }
 
@@ -403,13 +425,15 @@ export class GameLogic {
     };
 
     this.isTimerRunning = false;
+    this._roundTimerStartedOnce = false;
+    this._accumulatedElapsedMs = 0;
     this.roundStartTime = performance.now();
 
     const transitioned = this.gameState.transition(GameStates.AWAITING_AUDIO, roundPayload);
     if (!transitioned || roundToken !== this._roundToken) return;
 
     this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
-      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
+      detail: { isTimerRunning: false, pausedByUser: false, timeRemaining: this.gameState.timeRemaining }
     }));
 
     this.visualizer.start();
@@ -556,17 +580,20 @@ export class GameLogic {
   }
 
   /**
-   * Inicia o reanuda el cronómetro de la ronda.
+   * Inicia o reanuda el cronómetro de la ronda preservando el segundo exacto tras una pausa.
    * @param {boolean} [resetFullTime=false]
    */
   startRoundTimer(resetFullTime = false) {
     if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
     if (this.isTimerRunning) return;
 
-    if (resetFullTime || this.gameState.status === GameStates.AWAITING_AUDIO) {
-      if (this.gameState.status === GameStates.AWAITING_AUDIO) {
-        this.gameState.transition(GameStates.PLAYING, { timerOnly: true });
-      }
+    if (this.gameState.status === GameStates.AWAITING_AUDIO) {
+      this.gameState.transition(GameStates.PLAYING, { timerOnly: true });
+    }
+
+    if (resetFullTime || !this._roundTimerStartedOnce) {
+      this._roundTimerStartedOnce = true;
+      this._accumulatedElapsedMs = 0;
       this.gameState.setTimeRemaining(this.gameState.maxRoundTime);
     }
 
@@ -574,20 +601,32 @@ export class GameLogic {
     this.roundStartTime = performance.now();
     this._startTimer();
     this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
-      detail: { isTimerRunning: true, timeRemaining: this.gameState.timeRemaining }
+      detail: {
+        isTimerRunning: true,
+        pausedByUser: false,
+        timeRemaining: this.gameState.timeRemaining
+      }
     }));
   }
 
   /**
-   * Pausa el cronómetro de la ronda de forma controlada mediante la FSM.
+   * Pausa el cronómetro y congela la barra de avance cuando se detiene la canción.
+   * @param {boolean} [pausedByUser=true]
    */
-  pauseRoundTimer() {
+  pauseRoundTimer(pausedByUser = true) {
     if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
+    if (this.isTimerRunning && this.roundStartTime > 0) {
+      this._accumulatedElapsedMs += Math.max(0, performance.now() - this.roundStartTime);
+    }
     this._clearTimer();
-    this.gameState.pauseToAwaitingAudio({ pausedByUser: true });
+    this.gameState.pauseToAwaitingAudio({ pausedByUser });
     this.isTimerRunning = false;
     this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
-      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
+      detail: {
+        isTimerRunning: false,
+        pausedByUser,
+        timeRemaining: this.gameState.timeRemaining
+      }
     }));
   }
 
@@ -597,6 +636,7 @@ export class GameLogic {
    */
   _startTimer() {
     this._clearTimer();
+    this.isTimerRunning = true;
     this.timerInterval = setInterval(() => {
       const remaining = this.gameState.timeRemaining - 1;
       this.gameState.setTimeRemaining(remaining);
@@ -634,8 +674,9 @@ export class GameLogic {
       return { isCorrect: false, correctAnswer: this.gameState.correctAnswer, pointsEarned: 0 };
     }
 
+    const activeMs = this.isTimerRunning ? Math.max(0, performance.now() - this.roundStartTime) : 0;
+    const timeSpent = Math.max(0, (this._accumulatedElapsedMs + activeMs) / 1000);
     this._clearTimer();
-    const timeSpent = Math.max(0, (performance.now() - this.roundStartTime) / 1000);
 
     let isCorrect = false;
     let evaluation = null;

@@ -201,12 +201,14 @@ export class GameState extends EventTarget {
    *
    * @returns {boolean} True si pudo iniciar el temporizador.
    */
-  startTimer() {
+  startTimer(resetFullTime = false) {
     if (this.status !== GameStates.AWAITING_AUDIO && this.status !== GameStates.PLAYING) {
       return false;
     }
 
-    this.timeRemaining = this.maxRoundTime;
+    if (resetFullTime || this.timeRemaining <= 0) {
+      this.timeRemaining = this.maxRoundTime;
+    }
 
     if (this.status === GameStates.AWAITING_AUDIO) {
       const moved = this.transition(GameStates.PLAYING, {

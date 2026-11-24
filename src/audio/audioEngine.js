@@ -34,11 +34,12 @@ export class AudioEngine {
     this.volume = 0.85;
     this._isInitialized = false;
 
-    // Callbacks
-    this._onEndedCb = null;
-    this._onErrorCb = null;
-    this._onPlayingCb = null;
-    this._onPauseCb = null;
+    // Conjuntos de listeners (permiten múltiples suscriptores sin sobrescribirse)
+    this._onEndedListeners = new Set();
+    this._onErrorListeners = new Set();
+    this._onPlayingListeners = new Set();
+    this._onPauseListeners = new Set();
+    this._onWaitingListeners = new Set();
 
     this._bindElementEvents(this.localAudio, 'local-audio');
     this._bindElementEvents(this.remoteAudio, 'remote-audio');
@@ -85,32 +86,31 @@ export class AudioEngine {
   _bindElementEvents(el, mode) {
     el.addEventListener('playing', () => {
       if (this.activeMode !== mode) return;
-      if (typeof this._onPlayingCb === 'function') {
-        this._onPlayingCb();
-      }
+      this._onPlayingListeners.forEach((cb) => cb());
     });
 
     el.addEventListener('pause', () => {
       if (this.activeMode !== mode) return;
-      if (typeof this._onPauseCb === 'function') {
-        this._onPauseCb();
-      }
+      this._onPauseListeners.forEach((cb) => cb());
     });
+
+    const handleBuffering = () => {
+      if (this.activeMode !== mode || el.paused) return;
+      this._onWaitingListeners.forEach((cb) => cb());
+    };
+    el.addEventListener('waiting', handleBuffering);
+    el.addEventListener('stalled', handleBuffering);
 
     el.addEventListener('ended', () => {
       if (this.activeMode !== mode || el.loop) return;
-      if (typeof this._onEndedCb === 'function') {
-        this._onEndedCb();
-      }
+      this._onEndedListeners.forEach((cb) => cb());
     });
 
     el.addEventListener('error', (e) => {
       if (this.activeMode !== mode) return;
       // Ignorar eventos de error al limpiar `src` intencionalmente
       if (!el.getAttribute('src')) return;
-      if (typeof this._onErrorCb === 'function') {
-        this._onErrorCb(e);
-      }
+      this._onErrorListeners.forEach((cb) => cb(e));
     });
   }
 
@@ -354,22 +354,27 @@ export class AudioEngine {
 
   /** @param {Function} cb */
   onEnded(cb) {
-    this._onEndedCb = cb;
+    if (typeof cb === 'function') this._onEndedListeners.add(cb);
   }
 
   /** @param {Function} cb */
   onError(cb) {
-    this._onErrorCb = cb;
+    if (typeof cb === 'function') this._onErrorListeners.add(cb);
   }
 
   /** @param {Function} cb */
   onPlaying(cb) {
-    this._onPlayingCb = cb;
+    if (typeof cb === 'function') this._onPlayingListeners.add(cb);
   }
 
   /** @param {Function} cb */
   onPause(cb) {
-    this._onPauseCb = cb;
+    if (typeof cb === 'function') this._onPauseListeners.add(cb);
+  }
+
+  /** @param {Function} cb */
+  onWaiting(cb) {
+    if (typeof cb === 'function') this._onWaitingListeners.add(cb);
   }
 }
 

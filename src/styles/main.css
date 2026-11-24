@@ -1104,7 +1104,7 @@ body[data-device-view="mobile"] .footer-shortcuts {
   width: 100%;
   background: var(--color-accent);
   border-radius: var(--radius-full);
-  transition: width 120ms linear, background-color var(--transition-normal);
+  transition: width 120ms linear, background-color var(--transition-normal), opacity var(--transition-fast);
 }
 
 .timer-bar-fill.warning {
@@ -1113,6 +1113,10 @@ body[data-device-view="mobile"] .footer-shortcuts {
 
 .timer-bar-fill.danger {
   background: var(--color-error);
+}
+
+.timer-bar-fill.paused {
+  opacity: 0.45;
 }
 
 .primary-cta-slot {
