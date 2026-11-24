@@ -458,6 +458,13 @@ export class DOMRenderer {
     });
 
     this.dom.btnPlayPause?.addEventListener('click', async () => {
+      if (this.gameState.status === GameStates.IDLE) {
+        if (this.dom.btnStart && !this.dom.btnStart.disabled) {
+          this.dom.btnStart.click();
+        }
+        return;
+      }
+
       this.audioEngine.initContext();
       try {
         const isPlaying = await this.audioEngine.togglePlayPause();
@@ -587,11 +594,16 @@ export class DOMRenderer {
   _setPlayPauseButtonState(isPlaying) {
     if (this.dom.playPauseIcon) {
       this.dom.playPauseIcon.innerHTML = isPlaying
-        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
-        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>';
+        ? '<svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>'
+        : '<svg class="icon-play-offset" width="38" height="38" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>';
     }
     if (this.dom.playPauseLabel) {
-      this.dom.playPauseLabel.textContent = isPlaying === null ? 'Audio' : (isPlaying ? 'Pausar' : 'Reproducir');
+      this.dom.playPauseLabel.textContent = isPlaying ? 'Pausar' : 'Reproducir';
+    }
+    if (this.dom.btnPlayPause) {
+      this.dom.btnPlayPause.classList.toggle('is-playing', Boolean(isPlaying));
+      this.dom.btnPlayPause.setAttribute('aria-pressed', String(Boolean(isPlaying)));
+      this.dom.btnPlayPause.setAttribute('aria-label', isPlaying ? 'Pausar canción' : 'Reproducir canción');
     }
   }
 
@@ -1340,7 +1352,7 @@ export class DOMRenderer {
     }
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = isTimerRunning
-        ? 'Tiempo en marcha · Máx. 2:00'
+        ? 'Tiempo en marcha · 0:30'
         : 'Cargando audio sin anuncios';
     }
 
@@ -1832,9 +1844,9 @@ export class DOMRenderer {
     if (this.dom.timerBar) {
       this.dom.timerBar.style.width = `${percent}%`;
       this.dom.timerBar.classList.remove('warning', 'danger');
-      if (remaining <= 10) {
+      if (remaining <= 5) {
         this.dom.timerBar.classList.add('danger');
-      } else if (remaining <= 25) {
+      } else if (remaining <= 12) {
         this.dom.timerBar.classList.add('warning');
       }
     }
@@ -1922,7 +1934,7 @@ export class DOMRenderer {
         ) {
           e.preventDefault();
           this.gameState.startTimer();
-          this.announce('Cronómetro iniciado manualmente en 120 segundos exactos.');
+          this.announce(`Cronómetro iniciado manualmente en ${this.gameState.maxRoundTime} segundos exactos.`);
         }
         return;
       }

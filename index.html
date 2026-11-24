@@ -183,13 +183,6 @@
           </span>
 
           <div class="audio-stage-toolbar">
-            <button id="btn-play-pause" class="stage-mini-action stage-play-btn" type="button" aria-label="Reproducir o pausar canción" title="Reproducir / Pausar audio (Espacio)">
-              <span id="play-pause-icon" class="stage-icon-slot" aria-hidden="true">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
-              </span>
-              <span class="stage-btn-label" id="play-pause-label">Audio</span>
-            </button>
-
             <button id="btn-toggle-minimize" class="stage-minimize-btn hidden" type="button" aria-label="Mostrar u ocultar el vídeo local" title="Mostrar / Ocultar vídeo local">
               <svg id="icon-minimize-svg" class="icon-minimize" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;" aria-hidden="true">
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
@@ -237,18 +230,27 @@
             </div>
           </div>
 
-          <!-- Cortina opaca de escucha: visualizador espectral limpio durante la adivinanza -->
+          <!-- Cortina opaca de escucha: botón central grande + visualizador espectral limpio -->
           <div class="listening-curtain" id="listening-curtain">
             <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio"></canvas>
 
             <div class="audio-overlay-label" id="stage-overlay">
-              <div class="curtain-eq" id="curtain-eq" aria-hidden="true">
-                <span class="eq-bar bar-1"></span>
-                <span class="eq-bar bar-2"></span>
-                <span class="eq-bar bar-3"></span>
-                <span class="eq-bar bar-4"></span>
+              <button id="btn-play-pause" class="stage-hero-play-btn" type="button" aria-label="Reproducir canción" title="Reproducir / Pausar audio (Espacio)">
+                <span id="play-pause-icon" class="stage-hero-play-icon" aria-hidden="true">
+                  <svg class="icon-play-offset" width="38" height="38" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                </span>
+                <span class="visually-hidden" id="play-pause-label">Reproducir</span>
+              </button>
+
+              <div class="stage-title-row">
+                <div class="curtain-eq paused" id="curtain-eq" aria-hidden="true">
+                  <span class="eq-bar bar-1"></span>
+                  <span class="eq-bar bar-2"></span>
+                  <span class="eq-bar bar-3"></span>
+                  <span class="eq-bar bar-4"></span>
+                </div>
+                <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
               </div>
-              <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
               <p class="stage-subtitle" id="stage-subtitle">Escucha con atención · Carátula HD al responder</p>
             </div>
           </div>
@@ -285,7 +287,7 @@
                 <span class="ad-status-dot paused" id="timer-status-dot" aria-hidden="true"></span>
                 <span id="timer-status-label">Esperando inicio de la pista</span>
               </span>
-              <span id="timer-text" class="stat-number timer-countdown">2:00</span>
+              <span id="timer-text" class="stat-number timer-countdown">0:30</span>
             </div>
             <div class="timer-bar-track">
               <div class="timer-bar-fill" id="timer-bar-fill"></div>

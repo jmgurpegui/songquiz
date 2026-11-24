@@ -664,20 +664,21 @@ export class GameLogic {
 
     if (isCorrect) {
       const remainingSec = this.gameState.timeRemaining;
-      const maxTime = this.gameState.maxRoundTime || 120;
+      const maxTime = this.gameState.maxRoundTime || 30;
+      const remainingRatio = remainingSec / maxTime;
 
-      speedBonus = Math.max(10, Math.round((remainingSec / maxTime) * 150));
+      speedBonus = Math.max(10, Math.round(remainingRatio * 150));
       if (hintsUsed > 0) {
         speedBonus = Math.max(10, speedBonus - hintsUsed * 20);
       }
 
-      if (remainingSec >= 105) {
+      if (remainingRatio >= 0.8) {
         speedBadge = 'Relámpago';
-      } else if (remainingSec >= 85) {
+      } else if (remainingRatio >= 0.6) {
         speedBadge = 'Súper rápido';
-      } else if (remainingSec >= 60) {
+      } else if (remainingRatio >= 0.4) {
         speedBadge = 'Buen ritmo';
-      } else if (remainingSec >= 30) {
+      } else if (remainingRatio >= 0.2) {
         speedBadge = 'A tiempo';
       } else {
         speedBadge = 'Al límite';
