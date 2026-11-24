@@ -1,9 +1,9 @@
 /**
- * @fileoverview Service Worker para SongQuiz (PWA Mobile, Tablet & Chromecast).
- * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios estáticos.
+ * @fileoverview Service Worker para SongQuiz (PWA / Android TWA, Mobile & Tablet).
+ * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios e iconos.
  */
 
-const CACHE_NAME = 'songquiz-v3.5.0';
+const CACHE_NAME = 'songquiz-v3.7.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -18,10 +18,10 @@ const PRECACHE_ASSETS = [
   './src/utils/playlistParser.js',
   './src/utils/storageManager.js',
   './src/utils/catalogValidator.js',
+  './src/utils/pwaManager.js',
   './src/audio/soundFX.js',
   './src/audio/audioEngine.js',
-  './src/audio/youtubePlayer.js',
-  './src/audio/castManager.js',
+  './src/audio/mediaResolver.js',
   './src/ui/visualizer.js',
   './src/core/gameState.js',
   './src/core/lyricsChallengeEngine.js',
@@ -31,6 +31,10 @@ const PRECACHE_ASSETS = [
   './assets/icons/favicon.svg',
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/icon-maskable-512.png',
+  './assets/icons/apple-touch-icon.png',
   './assets/audio/blinding_lights.wav',
   './assets/audio/shape_of_you.wav',
   './assets/audio/bohemian_rhapsody.wav',
@@ -55,6 +59,7 @@ self.addEventListener('activate', (event) => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
+          return undefined;
         })
       );
     }).then(() => self.clients.claim())
@@ -63,13 +68,30 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (!event.request.url.startsWith('http')) return;
+  if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
   const isSameOrigin = url.origin === self.location.origin;
-  const isCodeOrData = (isSameOrigin && /\.(html|js|css|json)$/i.test(url.pathname)) || url.pathname.endsWith('/');
+
+  // Navegación HTML (soporta apertura offline de la PWA/TWA incluyendo ?mode=lyrics)
+  if (event.request.mode === 'navigate' && isSameOrigin) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  const isCodeOrData = isSameOrigin && (/\.(html|js|css|json)$/i.test(url.pathname) || url.pathname.endsWith('/'));
 
   if (isCodeOrData) {
-    // Network-First para garantizar que móvil, tablet y escritorio carguen siempre la última versión
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {

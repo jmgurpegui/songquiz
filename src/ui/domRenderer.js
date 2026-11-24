@@ -11,6 +11,7 @@ import { THEMATIC_PLAYLISTS } from '../data/thematicPlaylists.js';
 import { readStorageRaw, writeStorageJSON, escapeHtml } from '../utils/storageManager.js';
 import { auditSongCatalog, sanitizeImportedCatalog } from '../utils/catalogValidator.js';
 import { buildScaffoldingHint } from '../core/lyricsChallengeEngine.js';
+import { localMediaLibrary, buildYoutubeThumbnailUrl, buildExternalYoutubeUrl } from '../audio/mediaResolver.js';
 
 export class DOMRenderer {
   /**
@@ -19,17 +20,15 @@ export class DOMRenderer {
    * @param {import('../audio/audioEngine.js').AudioEngine} audioEngine
    * @param {import('../audio/soundFX.js').SoundFX} soundFX
    * @param {Array<Object>} defaultSongs
-   * @param {import('../audio/youtubePlayer.js').YouTubePlayerEngine} [youtubePlayer=null]
-   * @param {import('../audio/castManager.js').CastManager} [castManager=null]
+   * @param {import('../utils/pwaManager.js').PWAManager} [pwaManager=null]
    */
-  constructor(gameState, gameLogic, audioEngine, soundFX, defaultSongs = [], youtubePlayer = null, castManager = null) {
+  constructor(gameState, gameLogic, audioEngine, soundFX, defaultSongs = [], pwaManager = null) {
     this.gameState = gameState;
     this.gameLogic = gameLogic;
     this.audioEngine = audioEngine;
     this.soundFX = soundFX;
     this.defaultSongs = defaultSongs;
-    this.youtubePlayer = youtubePlayer;
-    this.castManager = castManager;
+    this.pwaManager = pwaManager;
 
     // Pila de modales activos para focus trap e inert seguro (soporta alertdialog sobre modal)
     this._modalStack = [];
@@ -40,9 +39,8 @@ export class DOMRenderer {
     this._lyricsEsRevealed = false;
     this._isCuriosityExpanded = false;
 
-    // Estado de visibilidad del vídeo: oculto por defecto mientras se adivina,
-    // y visible al completo en cuanto se responde (con opción de minimizar tras revelar)
-    this.isVideoPeekOpen = false;
+    // Estado de vídeo local personal (MP4/WebM): oculto hasta responder
+    this.isLocalVideoRound = false;
     this.isPostRevealMinimized = false;
 
     this._cacheDOMElements();
@@ -51,8 +49,9 @@ export class DOMRenderer {
     this._bindStateListeners();
     this._bindKeyboardShortcuts();
     this._bindPlaylistManagerEvents();
-    this._bindCastEvents();
+    this._bindLocalMediaEvents();
     this._bindConfirmDialogEvents();
+    this._bindPWAEvents();
     this._updateModeButtons();
     this._updateLyricsLevelButtons();
     this._initDeviceView();
@@ -88,6 +87,15 @@ export class DOMRenderer {
       stageTitle: document.getElementById('stage-title'),
       stageSubtitle: document.getElementById('stage-subtitle'),
       audioStage: document.getElementById('audio-stage'),
+      localVideoContainer: document.getElementById('local-video-container'),
+      localVideoPlayer: document.getElementById('local-video-player'),
+      artworkRevealCard: document.getElementById('artwork-reveal-card'),
+      revealArtworkImg: document.getElementById('reveal-artwork-img'),
+      revealArtworkFallback: document.getElementById('reveal-artwork-fallback'),
+      revealSongTitle: document.getElementById('reveal-song-title'),
+      revealSongArtist: document.getElementById('reveal-song-artist'),
+      revealSongMeta: document.getElementById('reveal-song-meta'),
+      btnRevealYoutube: document.getElementById('btn-reveal-youtube'),
       listeningCurtain: document.getElementById('listening-curtain'),
       curtainEq: document.getElementById('curtain-eq'),
       stageModeIndicator: document.getElementById('stage-mode-indicator'),
@@ -102,8 +110,6 @@ export class DOMRenderer {
       minimizedSubtitle: document.getElementById('minimized-subtitle'),
       timerStatusDot: document.getElementById('timer-status-dot'),
       timerStatusLabel: document.getElementById('timer-status-label'),
-      btnSeekBack: document.getElementById('btn-seek-back'),
-      btnSeekForward: document.getElementById('btn-seek-forward'),
       btnPlayPause: document.getElementById('btn-play-pause'),
       playPauseIcon: document.getElementById('play-pause-icon'),
       playPauseLabel: document.getElementById('play-pause-label'),
@@ -114,21 +120,6 @@ export class DOMRenderer {
       audioUnavailableBanner: document.getElementById('audio-unavailable-banner'),
       audioUnavailableReason: document.getElementById('audio-unavailable-reason'),
       btnSkipUnavailable: document.getElementById('btn-skip-unavailable'),
-
-      // Controles y modal de Chromecast / TV
-      btnCast: document.getElementById('btn-cast'),
-      castBtnLabel: document.getElementById('cast-btn-label'),
-      castModal: document.getElementById('cast-modal'),
-      btnCloseCast: document.getElementById('btn-close-cast'),
-      castStatusBanner: document.getElementById('cast-status-banner'),
-      castStatusDot: document.getElementById('cast-status-dot'),
-      castStatusText: document.getElementById('cast-status-text'),
-      castInlineHint: document.getElementById('cast-inline-hint'),
-      btnConnectChromecast: document.getElementById('btn-connect-chromecast'),
-      btnConnectChromecastText: document.getElementById('btn-connect-chromecast-text'),
-      btnToggleTvMode: document.getElementById('btn-toggle-tv-mode'),
-      btnToggleTvModeText: document.getElementById('btn-toggle-tv-mode-text'),
-      btnOpenYtCastApp: document.getElementById('btn-open-yt-cast-app'),
 
       timerBar: document.getElementById('timer-bar-fill'),
       timerText: document.getElementById('timer-text'),
@@ -173,7 +164,7 @@ export class DOMRenderer {
       recordBadge: document.getElementById('record-badge'),
       btnRestart: document.getElementById('btn-restart'),
 
-      // Modal de gestión de playlist
+      // Modal de gestión de playlist y archivos locales
       playlistModal: document.getElementById('playlist-modal'),
       btnCloseImporter: document.getElementById('btn-close-importer'),
       youtubePlaylistUrlInput: document.getElementById('youtube-playlist-url-input'),
@@ -187,12 +178,27 @@ export class DOMRenderer {
       btnResetDefaultSongs: document.getElementById('btn-reset-default-songs'),
       playlistCountBadge: document.getElementById('playlist-count-badge'),
 
+      // Cargador de archivos personales locales (MP3 / MP4)
+      localDropZone: document.getElementById('local-drop-zone'),
+      btnPickLocalFiles: document.getElementById('btn-pick-local-files'),
+      btnPickLocalFolder: document.getElementById('btn-pick-local-folder'),
+      localFilesInput: document.getElementById('local-files-input'),
+      localFolderInput: document.getElementById('local-folder-input'),
+      localMediaFeedback: document.getElementById('local-media-feedback'),
+
       // Diálogo accesible de confirmación (reemplaza window.confirm)
       confirmDialogModal: document.getElementById('confirm-dialog-modal'),
       confirmDialogTitle: document.getElementById('confirm-dialog-title'),
       confirmDialogMessage: document.getElementById('confirm-dialog-message'),
       btnConfirmCancel: document.getElementById('btn-confirm-cancel'),
-      btnConfirmAccept: document.getElementById('btn-confirm-accept')
+      btnConfirmAccept: document.getElementById('btn-confirm-accept'),
+
+      // Controles PWA / Android TWA e indicador offline
+      btnInstallPwa: document.getElementById('btn-install-pwa'),
+      offlineStatusBanner: document.getElementById('offline-status-banner'),
+      iosInstallModal: document.getElementById('ios-install-modal'),
+      btnCloseIosInstall: document.getElementById('btn-close-ios-install'),
+      btnIosInstallDone: document.getElementById('btn-ios-install-done')
     };
   }
 
@@ -205,45 +211,51 @@ export class DOMRenderer {
   }
 
   /**
-   * Sincroniza la cortina de escucha, el modo vídeo completo tras responder y el botón Ver/Ocultar vídeo.
+   * Sincroniza la cortina de escucha, la tarjeta de Carátula HD y el reproductor de vídeo local MP4.
    * @private
    */
   _syncStageVisibility() {
     if (!this.dom.audioStage) return;
 
     const isRevealed = this.gameState.status === GameStates.ROUND_OVER;
-    const isVideoVisible = isRevealed ? !this.isPostRevealMinimized : this.isVideoPeekOpen;
+    const showLocalVideo = isRevealed && this.isLocalVideoRound && !this.isPostRevealMinimized;
+    const showArtworkCard = isRevealed && !this.isLocalVideoRound && !this.isPostRevealMinimized;
 
     this.dom.audioStage.classList.toggle('revealed', isRevealed);
-    this.dom.audioStage.classList.toggle('video-peek', !isRevealed && this.isVideoPeekOpen);
-    this.dom.audioStage.classList.toggle('minimized', isRevealed && this.isPostRevealMinimized);
+    this.dom.audioStage.classList.toggle('has-local-video', this.isLocalVideoRound);
+    this.dom.audioStage.classList.toggle('minimized', isRevealed && this.isLocalVideoRound && this.isPostRevealMinimized);
+
+    this.dom.localVideoContainer?.classList.toggle('hidden', !showLocalVideo);
+    this.dom.artworkRevealCard?.classList.toggle('hidden', !showArtworkCard);
+
+    // Mostrar el botón Ver/Ocultar vídeo únicamente cuando la pista revelada sea un MP4 local
+    if (this.dom.btnToggleMinimize) {
+      this.dom.btnToggleMinimize.classList.toggle('hidden', !(isRevealed && this.isLocalVideoRound));
+    }
 
     if (this.dom.iconMinimizeSvg) {
-      this.dom.iconMinimizeSvg.style.display = isVideoVisible ? 'block' : 'none';
+      this.dom.iconMinimizeSvg.style.display = showLocalVideo ? 'block' : 'none';
     }
     if (this.dom.iconExpandSvg) {
-      this.dom.iconExpandSvg.style.display = isVideoVisible ? 'none' : 'block';
+      this.dom.iconExpandSvg.style.display = showLocalVideo ? 'none' : 'block';
     }
     if (this.dom.labelToggleMinimize) {
-      this.dom.labelToggleMinimize.textContent = isVideoVisible ? 'Ocultar vídeo' : 'Ver vídeo';
+      this.dom.labelToggleMinimize.textContent = showLocalVideo ? 'Ocultar vídeo' : 'Ver vídeo';
     }
+
     if (this.dom.stageModeIndicator) {
-      this.dom.stageModeIndicator.classList.toggle('unlocked', isRevealed && !this.isPostRevealMinimized);
+      this.dom.stageModeIndicator.classList.toggle('unlocked', isRevealed);
     }
-    if (this.dom.stageModeIcon) {
-      this.dom.stageModeIcon.innerHTML = isVideoVisible
-        ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>'
-        : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
-    }
+
     if (this.dom.stageModeText) {
       if (isRevealed) {
-        this.dom.stageModeText.textContent = this.isPostRevealMinimized
-          ? 'Vídeo oculto · Audio activo'
-          : 'Vídeo completo desbloqueado';
+        this.dom.stageModeText.textContent = this.isLocalVideoRound
+          ? (this.isPostRevealMinimized ? 'Vídeo local oculto · Audio activo' : 'Vídeo local desbloqueado')
+          : 'Pista revelada · Sin anuncios';
       } else {
-        this.dom.stageModeText.textContent = this.isVideoPeekOpen
-          ? 'Vista manual del reproductor'
-          : 'Vídeo oculto hasta responder';
+        this.dom.stageModeText.textContent = this.isLocalVideoRound
+          ? 'Vídeo local oculto hasta responder'
+          : 'Audio sin anuncios';
       }
     }
   }
@@ -337,6 +349,71 @@ export class DOMRenderer {
   }
 
   /**
+   * Enlaza eventos de instalación PWA, guía Safari iOS y estado offline/online.
+   * @private
+   */
+  _bindPWAEvents() {
+    const syncInstallButton = () => {
+      if (!this.dom.btnInstallPwa) return;
+      const show = Boolean(this.pwaManager?.shouldShowInstallButton());
+      this.dom.btnInstallPwa.classList.toggle('hidden', !show);
+    };
+
+    const syncConnectivity = (isOnline) => {
+      if (!this.dom.offlineStatusBanner) return;
+      this.dom.offlineStatusBanner.classList.toggle('hidden', isOnline);
+      if (!isOnline) {
+        this.announce('Sin conexión a Internet. Las pistas locales en caché siguen disponibles.');
+      }
+    };
+
+    syncInstallButton();
+    syncConnectivity(this.pwaManager ? this.pwaManager.isOnline : navigator.onLine !== false);
+
+    this.pwaManager?.addEventListener('installStateChange', syncInstallButton);
+    this.pwaManager?.addEventListener('installed', () => {
+      syncInstallButton();
+      this.announce('SongQuiz se ha instalado correctamente en tu dispositivo.');
+    });
+    this.pwaManager?.addEventListener('connectivityChange', (e) => {
+      syncConnectivity(Boolean(e.detail?.isOnline));
+    });
+
+    this.dom.btnInstallPwa?.addEventListener('click', async () => {
+      if (!this.pwaManager) return;
+      const result = await this.pwaManager.promptInstall();
+      if (result === 'ios-guide') {
+        this._openIosInstallModal();
+      } else if (result === 'accepted') {
+        this.announce('Instalación de SongQuiz aceptada.');
+      }
+    });
+
+    this.dom.btnCloseIosInstall?.addEventListener('click', () => this._closeIosInstallModal());
+    this.dom.btnIosInstallDone?.addEventListener('click', () => this._closeIosInstallModal());
+    this.dom.iosInstallModal?.addEventListener('click', (e) => {
+      if (e.target === this.dom.iosInstallModal) {
+        this._closeIosInstallModal();
+      }
+    });
+  }
+
+  _openIosInstallModal() {
+    if (!this.dom.iosInstallModal) return;
+    this.dom.iosInstallModal.classList.add('open');
+    this._trapFocusInModal(this.dom.iosInstallModal);
+    this.announce('Guía de instalación en iOS abierta.');
+  }
+
+  _closeIosInstallModal() {
+    if (this.dom.iosInstallModal?.classList.contains('open')) {
+      this.dom.iosInstallModal.classList.remove('open');
+      this._releaseFocusTrap(this.dom.iosInstallModal);
+      this.announce('Guía de instalación cerrada.');
+    }
+  }
+
+  /**
    * Enlaza eventos de clic de los botones principales, selector de modos y Lyrics Challenge.
    * @private
    */
@@ -369,83 +446,42 @@ export class DOMRenderer {
     this.dom.btnMute?.addEventListener('click', () => {
       const isMuted = this.audioEngine.toggleMute();
       this.soundFX.toggleMute();
-      if (this.youtubePlayer) {
-        this.youtubePlayer.setMuted(isMuted);
-      }
       this._updateMuteIcon(isMuted);
       this.announce(isMuted ? 'Sonido silenciado' : 'Sonido activado');
     });
 
     this.dom.btnToggleMinimize?.addEventListener('click', () => {
-      const isRevealed = this.gameState.status === GameStates.ROUND_OVER;
-      if (isRevealed) {
-        this.isPostRevealMinimized = !this.isPostRevealMinimized;
-        this._syncStageVisibility();
-        this.announce(this.isPostRevealMinimized ? 'Vídeo oculto en modo audio' : 'Vídeo completo visible');
-      } else {
-        this.isVideoPeekOpen = !this.isVideoPeekOpen;
-        this._syncStageVisibility();
-        this.announce(this.isVideoPeekOpen ? 'Reproductor de vídeo visible temporalmente' : 'Vídeo oculto hasta responder');
-      }
-    });
-
-    this.dom.btnSeekBack?.addEventListener('click', () => {
-      this.gameLogic.seekAudio(-10);
-      this.announce('Retrocediendo 10 segundos en la canción');
-    });
-
-    this.dom.btnSeekForward?.addEventListener('click', () => {
-      this.gameLogic.seekAudio(15);
-      this.announce('Adelantando 15 segundos para escuchar la letra');
+      if (!this.isLocalVideoRound || this.gameState.status !== GameStates.ROUND_OVER) return;
+      this.isPostRevealMinimized = !this.isPostRevealMinimized;
+      this._syncStageVisibility();
+      this.announce(this.isPostRevealMinimized ? 'Vídeo local oculto en modo audio' : 'Vídeo local visible');
     });
 
     this.dom.btnPlayPause?.addEventListener('click', async () => {
       this.audioEngine.initContext();
-      let isPlaying = false;
-      if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
-        isPlaying = this.youtubePlayer.togglePlayPause();
-      } else {
-        isPlaying = await this.audioEngine.togglePlayPause();
-      }
-      this._setPlayPauseButtonState(isPlaying);
-      this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
-    });
-
-    // Desbloqueo de reproducción en Chrome móvil
-    this._tapAttempts = 0;
-    this.dom.btnTapToPlay?.addEventListener('click', () => {
-      this._tapAttempts += 1;
-      this.audioEngine.initContext();
-      if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
-        this.youtubePlayer.forcePlay();
-      } else if (this.gameState.currentSong?.audioSrc) {
-        this.audioEngine.play().catch(() => {});
-      }
-      this._hideTapToPlay();
-    });
-
-    if (this.youtubePlayer) {
-      this.youtubePlayer.onPlaybackBlocked(() => {
-        const s = this.gameState.status;
-        if (s !== GameStates.PLAYING && s !== GameStates.AWAITING_AUDIO && s !== GameStates.ROUND_OVER) return;
-        if (this._tapAttempts >= 1) {
-          this.dom.audioStage?.classList.add('needs-native-tap');
-          this.isPostRevealMinimized = false;
-          this._syncStageVisibility();
-          this.announce('Pulsa el botón de reproducción del vídeo de YouTube.', true);
-          return;
-        }
+      try {
+        const isPlaying = await this.audioEngine.togglePlayPause();
+        this._setPlayPauseButtonState(isPlaying);
+        this.announce(isPlaying ? 'Audio en reproducción' : 'Audio en pausa');
+      } catch {
         this._showTapToPlay();
-      });
+      }
+    });
 
-      this.youtubePlayer.onPlaying(() => {
-        this._tapAttempts = 0;
+    // Sincronizar botón de reproducción/pausa con eventos reales del reproductor HTML5
+    this.audioEngine.onPause(() => {
+      this._setPlayPauseButtonState(false);
+    });
+
+    // Desbloqueo táctil del audio en Chrome móvil / iOS Safari
+    this.dom.btnTapToPlay?.addEventListener('click', async () => {
+      this.audioEngine.initContext();
+      const ok = await this.gameLogic.unlockPlaybackFromGesture();
+      if (ok) {
         this._hideTapToPlay();
-        this._hideAudioUnavailableBanner();
-        this.dom.audioStage?.classList.remove('needs-native-tap');
         this._setPlayPauseButtonState(true);
-      });
-    }
+      }
+    });
 
     this.dom.btnOpenImporter?.addEventListener('click', () => {
       this._openPlaylistModal();
@@ -965,10 +1001,10 @@ export class DOMRenderer {
   _closeCurrentModal() {
     if (this.dom.confirmDialogModal?.classList.contains('open')) {
       this._closeConfirmDialog();
+    } else if (this.dom.iosInstallModal?.classList.contains('open')) {
+      this._closeIosInstallModal();
     } else if (this.dom.playlistModal?.classList.contains('open')) {
       this._closePlaylistModal();
-    } else if (this.dom.castModal?.classList.contains('open')) {
-      this._closeCastModal();
     } else if (this.dom.gameOverModal?.classList.contains('open')) {
       this.dom.gameOverModal.classList.remove('open');
       this._releaseFocusTrap(this.dom.gameOverModal);
@@ -977,87 +1013,99 @@ export class DOMRenderer {
   }
 
   /**
-   * Enlaza eventos para Chromecast y Modo Pantalla TV sin window.alert.
+   * Enlaza la pestaña "Mis Archivos" para cargar archivos locales MP3/M4A/WAV/MP4 o una carpeta.
    * @private
    */
-  _bindCastEvents() {
-    this.dom.btnCast?.addEventListener('click', () => {
-      this._openCastModal();
-    });
-
-    this.dom.btnCloseCast?.addEventListener('click', () => {
-      this._closeCastModal();
-    });
-
-    this.dom.castModal?.addEventListener('click', (e) => {
-      if (e.target === this.dom.castModal) {
-        this._closeCastModal();
-      }
-    });
-
+  _bindLocalMediaEvents() {
     this.dom.playlistModal?.addEventListener('click', (e) => {
       if (e.target === this.dom.playlistModal) {
         this._closePlaylistModal();
       }
     });
 
-    this.dom.btnConnectChromecast?.addEventListener('click', async () => {
-      if (!this.castManager) return;
-      if (this.dom.castStatusText) {
-        this.dom.castStatusText.textContent = 'Buscando dispositivos Chromecast en tu red Wi-Fi...';
-      }
-      const res = await this.castManager.connectToChromecast();
-      if (this.dom.castStatusText && res?.message) {
-        this.dom.castStatusText.textContent = res.message;
-      }
-      this.announce(res?.message || 'Estado de Chromecast actualizado');
-    });
+    const handleSelectedFiles = (fileList) => {
+      this._hideInlineFeedback(this.dom.localMediaFeedback);
+      const { tracks, skippedCount, videoCount, audioCount } = localMediaLibrary.importFiles(fileList);
 
-    const btnAndroid = document.getElementById('btn-android-screen-cast');
-    btnAndroid?.addEventListener('click', () => {
-      if (this.castManager?.isAndroid) {
-        this.castManager.openAndroidScreenCast();
-        this.announce('Abriendo Google Home para transmitir pantalla completa al TV.');
-      } else {
+      if (tracks.length === 0) {
         this._showInlineFeedback(
-          this.dom.castInlineHint,
-          'En tu móvil, desliza el panel de ajustes rápidos superior y pulsa "Transmitir / Enviar pantalla" (o Smart View) para duplicar audio y vídeo en tu TV.',
-          'warning'
+          this.dom.localMediaFeedback,
+          'No se detectaron archivos compatibles (MP3, M4A, WAV, OGG, MP4 o WebM).',
+          'error'
+        );
+        return;
+      }
+
+      try {
+        this.gameLogic.setLocalMediaPlaylist(tracks, true);
+        this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach((p) => p.classList.remove('active'));
+        this._renderPlaylistTable();
+
+        const summaryParts = [];
+        if (audioCount > 0) summaryParts.push(`${audioCount} de audio`);
+        if (videoCount > 0) summaryParts.push(`${videoCount} de vídeo`);
+        const skipNote = skippedCount > 0 ? ` (${skippedCount} omitidos por formato)` : '';
+
+        this._showInlineFeedback(
+          this.dom.localMediaFeedback,
+          `Biblioteca personal cargada: ${tracks.length} pistas (${summaryParts.join(', ')})${skipNote}.`,
+          'success'
+        );
+        this.announce(`Biblioteca personal activada con ${tracks.length} pistas locales sin anuncios.`);
+
+        setTimeout(() => {
+          this._closePlaylistModal();
+        }, 900);
+      } catch (err) {
+        this._showInlineFeedback(
+          this.dom.localMediaFeedback,
+          err.message || 'No se pudo activar la lista de archivos locales.',
+          'error'
         );
       }
-    });
+    };
 
-    this.dom.btnToggleTvMode?.addEventListener('click', () => {
-      if (!this.castManager) return;
-      const active = this.castManager.toggleTvDisplayMode();
-      if (this.dom.btnToggleTvModeText) {
-        this.dom.btnToggleTvModeText.textContent = active
-          ? 'Modo Pantalla TV activo (salir)'
-          : 'Activar Modo Pantalla TV';
+    this.dom.btnPickLocalFiles?.addEventListener('click', () => {
+      if (this.dom.localFilesInput) {
+        this.dom.localFilesInput.value = '';
+        this.dom.localFilesInput.click();
       }
-      this.announce(active ? 'Modo Pantalla TV activado' : 'Modo Pantalla TV desactivado');
     });
 
-    if (this.castManager) {
-      this.castManager.addEventListener('connectionChange', (e) => {
-        const { isConnected, deviceName } = e.detail;
-        this.dom.btnCast?.classList.toggle('connected', isConnected);
-        if (this.dom.castBtnLabel) {
-          this.dom.castBtnLabel.textContent = isConnected ? 'TV' : 'Cast';
-        }
-        if (this.dom.castStatusDot) {
-          this.dom.castStatusDot.classList.toggle('paused', !isConnected);
-        }
-        if (this.dom.castStatusText) {
-          this.dom.castStatusText.textContent = isConnected
-            ? `Conectado a "${deviceName}" en la red Wi-Fi`
-            : 'Asegúrate de que tu dispositivo y el Chromecast estén en la misma red Wi-Fi.';
-        }
-        if (this.dom.btnConnectChromecastText) {
-          this.dom.btnConnectChromecastText.textContent = isConnected
-            ? `Desconectar (${deviceName})`
-            : 'Conectar marcador Chromecast (Wi-Fi)';
-        }
+    this.dom.btnPickLocalFolder?.addEventListener('click', () => {
+      if (this.dom.localFolderInput) {
+        this.dom.localFolderInput.value = '';
+        this.dom.localFolderInput.click();
+      }
+    });
+
+    this.dom.localFilesInput?.addEventListener('change', (e) => {
+      const files = e.target?.files;
+      if (files && files.length > 0) handleSelectedFiles(files);
+    });
+
+    this.dom.localFolderInput?.addEventListener('change', (e) => {
+      const files = e.target?.files;
+      if (files && files.length > 0) handleSelectedFiles(files);
+    });
+
+    if (this.dom.localDropZone) {
+      const zone = this.dom.localDropZone;
+      ['dragenter', 'dragover'].forEach((evt) => {
+        zone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          zone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach((evt) => {
+        zone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          zone.classList.remove('dragover');
+        });
+      });
+      zone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) handleSelectedFiles(files);
       });
     }
   }
@@ -1081,24 +1129,6 @@ export class DOMRenderer {
 
   _hideAudioUnavailableBanner() {
     this.dom.audioUnavailableBanner?.classList.add('hidden');
-  }
-
-  _openCastModal() {
-    this._hideInlineFeedback(this.dom.castInlineHint);
-    if (this.castManager && this.dom.castStatusText && !this.castManager.isConnected) {
-      this.dom.castStatusText.textContent = this.castManager.getSupportSummary();
-    }
-    this.dom.castModal?.classList.add('open');
-    this._trapFocusInModal(this.dom.castModal);
-    this.announce('Panel de envío a Chromecast abierto.');
-  }
-
-  _closeCastModal() {
-    if (this.dom.castModal?.classList.contains('open')) {
-      this.dom.castModal.classList.remove('open');
-      this._releaseFocusTrap(this.dom.castModal);
-      this.announce('Panel de Chromecast cerrado.');
-    }
   }
 
   /**
@@ -1241,7 +1271,14 @@ export class DOMRenderer {
 
     this.gameState.addEventListener('audioUnavailable', (e) => {
       const { reason } = e.detail || {};
-      this._showAudioUnavailableBanner(reason || 'No se pudo reproducir el audio oficial de esta pista.');
+      this._showAudioUnavailableBanner(reason || 'No se pudo reproducir el audio sin anuncios de esta pista.');
+    });
+
+    this.gameState.addEventListener('playbackBlocked', () => {
+      const s = this.gameState.status;
+      if (s === GameStates.PLAYING || s === GameStates.AWAITING_AUDIO) {
+        this._showTapToPlay();
+      }
     });
 
     this.gameState.addEventListener('timeTick', (e) => {
@@ -1261,6 +1298,10 @@ export class DOMRenderer {
     this.gameState.addEventListener('timerStateChange', (e) => {
       const { isTimerRunning } = e.detail;
       this._updateTimerControlState(isTimerRunning);
+      if (isTimerRunning) {
+        this._hideTapToPlay();
+        this._setPlayPauseButtonState(true);
+      }
     });
   }
 
@@ -1286,7 +1327,7 @@ export class DOMRenderer {
   }
 
   /**
-   * Actualiza el estado visual del cronómetro de la ronda (la detección de anuncios es automática).
+   * Actualiza el estado visual del cronómetro de la ronda.
    * @param {boolean} isTimerRunning
    * @private
    */
@@ -1300,19 +1341,21 @@ export class DOMRenderer {
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = isTimerRunning
         ? 'Tiempo en marcha · Máx. 2:00'
-        : 'Esperando inicio de la pista';
+        : 'Cargando audio sin anuncios';
     }
 
     if (this.dom.stageTitle && this.dom.stageSubtitle && this.gameState.status !== GameStates.ROUND_OVER) {
       if (!isTimerRunning) {
         this.dom.stageTitle.textContent = 'Preparando canción...';
-        this.dom.stageSubtitle.textContent = 'Sincronizando reproducción · Si aparece un anuncio, pulsa «Ver vídeo» para saltarlo';
+        this.dom.stageSubtitle.textContent = 'Obteniendo audio limpio sin anuncios';
       } else if (this.gameState.gameMode === GameModes.LYRICS) {
         this.dom.stageTitle.textContent = 'Completa la letra';
-        this.dom.stageSubtitle.textContent = 'Escucha el verso · El vídeo completo se revelará al responder';
+        this.dom.stageSubtitle.textContent = 'Escucha el verso · Carátula HD y traducción al responder';
       } else {
         this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
-        this.dom.stageSubtitle.textContent = 'Escucha con atención · El vídeo completo se revelará al responder';
+        this.dom.stageSubtitle.textContent = this.isLocalVideoRound
+          ? 'Escucha con atención · Tu vídeo local se revelará al responder'
+          : 'Escucha con atención · Carátula HD al responder';
       }
     }
   }
@@ -1407,10 +1450,9 @@ export class DOMRenderer {
    * Configura la interfaz al iniciar una ronda activa con accesibilidad WAI-ARIA y escape XSS.
    * @private
    */
-  _renderPlayingState({ options = [], roundNumber, totalRounds, isOrderedMode, song, lyricsData = null, gameMode }) {
+  _renderPlayingState({ options = [], roundNumber, totalRounds, isOrderedMode, isLocalVideo = false, song, lyricsData = null, gameMode }) {
     this._hideTapToPlay();
     this._hideAudioUnavailableBanner();
-    this.dom.audioStage?.classList.remove('needs-native-tap');
     this.dom.discoveryPanel?.classList.remove('active');
     this._setCuriosityExpanded(false);
     this.dom.btnNext?.classList.add('hidden');
@@ -1421,8 +1463,8 @@ export class DOMRenderer {
       this.dom.statusMsg.className = 'status-msg';
     }
 
-    // Cada ronda nueva oculta el vídeo al 100% hasta que el jugador seleccione respuesta
-    this.isVideoPeekOpen = false;
+    // Cada ronda nueva oculta carátula y vídeo local hasta seleccionar respuesta
+    this.isLocalVideoRound = Boolean(isLocalVideo || song?.isLocalVideo);
     this.isPostRevealMinimized = false;
     this._syncStageVisibility();
     this._updateTimerControlState(false);
@@ -1431,29 +1473,18 @@ export class DOMRenderer {
       this.dom.btnYtExternal.style.display = 'none';
     }
 
-    if (this.dom.btnOpenYtCastApp && song?.youtubeId) {
-      this.dom.btnOpenYtCastApp.href = `https://www.youtube.com/watch?v=${encodeURIComponent(song.youtubeId)}`;
-    }
-
     this._setPlayPauseButtonState(null);
-
-    this.castManager?.syncRoundStart({
-      song,
-      roundNumber,
-      totalRounds,
-      score: this.gameState.score,
-      streak: this.gameState.streak,
-      options
-    });
 
     if (this.dom.minimizedTitle && this.dom.minimizedSubtitle) {
       this.dom.minimizedTitle.textContent = 'Modo audio puro';
-      this.dom.minimizedSubtitle.textContent = 'Vídeo y título ocultos para evitar spoilers';
+      this.dom.minimizedSubtitle.textContent = 'Pulsa «Ver vídeo» para mostrar el archivo local';
     }
 
     if (this.dom.roundIndicator) {
       if (gameMode === GameModes.LYRICS) {
         this.dom.roundIndicator.textContent = `Lyrics · ${roundNumber} / ${totalRounds}`;
+      } else if (this.gameLogic.isLocalMediaSession) {
+        this.dom.roundIndicator.textContent = `Mis Archivos · ${roundNumber} / ${totalRounds}`;
       } else if (isOrderedMode || song?.rank) {
         this.dom.roundIndicator.textContent = `Top 100 YT · #${song?.rank || roundNumber} / ${totalRounds}`;
       } else {
@@ -1474,8 +1505,8 @@ export class DOMRenderer {
       } else {
         this.dom.stageTitle.textContent = 'Preparando canción...';
         this.dom.stageSubtitle.textContent = (isOrderedMode && song?.rank)
-          ? `Puesto #${song.rank} en YouTube · Sincronizando reproducción`
-          : 'Sincronizando reproducción de la pista';
+          ? `Puesto #${song.rank} en YouTube · Cargando preview sin anuncios`
+          : 'Cargando audio limpio sin anuncios';
       }
     }
 
@@ -1661,11 +1692,13 @@ export class DOMRenderer {
 
     if (this.dom.minimizedTitle && this.dom.minimizedSubtitle) {
       this.dom.minimizedTitle.textContent = `${song.title} — ${song.artist}`;
-      this.dom.minimizedSubtitle.textContent = 'Pulsa «Ver vídeo» para mostrar el videoclip completo';
+      this.dom.minimizedSubtitle.textContent = 'Pulsa «Ver vídeo» para volver a ver tu archivo local';
     }
 
-    // Al responder (o agotar tiempo), desbloquear automáticamente el vídeo completo sin obstrucciones
-    this.isVideoPeekOpen = false;
+    // Poblar tarjeta de revelación con Carátula HD + botón opcional a YouTube
+    this._renderArtworkReveal(song, this.gameLogic.currentRoundMedia);
+
+    // Al responder (o agotar tiempo), revelar Carátula HD o vídeo local MP4
     this.isPostRevealMinimized = false;
     this._syncStageVisibility();
     this.dom.btnNext?.classList.remove('hidden');
@@ -1675,9 +1708,10 @@ export class DOMRenderer {
       this.dom.timerStatusLabel.textContent = `${song.title} — ${song.artist}`;
     }
 
+    const ytUrl = buildExternalYoutubeUrl(song);
     if (this.dom.btnYtExternal) {
-      if (song.youtubeId) {
-        this.dom.btnYtExternal.href = `https://www.youtube.com/watch?v=${encodeURIComponent(song.youtubeId)}`;
+      if (ytUrl) {
+        this.dom.btnYtExternal.href = ytUrl;
         this.dom.btnYtExternal.style.display = 'inline-flex';
       } else {
         this.dom.btnYtExternal.style.display = 'none';
@@ -1699,16 +1733,83 @@ export class DOMRenderer {
 
     this._setCuriosityExpanded(false);
     this.dom.discoveryPanel?.classList.add('active');
+  }
 
-    this.castManager?.syncRoundReveal({
-      song,
-      isCorrect,
-      pointsEarned,
-      speedBadge,
-      score: this.gameState.score,
-      streak: this.gameState.streak,
-      correctAnswer
-    });
+  /**
+   * Renderiza la tarjeta de revelación con Carátula HD (con respaldo progresivo sin imágenes rotas)
+   * y el enlace externo opcional para ver el vídeo en YouTube.
+   *
+   * @param {Object} song
+   * @param {Object|null} roundMedia
+   * @private
+   */
+  _renderArtworkReveal(song, roundMedia) {
+    if (this.dom.revealSongTitle) {
+      this.dom.revealSongTitle.textContent = song?.title || '';
+    }
+    if (this.dom.revealSongArtist) {
+      this.dom.revealSongArtist.textContent = song?.artist || '';
+    }
+    if (this.dom.revealSongMeta) {
+      const metaParts = [];
+      if (song?.year) metaParts.push(String(song.year));
+      if (song?.genre) metaParts.push(song.genre);
+      if (roundMedia?.collectionName) {
+        metaParts.push(roundMedia.collectionName);
+      } else if (roundMedia?.sourceType === 'itunes-preview') {
+        metaParts.push('Preview 30 s sin anuncios');
+      } else if (roundMedia?.sourceType === 'bundled-audio') {
+        metaParts.push('Audio local');
+      }
+      this.dom.revealSongMeta.textContent = metaParts.join(' · ');
+    }
+
+    const ytUrl = roundMedia?.externalYoutubeUrl || buildExternalYoutubeUrl(song);
+    if (this.dom.btnRevealYoutube) {
+      if (ytUrl) {
+        this.dom.btnRevealYoutube.href = ytUrl;
+        this.dom.btnRevealYoutube.classList.remove('hidden');
+      } else {
+        this.dom.btnRevealYoutube.classList.add('hidden');
+      }
+    }
+
+    const img = this.dom.revealArtworkImg;
+    const fallback = this.dom.revealArtworkFallback;
+    if (!img || !fallback) return;
+
+    const primaryUrl = roundMedia?.artworkUrl || buildYoutubeThumbnailUrl(song);
+    const secondaryUrl = roundMedia?.artworkUrl ? buildYoutubeThumbnailUrl(song) : null;
+
+    img.onload = null;
+    img.onerror = null;
+
+    if (!primaryUrl) {
+      img.classList.add('hidden');
+      img.removeAttribute('src');
+      fallback.classList.remove('hidden');
+      return;
+    }
+
+    img.alt = `Carátula de ${song?.title || 'la canción'} — ${song?.artist || ''}`;
+    img.classList.add('hidden');
+    fallback.classList.remove('hidden');
+
+    let triedSecondary = false;
+    img.onload = () => {
+      img.classList.remove('hidden');
+      fallback.classList.add('hidden');
+    };
+    img.onerror = () => {
+      if (!triedSecondary && secondaryUrl && secondaryUrl !== primaryUrl) {
+        triedSecondary = true;
+        img.src = secondaryUrl;
+      } else {
+        img.classList.add('hidden');
+        fallback.classList.remove('hidden');
+      }
+    };
+    img.src = primaryUrl;
   }
 
   _renderGameOverState({ finalScore, isNewRecord, accuracy, maxStreak, avgTime }) {
@@ -1798,13 +1899,13 @@ export class DOMRenderer {
           this.gameState.status === GameStates.AWAITING_AUDIO ||
           this.gameState.status === GameStates.ROUND_OVER
         ) {
-          let isPlaying = false;
-          if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
-            isPlaying = this.youtubePlayer.togglePlayPause();
-          } else {
-            isPlaying = await this.audioEngine.togglePlayPause();
+          try {
+            const isPlaying = await this.audioEngine.togglePlayPause();
+            this._setPlayPauseButtonState(isPlaying);
+            this.announce(isPlaying ? 'Audio reanudado' : 'Audio pausado');
+          } catch {
+            this._showTapToPlay();
           }
-          this.announce(isPlaying ? 'Audio reanudado' : 'Audio pausado');
         }
         return;
       }
@@ -1865,18 +1966,6 @@ export class DOMRenderer {
       if (lowerKey === 'm') {
         e.preventDefault();
         this.dom.btnMute?.click();
-        return;
-      }
-
-      if (lowerKey === 'v') {
-        e.preventDefault();
-        this.dom.btnToggleMinimize?.click();
-        return;
-      }
-
-      if (lowerKey === 'c') {
-        e.preventDefault();
-        this._openCastModal();
         return;
       }
 

@@ -1,35 +1,39 @@
 /**
  * @fileoverview Punto de entrada (bootstrap) de la aplicación SongQuiz.
- * Coordina la inyección de dependencias, YouTube Player, Web Audio y gestor de listas.
+ * Coordina la inyección de dependencias: Audio/Vídeo HTML5 sin anuncios, PWA/TWA y gestor de listas.
  */
 
-import { GameState } from './core/gameState.js';
+import { GameState, GameModes } from './core/gameState.js';
 import { GameLogic } from './core/gameLogic.js';
 import { audioEngine } from './audio/audioEngine.js';
 import { sfx } from './audio/soundFX.js';
-import { youtubePlayer } from './audio/youtubePlayer.js';
-import { CastManager } from './audio/castManager.js';
+import { PWAManager } from './utils/pwaManager.js';
 import { AudioVisualizer } from './ui/visualizer.js';
 import { DOMRenderer } from './ui/domRenderer.js';
 
 async function bootstrap() {
-  console.log('%c🎵 SongQuiz v3.1.0 (Mobile, Tablet & Chromecast)', 'color: #1db954; font-weight: bold; font-size: 14px;');
-
   const canvas = document.getElementById('visualizer-canvas');
   if (!canvas) {
     console.error('Canvas #visualizer-canvas no encontrado en el DOM.');
     return;
   }
 
-  // Inicializar YouTube IFrame API en segundo plano
-  youtubePlayer.init('ytplayer').catch((e) => {
-    console.warn('YouTube IFrame API no disponible inmediatamente:', e);
-  });
+  const localVideoEl = document.getElementById('local-video-player');
+  if (localVideoEl) {
+    audioEngine.attachVideoElement(localVideoEl);
+  }
 
   const visualizer = new AudioVisualizer(canvas, audioEngine);
   const gameState = new GameState();
-  const gameLogic = new GameLogic(gameState, audioEngine, visualizer, youtubePlayer);
-  const castManager = new CastManager(audioEngine, youtubePlayer);
+  const gameLogic = new GameLogic(gameState, audioEngine, visualizer);
+  const pwaManager = new PWAManager();
+
+  // Soporta accesos directos del manifest.json (ej. ./?mode=lyrics)
+  const params = new URLSearchParams(window.location.search);
+  const requestedMode = params.get('mode');
+  if (requestedMode === GameModes.LYRICS) {
+    gameState.setGameMode(GameModes.LYRICS);
+  }
 
   try {
     const response = await fetch('./src/data/songs.json');
@@ -38,8 +42,8 @@ async function bootstrap() {
     }
     const defaultSongs = await response.json();
 
-    // Iniciar renderizador del DOM con soporte móvil/tablet y Chromecast
-    new DOMRenderer(gameState, gameLogic, audioEngine, sfx, defaultSongs, youtubePlayer, castManager);
+    // Iniciar renderizador del DOM con soporte móvil/tablet, biblioteca local y PWA/TWA
+    new DOMRenderer(gameState, gameLogic, audioEngine, sfx, defaultSongs, pwaManager);
 
     const startBtn = document.getElementById('btn-start');
     if (startBtn) {
@@ -47,22 +51,21 @@ async function bootstrap() {
       startBtn.textContent = 'Comenzar partida';
     }
 
-    // Iniciar automáticamente la partida cargando la primera pista y sus 4 opciones
+    // Iniciar automáticamente la partida cargando la primera pista sin anuncios
     gameLogic.startNewGame(defaultSongs, false, true);
   } catch (err) {
     console.error('Error al inicializar el catálogo de canciones:', err);
     const statusMsg = document.getElementById('status-msg');
     if (statusMsg) {
-      statusMsg.textContent = '⚠️ Error al cargar el catálogo de canciones local.';
+      statusMsg.textContent = 'Error al cargar el catálogo de canciones local.';
       statusMsg.style.color = 'var(--color-error)';
     }
   }
 
-  // Registro PWA Offline First
+  // Registro Service Worker PWA Offline-First (HTTPS o localhost)
   if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then((reg) => console.log('ServiceWorker registrado:', reg.scope))
         .catch((err) => console.warn('ServiceWorker error:', err));
     });
   }

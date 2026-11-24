@@ -1,14 +1,24 @@
 /**
- * @fileoverview Motor de reproducción de audio HTML5 conectado a AnalyserNode de Web Audio.
- * Proporciona control de reproducción para clips musicales y extracción de espectro en tiempo real.
+ * @fileoverview Motor unificado de reproducción multimedia HTML5 (Audio y Vídeo local MP4/WebM)
+ * con soporte Web Audio AnalyserNode para pistas locales/same-origin y reproducción directa
+ * libre de bloqueos CORS para previews oficiales de 30 s sin anuncios.
  */
 
 export class AudioEngine {
   constructor() {
-    /** @type {HTMLAudioElement} */
-    this.audio = new Audio();
-    this.audio.crossOrigin = 'anonymous';
-    this.audio.preload = 'auto';
+    /** Reproductor HTML5 conectado a Web Audio para archivos same-origin y blobs locales. */
+    this.localAudio = new Audio();
+    this.localAudio.preload = 'auto';
+
+    /** Reproductor HTML5 directo (sin crossOrigin) para previews remotos de 30 s sin fallos CORS. */
+    this.remoteAudio = new Audio();
+    this.remoteAudio.preload = 'auto';
+
+    /** @type {HTMLVideoElement|null} Elemento <video> del DOM para MP4/WebM personales. */
+    this.videoElement = null;
+
+    /** @type {'local-audio'|'remote-audio'|'local-video'} */
+    this.activeMode = 'local-audio';
 
     /** @type {AudioContext|null} */
     this.ctx = null;
@@ -21,29 +31,83 @@ export class AudioEngine {
 
     this.frequencyData = null;
     this.isMuted = false;
-    this.volume = 0.8;
+    this.volume = 0.85;
     this._isInitialized = false;
 
     // Callbacks
     this._onEndedCb = null;
     this._onErrorCb = null;
+    this._onPlayingCb = null;
+    this._onPauseCb = null;
 
-    this._bindAudioEvents();
+    this._bindElementEvents(this.localAudio, 'local-audio');
+    this._bindElementEvents(this.remoteAudio, 'remote-audio');
   }
 
   /**
-   * Enlaza eventos nativos del elemento HTML5 Audio.
+   * Devuelve el elemento HTMLMediaElement actualmente activo.
+   * @returns {HTMLMediaElement}
+   */
+  get activeMedia() {
+    if (this.activeMode === 'local-video' && this.videoElement) {
+      return this.videoElement;
+    }
+    if (this.activeMode === 'remote-audio') {
+      return this.remoteAudio;
+    }
+    return this.localAudio;
+  }
+
+  /** Alias de compatibilidad hacia atrás. */
+  get audio() {
+    return this.activeMedia;
+  }
+
+  /**
+   * Vincula el elemento `<video>` del escenario para reproducir vídeos personales locales (MP4/WebM).
+   * @param {HTMLVideoElement|null} videoEl
+   */
+  attachVideoElement(videoEl) {
+    if (!videoEl || this.videoElement === videoEl) return;
+    this.videoElement = videoEl;
+    this.videoElement.preload = 'auto';
+    this.videoElement.playsInline = true;
+    this._applyVolumeToElement(this.videoElement);
+    this._bindElementEvents(this.videoElement, 'local-video');
+  }
+
+  /**
+   * Enlaza eventos nativos de un elemento multimedia respetando el modo activo.
+   * @param {HTMLMediaElement} el
+   * @param {'local-audio'|'remote-audio'|'local-video'} mode
    * @private
    */
-  _bindAudioEvents() {
-    this.audio.addEventListener('ended', () => {
+  _bindElementEvents(el, mode) {
+    el.addEventListener('playing', () => {
+      if (this.activeMode !== mode) return;
+      if (typeof this._onPlayingCb === 'function') {
+        this._onPlayingCb();
+      }
+    });
+
+    el.addEventListener('pause', () => {
+      if (this.activeMode !== mode) return;
+      if (typeof this._onPauseCb === 'function') {
+        this._onPauseCb();
+      }
+    });
+
+    el.addEventListener('ended', () => {
+      if (this.activeMode !== mode || el.loop) return;
       if (typeof this._onEndedCb === 'function') {
         this._onEndedCb();
       }
     });
 
-    this.audio.addEventListener('error', (e) => {
-      console.error('Error en AudioEngine al reproducir clip:', e);
+    el.addEventListener('error', (e) => {
+      if (this.activeMode !== mode) return;
+      // Ignorar eventos de error al limpiar `src` intencionalmente
+      if (!el.getAttribute('src')) return;
       if (typeof this._onErrorCb === 'function') {
         this._onErrorCb(e);
       }
@@ -51,21 +115,21 @@ export class AudioEngine {
   }
 
   /**
-   * Inicializa la cadena de nodos Web Audio tras el primer gesto de usuario.
-   * AudioElement -> MediaElementSource -> AnalyserNode -> GainNode -> Destination
+   * Inicializa la cadena Web Audio para el reproductor local (espectro en tiempo real).
    */
   initContext() {
     if (this._isInitialized) return;
+    if (typeof window === 'undefined') return;
 
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
       this.ctx = new AudioCtx();
-
-      this.source = this.ctx.createMediaElementSource(this.audio);
+      this.source = this.ctx.createMediaElementSource(this.localAudio);
       this.analyser = this.ctx.createAnalyser();
-      this.analyser.fftSize = 128; // 64 bandas de frecuencia, óptimo para 60fps
+      this.analyser.fftSize = 128;
       this.analyser.smoothingTimeConstant = 0.8;
-
       this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
       this.gainNode = this.ctx.createGain();
@@ -77,142 +141,235 @@ export class AudioEngine {
 
       this._isInitialized = true;
     } catch (err) {
-      console.warn('Fallo en la conexión de MediaElementSource a Web Audio:', err);
+      console.warn('Web Audio no disponible, usando reproducción HTML5 directa:', err);
     }
   }
 
   /**
-   * Carga una nueva fuente de audio.
-   * @param {string} src - Ruta relativa o URL del archivo de audio.
+   * Aplica volumen y silencio actuales a un elemento HTMLMediaElement.
+   * @param {HTMLMediaElement} el
+   * @private
+   */
+  _applyVolumeToElement(el) {
+    if (!el) return;
+    el.muted = this.isMuted;
+    el.volume = this.volume;
+  }
+
+  /**
+   * Carga una fuente de audio o vídeo (local, blob o preview remoto sin anuncios).
+   * @param {{ url: string, isVideo?: boolean, isCrossOrigin?: boolean, loop?: boolean }} config
    * @returns {Promise<void>}
    */
-  load(src) {
-    return new Promise((resolve, reject) => {
-      this.audio.src = src;
-      this.audio.load();
+  loadMedia({ url, isVideo = false, isCrossOrigin = false, loop = true }) {
+    this.stop();
 
-      const onCanPlay = () => {
-        this.audio.removeEventListener('canplaythrough', onCanPlay);
-        this.audio.removeEventListener('error', onError);
+    if (isVideo && this.videoElement) {
+      this.activeMode = 'local-video';
+    } else if (isCrossOrigin) {
+      this.activeMode = 'remote-audio';
+    } else {
+      this.activeMode = 'local-audio';
+    }
+
+    const media = this.activeMedia;
+    media.loop = Boolean(loop);
+    this._applyVolumeToElement(media);
+
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const cleanup = () => {
+        clearTimeout(timeoutId);
+        media.removeEventListener('canplay', onReady);
+        media.removeEventListener('loadeddata', onReady);
+        media.removeEventListener('error', onErr);
+      };
+
+      const onReady = () => {
+        if (settled) return;
+        settled = true;
+        cleanup();
         resolve();
       };
 
-      const onError = (e) => {
-        this.audio.removeEventListener('canplaythrough', onCanPlay);
-        this.audio.removeEventListener('error', onError);
-        reject(e);
+      const onErr = (e) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(e || new Error('No se pudo cargar el archivo multimedia.'));
       };
 
-      this.audio.addEventListener('canplaythrough', onCanPlay, { once: true });
-      this.audio.addEventListener('error', onError, { once: true });
+      const timeoutId = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error('Tiempo de espera agotado al cargar el audio.'));
+      }, 10000);
+
+      media.addEventListener('canplay', onReady, { once: true });
+      media.addEventListener('loadeddata', onReady, { once: true });
+      media.addEventListener('error', onErr, { once: true });
+
+      media.src = url;
+      media.load();
     });
   }
 
   /**
-   * Indica si la pista está reproduciéndose actualmente.
-   * @returns {boolean}
+   * Compatibilidad con llamadas previas `load(src)`.
+   * @param {string} src
+   * @returns {Promise<void>}
    */
-  get isPlaying() {
-    return !this.audio.paused && !this.audio.ended && this.audio.currentTime > 0;
+  load(src) {
+    const isCrossOrigin = /^https?:\/\//i.test(src || '');
+    return this.loadMedia({ url: src, isVideo: false, isCrossOrigin, loop: true });
   }
 
   /**
-   * Alterna entre reproducción y pausa.
-   * @returns {Promise<boolean>} Devuelve true si quedó reproduciéndose, false si se pausó.
+   * Indica si el medio activo se está reproduciendo.
+   * @returns {boolean}
+   */
+  get isPlaying() {
+    const media = this.activeMedia;
+    return Boolean(media && !media.paused && !media.ended && media.readyState >= 2);
+  }
+
+  /**
+   * Alterna entre reproducción y pausa del medio activo.
+   * @returns {Promise<boolean>}
    */
   async togglePlayPause() {
     if (this.isPlaying) {
       this.pause();
       return false;
-    } else {
-      await this.play();
-      return true;
     }
+    await this.play();
+    return true;
   }
 
   /**
-   * Inicia o reanuda la reproducción asegurando el contexto de audio.
+   * Inicia o reanuda la reproducción del medio activo.
    * @returns {Promise<void>}
    */
   async play() {
-    this.initContext();
-
-    if (this.ctx && this.ctx.state === 'suspended') {
-      await this.ctx.resume();
+    if (this.activeMode === 'local-audio') {
+      this.initContext();
+      if (this.ctx && this.ctx.state === 'suspended') {
+        await this.ctx.resume().catch(() => {});
+      }
     }
 
-    try {
-      await this.audio.play();
-    } catch (err) {
-      console.warn('Autoplay bloqueado por el navegador hasta interacción del usuario:', err);
-      throw err;
-    }
+    const media = this.activeMedia;
+    this._applyVolumeToElement(media);
+    await media.play();
   }
 
   /**
-   * Pausa la reproducción del clip.
+   * Pausa la reproducción actual.
    */
   pause() {
-    this.audio.pause();
+    try {
+      this.activeMedia.pause();
+    } catch {}
   }
 
   /**
-   * Detiene la reproducción y reinicia la aguja a 0.
+   * Sitúa la reproducción en un segundo determinado si la duración lo permite.
+   * @param {number} seconds
+   */
+  seekTo(seconds) {
+    const media = this.activeMedia;
+    if (!media) return;
+    const safeSec = Math.max(0, Number(seconds) || 0);
+    try {
+      if (Number.isFinite(media.duration) && media.duration > 0) {
+        media.currentTime = safeSec < media.duration - 1 ? safeSec : 0;
+      } else {
+        media.currentTime = 0;
+      }
+    } catch {}
+  }
+
+  /**
+   * Detiene todos los reproductores (audio local, preview remoto y vídeo local).
    */
   stop() {
-    this.audio.pause();
-    this.audio.currentTime = 0;
+    for (const el of [this.localAudio, this.remoteAudio, this.videoElement]) {
+      if (!el) continue;
+      try {
+        el.pause();
+        el.currentTime = 0;
+      } catch {}
+    }
   }
 
   /**
-   * Ajusta el volumen de la pista (0.0 a 1.0).
+   * Ajusta el volumen global (0.0 a 1.0).
    * @param {number} val
    */
   setVolume(val) {
     this.volume = Math.max(0, Math.min(1, val));
+    for (const el of [this.localAudio, this.remoteAudio, this.videoElement]) {
+      this._applyVolumeToElement(el);
+    }
     if (!this.isMuted && this.gainNode && this.ctx) {
       this.gainNode.gain.setValueAtTime(this.volume, this.ctx.currentTime);
     }
   }
 
   /**
-   * Alterna el modo silencio del reproductor.
-   * @returns {boolean} Estado actual de silencio.
+   * Establece explícitamente el silencio.
+   * @param {boolean} muted
    */
-  toggleMute() {
-    this.isMuted = !this.isMuted;
+  setMuted(muted) {
+    this.isMuted = Boolean(muted);
+    for (const el of [this.localAudio, this.remoteAudio, this.videoElement]) {
+      this._applyVolumeToElement(el);
+    }
     if (this.gainNode && this.ctx) {
       this.gainNode.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
     }
+  }
+
+  /**
+   * Alterna silencio global.
+   * @returns {boolean}
+   */
+  toggleMute() {
+    this.setMuted(!this.isMuted);
     return this.isMuted;
   }
 
   /**
-   * Obtiene la matriz de frecuencias en tiempo real para el visualizador Canvas.
+   * Obtiene datos de frecuencia en tiempo real para el visualizador Canvas.
    * @returns {Uint8Array}
    */
   getFrequencyData() {
-    if (this.analyser && this.frequencyData) {
+    if (this.activeMode === 'local-audio' && this.analyser && this.frequencyData) {
       this.analyser.getByteFrequencyData(this.frequencyData);
       return this.frequencyData;
     }
     return new Uint8Array(64);
   }
 
-  /**
-   * Suscribe un callback al finalizar el clip de audio.
-   * @param {Function} cb
-   */
+  /** @param {Function} cb */
   onEnded(cb) {
     this._onEndedCb = cb;
   }
 
-  /**
-   * Suscribe un callback si ocurre un error de reproducción.
-   * @param {Function} cb
-   */
+  /** @param {Function} cb */
   onError(cb) {
     this._onErrorCb = cb;
+  }
+
+  /** @param {Function} cb */
+  onPlaying(cb) {
+    this._onPlayingCb = cb;
+  }
+
+  /** @param {Function} cb */
+  onPause(cb) {
+    this._onPauseCb = cb;
   }
 }
 

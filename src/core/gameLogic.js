@@ -1,12 +1,18 @@
 /**
  * @fileoverview Lógica de negocio, puntuación, temporizador, modo "Lyrics Challenge" con carga
- * diferida, prevención de race conditions (_roundToken) y audio de respaldo auténtico sin engaños.
+ * diferida, resolución multimedia sin anuncios (previews oficiales 30s + biblioteca local MP3/MP4),
+ * prevención de race conditions (_roundToken) y persistencia resiliente de progreso.
  */
 
 import { GameStates, GameModes } from './gameState.js';
 import { shuffle, generateOptions } from '../utils/random.js';
 import { sfx } from '../audio/soundFX.js';
-import { youtubePlayer, hasAuthenticLocalAudio } from '../audio/youtubePlayer.js';
+import {
+  resolveSongMedia,
+  prefetchSongMedia,
+  localMediaLibrary,
+  hasAuthenticLocalAudio
+} from '../audio/mediaResolver.js';
 import { readStorageJSON, writeStorageJSON, removeStorageKey } from '../utils/storageManager.js';
 import { sanitizeImportedCatalog } from '../utils/catalogValidator.js';
 import { evaluateLyricsAnswer, buildLyricsRoundData } from './lyricsChallengeEngine.js';
@@ -15,72 +21,87 @@ export const STORAGE_KEYS = Object.freeze({
   HIGH_SCORE: 'songquiz_high_score',
   GAMES_PLAYED: 'songquiz_games_count',
   BEST_STREAK: 'songquiz_best_streak',
-  CUSTOM_PLAYLIST: 'songquiz_custom_playlist_v3'
+  CUSTOM_PLAYLIST: 'songquiz_custom_playlist_v3',
+  PROGRESS: 'songquiz_progress_v1'
 });
 
+const MAX_TRACKED_SONG_IDS = 300;
 const LYRICS_BANK_URL = './src/data/lyricsBank.json';
+
+/**
+ * Crea una estructura limpia de progreso del jugador.
+ * @returns {Object}
+ */
+function createEmptyProgress() {
+  return {
+    failedSongIds: [],
+    masteredSongIds: [],
+    classicStats: { played: 0, correct: 0 },
+    lyricsStats: { played: 0, correct: 0, exact: 0, contraction: 0, fuzzy: 0, hintsUsed: 0 },
+    updatedAt: null
+  };
+}
+
+/**
+ * Valida la integridad del objeto de progreso hidratado desde almacenamiento local.
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function isValidProgressRecord(value) {
+  return Boolean(
+    value &&
+    typeof value === 'object' &&
+    Array.isArray(value.failedSongIds) &&
+    Array.isArray(value.masteredSongIds) &&
+    value.classicStats && typeof value.classicStats.played === 'number' &&
+    value.lyricsStats && typeof value.lyricsStats.played === 'number'
+  );
+}
 
 export class GameLogic {
   /**
    * @param {import('./gameState.js').GameState} gameState
    * @param {import('../audio/audioEngine.js').AudioEngine} audioEngine
    * @param {import('../ui/visualizer.js').AudioVisualizer} visualizer
-   * @param {import('../audio/youtubePlayer.js').YouTubePlayerEngine} [ytPlayer=youtubePlayer]
    */
-  constructor(gameState, audioEngine, visualizer, ytPlayer = youtubePlayer) {
+  constructor(gameState, audioEngine, visualizer) {
     this.gameState = gameState;
     this.audioEngine = audioEngine;
     this.visualizer = visualizer;
-    this.youtubePlayer = ytPlayer;
 
     this.allSongs = [];
     this.masterCatalog = [];
     this.lastRoundOptions = [];
     this.isOrderedMode = false;
+    this.isLocalMediaSession = false;
     this.timerInterval = null;
     this.roundStartTime = 0;
     this.isTimerRunning = false;
 
+    /** Metadatos multimedia resueltos para la ronda activa (carátula HD, fuente, enlace YT). */
+    this.currentRoundMedia = null;
+
     /** Token incremental para descartar promesas o callbacks obsoletos de rondas anteriores. */
     this._roundToken = 0;
+    /** @type {AbortController|null} */
+    this._mediaAbortController = null;
 
     /** Banco de letras cargado bajo demanda al activar Lyrics Challenge. @type {Map<string, Object>|null} */
     this._lyricsBankMap = null;
     /** @type {Promise<Map<string, Object>>|null} */
     this._lyricsBankPromise = null;
 
-    // Vincular finalización natural de la pista de audio local
-    this.audioEngine.onEnded(() => {
-      if (this.gameState.status === GameStates.PLAYING) {
-        this.handleTimeout();
+    // Evento al iniciar reproducción real de audio/vídeo
+    this.audioEngine.onPlaying(() => {
+      if (this.gameState.status === GameStates.AWAITING_AUDIO) {
+        this.gameState.startTimer();
       }
     });
 
-    // Vincular evento startTimer de GameState
+    // Evento startTimer desde la FSM
     this.gameState.addEventListener('startTimer', () => {
       this.startRoundTimer(true);
     });
-
-    // Sincronización Pre-Roll y manejo seguro de errores de YouTube
-    if (this.youtubePlayer) {
-      this.youtubePlayer.onAudioActuallyPlaying((_time, loadedVideoId) => {
-        const currentYt = this.gameState.currentSong?.youtubeId?.trim();
-        if (loadedVideoId && currentYt && loadedVideoId !== currentYt) return;
-        if (this.gameState.status === GameStates.AWAITING_AUDIO) {
-          this.gameState.startTimer();
-        }
-      });
-
-      this.youtubePlayer.onError((errCode, failedVideoId) => {
-        const tokenAtError = this._roundToken;
-        const currentSong = this.gameState.currentSong;
-        if (!currentSong) return;
-        if (failedVideoId && currentSong.youtubeId && failedVideoId !== currentSong.youtubeId.trim()) {
-          return;
-        }
-        this._handleAudioFallbackOrUnavailable(currentSong, tokenAtError, errCode);
-      });
-    }
   }
 
   /**
@@ -146,6 +167,7 @@ export class GameLogic {
    * @param {boolean} [autoStart=true]
    */
   async startNewGame(defaultSongs, ordered = false, autoStart = true) {
+    this._abortPendingMedia();
     this._roundToken += 1;
     const initToken = this._roundToken;
 
@@ -156,11 +178,13 @@ export class GameLogic {
     this.isOrderedMode = Boolean(ordered);
     this.lastRoundOptions = [];
 
-    const savedCustom = this.getCustomPlaylist();
-    if (!ordered && savedCustom && Array.isArray(savedCustom) && savedCustom.length > 0) {
-      this.allSongs = [...savedCustom];
-    } else if (Array.isArray(defaultSongs) && defaultSongs.length > 0) {
-      this.allSongs = [...defaultSongs];
+    if (!this.isLocalMediaSession) {
+      const savedCustom = this.getCustomPlaylist();
+      if (!ordered && savedCustom && Array.isArray(savedCustom) && savedCustom.length > 0) {
+        this.allSongs = [...savedCustom];
+      } else if (Array.isArray(defaultSongs) && defaultSongs.length > 0) {
+        this.allSongs = [...defaultSongs];
+      }
     }
 
     let gameSongs;
@@ -219,6 +243,11 @@ export class GameLogic {
       throw new Error('La lista de canciones no contiene registros válidos.');
     }
 
+    if (this.isLocalMediaSession) {
+      localMediaLibrary.revokeAll();
+      this.isLocalMediaSession = false;
+    }
+
     this.allSongs = [...sanitized];
     this.isOrderedMode = Boolean(ordered);
 
@@ -234,11 +263,39 @@ export class GameLogic {
   }
 
   /**
-   * Restablece la lista por defecto y borra cualquier lista personalizada local.
+   * Activa una sesión temporal en memoria con archivos personales MP3/M4A/WAV/MP4 del dispositivo.
+   * No escribe URLs `blob:` en `localStorage` ni modifica el catálogo oficial.
+   *
+   * @param {Array<Object>} localTracks
+   * @param {boolean} [autoStart=true]
+   */
+  setLocalMediaPlaylist(localTracks, autoStart = true) {
+    if (!Array.isArray(localTracks) || localTracks.length === 0) {
+      throw new Error('No se encontraron archivos de audio o vídeo compatibles.');
+    }
+
+    this.isLocalMediaSession = true;
+    this.isOrderedMode = false;
+    this.allSongs = [...localTracks];
+
+    // En biblioteca local personal activamos modo Classic para adivinar título y artista
+    if (this.gameState.gameMode !== GameModes.CLASSIC) {
+      this.gameState.setGameMode(GameModes.CLASSIC);
+    }
+
+    this.startNewGame(this.allSongs, false, autoStart);
+  }
+
+  /**
+   * Restablece la lista por defecto y borra cualquier lista personalizada local o biblioteca temporal.
    * @param {Array<Object>} defaultSongs
    * @param {boolean} [autoStart=true]
    */
   resetToDefaultPlaylist(defaultSongs, autoStart = true) {
+    if (this.isLocalMediaSession) {
+      localMediaLibrary.revokeAll();
+      this.isLocalMediaSession = false;
+    }
     removeStorageKey(STORAGE_KEYS.CUSTOM_PLAYLIST);
     const catalog = (Array.isArray(defaultSongs) && defaultSongs.length > 0)
       ? defaultSongs
@@ -263,11 +320,26 @@ export class GameLogic {
   }
 
   /**
-   * Inicia una ronda de adivinanza adaptada al modo activo (Classic o Lyrics Challenge)
-   * con protección `_roundToken` contra condiciones de carrera.
+   * Aborta cualquier resolución multimedia de una ronda anterior.
+   * @private
+   */
+  _abortPendingMedia() {
+    if (this._mediaAbortController) {
+      try {
+        this._mediaAbortController.abort();
+      } catch {}
+      this._mediaAbortController = null;
+    }
+  }
+
+  /**
+   * Inicia una ronda de adivinanza con audio 100% libre de anuncios y protección `_roundToken`.
    */
   async startRound() {
     this._clearTimer();
+    this._abortPendingMedia();
+    this.audioEngine.stop();
+
     this._roundToken += 1;
     const roundToken = this._roundToken;
 
@@ -279,11 +351,11 @@ export class GameLogic {
 
     this.gameState.currentSong = track;
     this.gameState.timeRemaining = this.gameState.maxRoundTime;
+    this.currentRoundMedia = null;
 
     let options = [];
     let correctAnswer = '';
     let lyricsData = null;
-    let startSeconds = 0;
 
     if (this.gameState.gameMode === GameModes.LYRICS) {
       let bank;
@@ -299,20 +371,14 @@ export class GameLogic {
         lyricsData = buildLyricsRoundData(lyricsEntry);
         options = lyricsData.options;
         correctAnswer = lyricsData.targetWord;
-        startSeconds = lyricsData.cueSeconds || 0;
       } else {
-        // Fallback seguro si una pista personalizada no está en lyricsBank
-        const distractorPool = this.allSongs.length >= 20
-          ? this.allSongs
-          : [...this.allSongs, ...this.masterCatalog];
+        const distractorPool = this._buildDistractorPool();
         const classicSet = generateOptions(track, distractorPool, 4, this.lastRoundOptions);
         options = classicSet.options;
         correctAnswer = classicSet.correctAnswer;
       }
     } else {
-      const distractorPool = this.allSongs.length >= 20
-        ? this.allSongs
-        : [...this.allSongs, ...this.masterCatalog];
+      const distractorPool = this._buildDistractorPool();
       const classicSet = generateOptions(track, distractorPool, 4, this.lastRoundOptions);
       options = classicSet.options;
       correctAnswer = classicSet.correctAnswer;
@@ -331,6 +397,7 @@ export class GameLogic {
       lyricsLevel: this.gameState.lyricsLevel,
       lyricsData,
       isOrderedMode: this.isOrderedMode,
+      isLocalVideo: Boolean(track.isLocalVideo),
       options,
       correctAnswer
     };
@@ -347,69 +414,117 @@ export class GameLogic {
 
     this.visualizer.start();
 
-    const hasValidYtId = Boolean(track.youtubeId && /^[a-zA-Z0-9_-]{11}$/.test(track.youtubeId.trim()));
-    if (hasValidYtId && this.youtubePlayer) {
-      try {
-        this.audioEngine.stop();
-        await this.youtubePlayer.loadVideo(track.youtubeId.trim(), startSeconds);
-      } catch (err) {
-        if (roundToken !== this._roundToken) return;
-        console.warn('Reproducción de YouTube no disponible:', err);
-        await this._handleAudioFallbackOrUnavailable(track, roundToken, 'NETWORK_OR_EMBED');
+    // Resolver fuente sin anuncios (Archivo local -> WAV auténtico -> Preview 30s iTunes)
+    const abortCtrl = new AbortController();
+    this._mediaAbortController = abortCtrl;
+
+    let resolved;
+    try {
+      resolved = await resolveSongMedia(track, { signal: abortCtrl.signal });
+    } catch (err) {
+      if (err?.name === 'AbortError' || roundToken !== this._roundToken) return;
+      resolved = {
+        sourceType: 'unavailable',
+        mediaUrl: null,
+        artworkUrl: null,
+        collectionName: '',
+        externalYoutubeUrl: null,
+        isCrossOrigin: false,
+        reason: 'No se pudo obtener el audio sin anuncios para esta pista.'
+      };
+    }
+
+    if (roundToken !== this._roundToken) return;
+    this.currentRoundMedia = resolved;
+
+    this.gameState.dispatchEvent(new CustomEvent('roundMediaReady', {
+      detail: { song: track, media: resolved }
+    }));
+
+    // Precargar la siguiente canción en segundo plano para agilizar la siguiente ronda
+    const nextTrack = this.gameState.playlist[this.gameState.currentIndex + 1];
+    if (nextTrack) {
+      prefetchSongMedia(nextTrack);
+    }
+
+    if (!resolved.mediaUrl || resolved.sourceType === 'unavailable') {
+      this._emitAudioUnavailable(track, resolved.reason || 'No se encontró preview de 30 s disponible para esta canción.');
+      return;
+    }
+
+    try {
+      await this.audioEngine.loadMedia({
+        url: resolved.mediaUrl,
+        isVideo: resolved.sourceType === 'local-video',
+        isCrossOrigin: resolved.isCrossOrigin,
+        loop: true
+      });
+      if (roundToken !== this._roundToken) return;
+
+      await this.audioEngine.play();
+      if (roundToken !== this._roundToken) return;
+
+      if (this.gameState.status === GameStates.AWAITING_AUDIO) {
+        this.gameState.startTimer();
       }
-    } else {
-      await this._handleAudioFallbackOrUnavailable(track, roundToken, 'NO_YOUTUBE_ID');
+    } catch (playErr) {
+      if (roundToken !== this._roundToken) return;
+
+      if (playErr?.name === 'NotAllowedError' || /user didn't interact|autoplay|not allowed/i.test(String(playErr?.message || ''))) {
+        // Bloqueo de autoplay del navegador móvil/iOS: mostrar botón táctil para desbloquear
+        this.gameState.dispatchEvent(new CustomEvent('playbackBlocked', {
+          detail: { song: track, media: resolved }
+        }));
+      } else {
+        this._emitAudioUnavailable(track, 'No se pudo reproducir el clip de audio de esta pista.');
+      }
     }
   }
 
   /**
-   * Si YouTube falla o no hay red, reproduce audio local SOLO cuando existe un archivo auténtico
-   * para esa canción; en caso contrario ofrece saltar la pista sin penalización.
-   *
-   * @param {Object} track
-   * @param {number} expectedToken
-   * @param {number|string} errorCode
+   * Construye el pool de distractores ampliándolo con el catálogo maestro si la lista local es pequeña.
+   * @returns {Array<Object>}
    * @private
    */
-  async _handleAudioFallbackOrUnavailable(track, expectedToken, errorCode) {
-    if (expectedToken !== this._roundToken) return;
-    if (this.gameState.status !== GameStates.AWAITING_AUDIO && this.gameState.status !== GameStates.PLAYING) {
-      return;
+  _buildDistractorPool() {
+    if (this.allSongs.length >= 20) {
+      return this.allSongs;
     }
+    return [...this.allSongs, ...this.masterCatalog];
+  }
 
-    if (hasAuthenticLocalAudio(track)) {
-      try {
-        await this.audioEngine.load(track.audioSrc);
-        if (expectedToken !== this._roundToken) return;
-        await this.audioEngine.play();
-        if (expectedToken !== this._roundToken) return;
-        if (this.gameState.status === GameStates.AWAITING_AUDIO) {
-          this.gameState.startTimer();
-        }
-        return;
-      } catch (localErr) {
-        console.warn('Audio local auténtico diferido o fallido:', localErr);
-      }
-    }
-
-    // No reproducir un archivo .wav de otra canción: detener reloj y ofrecer salto sin penalización
+  /**
+   * Notifica audio no disponible y detiene el reloj para permitir saltar sin penalización.
+   * @param {Object} track
+   * @param {string} reason
+   * @private
+   */
+  _emitAudioUnavailable(track, reason) {
     this._clearTimer();
     this.audioEngine.stop();
     this.gameState.pauseToAwaitingAudio({ audioUnavailable: true });
-
-    const reason = (typeof navigator !== 'undefined' && navigator.onLine === false)
-      ? 'Sin conexión a Internet y esta canción no dispone de pista local.'
-      : (errorCode === 101 || errorCode === 150)
-        ? 'YouTube restringe la reproducción embebida de este vídeo (código ' + errorCode + ').'
-        : 'No se pudo cargar el audio oficial de esta pista.';
-
     this.gameState.dispatchEvent(new CustomEvent('audioUnavailable', {
       detail: {
         song: track,
-        errorCode,
         reason
       }
     }));
+  }
+
+  /**
+   * Reintenta reproducir el medio activo tras un gesto explícito del usuario (móvil/iOS).
+   * @returns {Promise<boolean>}
+   */
+  async unlockPlaybackFromGesture() {
+    try {
+      await this.audioEngine.play();
+      if (this.gameState.status === GameStates.AWAITING_AUDIO) {
+        this.gameState.startTimer();
+      }
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**
@@ -417,10 +532,8 @@ export class GameLogic {
    */
   skipRoundWithoutPenalty() {
     this._clearTimer();
+    this._abortPendingMedia();
     this._roundToken += 1;
-    if (this.youtubePlayer) {
-      this.youtubePlayer.stop();
-    }
     this.audioEngine.stop();
 
     const hasMore = this.gameState.advanceRound();
@@ -432,17 +545,14 @@ export class GameLogic {
   }
 
   /**
-   * Repite el fragmento cantado (cueSeconds) en el modo Lyrics Challenge.
+   * Repite el fragmento de audio en modo Lyrics Challenge (desde el inicio del preview o cue local).
    */
   repeatLyricsCue() {
-    const cue = this.gameState.lyricsChallengeData?.cueSeconds ?? 0;
-    if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
-      this.youtubePlayer.seekTo(cue);
-      this.youtubePlayer.play();
-    } else if (hasAuthenticLocalAudio(this.gameState.currentSong)) {
-      this.audioEngine.audio.currentTime = 0;
-      this.audioEngine.play().catch(() => {});
-    }
+    const isFullLocal = this.currentRoundMedia?.sourceType === 'local-audio' ||
+      this.currentRoundMedia?.sourceType === 'local-video';
+    const cue = isFullLocal ? (this.gameState.lyricsChallengeData?.cueSeconds ?? 0) : 0;
+    this.audioEngine.seekTo(cue);
+    this.audioEngine.play().catch(() => {});
   }
 
   /**
@@ -452,8 +562,6 @@ export class GameLogic {
   startRoundTimer(resetFullTime = false) {
     if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
     if (this.isTimerRunning) return;
-
-    this.youtubePlayer?._clearPlaybackWatcher();
 
     if (resetFullTime || this.gameState.status === GameStates.AWAITING_AUDIO) {
       if (this.gameState.status === GameStates.AWAITING_AUDIO) {
@@ -481,44 +589,6 @@ export class GameLogic {
     this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
       detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
     }));
-  }
-
-  /**
-   * Alterna entre iniciar/reanudar y pausar el cronómetro de la ronda.
-   * @returns {boolean}
-   */
-  toggleRoundTimer() {
-    if (this.isTimerRunning) {
-      this.pauseRoundTimer();
-    } else {
-      this.gameState.startTimer();
-    }
-    return this.isTimerRunning;
-  }
-
-  /**
-   * Reinicia el reloj de la ronda a los 2:00 completos (120s).
-   */
-  resetRoundTimer() {
-    if (this.gameState.status !== GameStates.PLAYING && this.gameState.status !== GameStates.AWAITING_AUDIO) return;
-    this._clearTimer();
-    this.isTimerRunning = false;
-    this.gameState.pauseToAwaitingAudio({ timerReset: true });
-    this.gameState.setTimeRemaining(this.gameState.maxRoundTime);
-    this.roundStartTime = performance.now();
-    this.gameState.dispatchEvent(new CustomEvent('timerStateChange', {
-      detail: { isTimerRunning: false, timeRemaining: this.gameState.timeRemaining }
-    }));
-  }
-
-  /**
-   * Adelanta o retrocede la canción actual en YouTube.
-   * @param {number} deltaSeconds
-   */
-  seekAudio(deltaSeconds) {
-    if (this.youtubePlayer && this.youtubePlayer.isLoaded && this.youtubePlayer.currentVideoId) {
-      this.youtubePlayer.seekBy(deltaSeconds);
-    }
   }
 
   /**
@@ -555,8 +625,6 @@ export class GameLogic {
 
   /**
    * Procesa la respuesta seleccionada o escrita por el jugador.
-   * En modo Lyrics Challenge aplica validación tolerante (`evaluateLyricsAnswer`).
-   *
    * @param {string} rawSelectedOption
    * @param {{ hintsUsed?: number }} [meta={}]
    * @returns {{ isCorrect: boolean, correctAnswer: string, pointsEarned: number, evaluation?: Object }}
@@ -567,7 +635,6 @@ export class GameLogic {
     }
 
     this._clearTimer();
-    this.youtubePlayer?._clearPlaybackWatcher();
     const timeSpent = Math.max(0, (performance.now() - this.roundStartTime) / 1000);
 
     let isCorrect = false;
@@ -605,15 +672,15 @@ export class GameLogic {
       }
 
       if (remainingSec >= 105) {
-        speedBadge = '⚡ Relámpago';
+        speedBadge = 'Relámpago';
       } else if (remainingSec >= 85) {
-        speedBadge = '🔥 Súper Rápido';
+        speedBadge = 'Súper rápido';
       } else if (remainingSec >= 60) {
-        speedBadge = '⏱️ Buen Ritmo';
+        speedBadge = 'Buen ritmo';
       } else if (remainingSec >= 30) {
-        speedBadge = '👍 A Tiempo';
+        speedBadge = 'A tiempo';
       } else {
-        speedBadge = '⏳ Al Límite';
+        speedBadge = 'Al límite';
       }
 
       if (this.gameState.streak >= 4) {
@@ -633,12 +700,20 @@ export class GameLogic {
     }
 
     this.gameState.recordAnswer(isCorrect, pointsEarned, timeSpent);
+    this.recordRoundProgress({
+      songId: this.gameState.currentSong?.id || null,
+      mode: this.gameState.gameMode,
+      isCorrect,
+      matchType: evaluation?.matchType || null,
+      hintsUsed
+    });
 
     this.gameState.transition(GameStates.ROUND_OVER, {
       selectedOption: rawSelectedOption,
       isCorrect,
       correctAnswer: this.gameState.correctAnswer,
       song: this.gameState.currentSong,
+      roundMedia: this.currentRoundMedia,
       lyricsData: this.gameState.lyricsChallengeData,
       evaluation,
       pointsEarned,
@@ -667,6 +742,13 @@ export class GameLogic {
     this._clearTimer();
     sfx.playWrong();
     this.gameState.recordAnswer(false, 0, this.gameState.maxRoundTime);
+    this.recordRoundProgress({
+      songId: this.gameState.currentSong?.id || null,
+      mode: this.gameState.gameMode,
+      isCorrect: false,
+      matchType: 'timeout',
+      hintsUsed: 0
+    });
 
     this.gameState.transition(GameStates.ROUND_OVER, {
       selectedOption: null,
@@ -674,6 +756,7 @@ export class GameLogic {
       isTimeout: true,
       correctAnswer: this.gameState.correctAnswer,
       song: this.gameState.currentSong,
+      roundMedia: this.currentRoundMedia,
       lyricsData: this.gameState.lyricsChallengeData,
       pointsEarned: 0,
       gameMode: this.gameState.gameMode
@@ -684,10 +767,8 @@ export class GameLogic {
    * Pasa a la siguiente canción de la lista o finaliza.
    */
   nextRound() {
+    this._abortPendingMedia();
     this._roundToken += 1;
-    if (this.youtubePlayer) {
-      this.youtubePlayer.stop();
-    }
     this.audioEngine.stop();
 
     const hasMore = this.gameState.advanceRound();
@@ -703,10 +784,8 @@ export class GameLogic {
    */
   finishGame() {
     this._clearTimer();
+    this._abortPendingMedia();
     this._roundToken += 1;
-    if (this.youtubePlayer) {
-      this.youtubePlayer.stop();
-    }
     this.audioEngine.stop();
     sfx.playGameOver();
 
@@ -763,5 +842,80 @@ export class GameLogic {
 
   saveHighScore(score) {
     return writeStorageJSON(STORAGE_KEYS.HIGH_SCORE, Number(score) || 0);
+  }
+
+  /**
+   * Recupera el progreso persistido (canciones falladas, dominadas y métricas de Classic/Lyrics).
+   * @returns {Object}
+   */
+  getProgressStats() {
+    const raw = readStorageJSON(STORAGE_KEYS.PROGRESS, null, isValidProgressRecord);
+    if (!raw) return createEmptyProgress();
+
+    return {
+      failedSongIds: raw.failedSongIds.filter((id) => typeof id === 'string').slice(0, MAX_TRACKED_SONG_IDS),
+      masteredSongIds: raw.masteredSongIds.filter((id) => typeof id === 'string').slice(0, MAX_TRACKED_SONG_IDS),
+      classicStats: {
+        played: Math.max(0, Number(raw.classicStats.played) || 0),
+        correct: Math.max(0, Number(raw.classicStats.correct) || 0)
+      },
+      lyricsStats: {
+        played: Math.max(0, Number(raw.lyricsStats.played) || 0),
+        correct: Math.max(0, Number(raw.lyricsStats.correct) || 0),
+        exact: Math.max(0, Number(raw.lyricsStats.exact) || 0),
+        contraction: Math.max(0, Number(raw.lyricsStats.contraction) || 0),
+        fuzzy: Math.max(0, Number(raw.lyricsStats.fuzzy) || 0),
+        hintsUsed: Math.max(0, Number(raw.lyricsStats.hintsUsed) || 0)
+      },
+      updatedAt: typeof raw.updatedAt === 'string' ? raw.updatedAt : null
+    };
+  }
+
+  /**
+   * Registra de forma resiliente el resultado de cada ronda (aciertos, canciones falladas
+   * y métricas pedagógicas de Lyrics Challenge) sin bloquear si falla la cuota.
+   *
+   * @param {{ songId: string|null, mode: string, isCorrect: boolean, matchType?: string|null, hintsUsed?: number }} entry
+   * @returns {import('../utils/storageManager.js').StorageWriteResult}
+   */
+  recordRoundProgress({ songId, mode, isCorrect, matchType = null, hintsUsed = 0 }) {
+    const progress = this.getProgressStats();
+
+    if (songId) {
+      const failedSet = new Set(progress.failedSongIds);
+      const masteredSet = new Set(progress.masteredSongIds);
+      if (isCorrect) {
+        failedSet.delete(songId);
+        masteredSet.add(songId);
+      } else {
+        failedSet.add(songId);
+      }
+      progress.failedSongIds = Array.from(failedSet).slice(-MAX_TRACKED_SONG_IDS);
+      progress.masteredSongIds = Array.from(masteredSet).slice(-MAX_TRACKED_SONG_IDS);
+    }
+
+    if (mode === GameModes.LYRICS) {
+      progress.lyricsStats.played += 1;
+      progress.lyricsStats.hintsUsed += Math.max(0, Number(hintsUsed) || 0);
+      if (isCorrect) {
+        progress.lyricsStats.correct += 1;
+        if (matchType === 'exact') progress.lyricsStats.exact += 1;
+        else if (matchType === 'contraction' || matchType === 'variant') progress.lyricsStats.contraction += 1;
+        else if (matchType === 'fuzzy') progress.lyricsStats.fuzzy += 1;
+      }
+    } else {
+      progress.classicStats.played += 1;
+      if (isCorrect) {
+        progress.classicStats.correct += 1;
+      }
+    }
+
+    progress.updatedAt = new Date().toISOString();
+    return writeStorageJSON(STORAGE_KEYS.PROGRESS, progress);
+  }
+
+  /** Re-export helper for tests/callers. */
+  hasAuthenticLocalAudio(song) {
+    return hasAuthenticLocalAudio(song);
   }
 }

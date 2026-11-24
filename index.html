@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="SongQuiz - Trivia musical interactiva con 291 canciones verificadas, Top 100 YouTube, modo Lyrics Challenge, diseño móvil/tablet y soporte Chromecast.">
+  <meta name="description" content="SongQuiz — Trivia musical interactiva sin anuncios con 291 canciones verificadas, previews oficiales de 30 s, carga local de MP3/MP4 y modo Lyrics Challenge.">
   <meta name="theme-color" content="#090b10">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SongQuiz">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>SongQuiz — Trivia Musical Interactiva</title>
 
-  <!-- PWA Manifest e Iconos -->
+  <!-- PWA Manifest e Iconos (PNG para Android TWA / iOS Safari + SVG fallback) -->
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
-  <link rel="apple-touch-icon" href="./assets/icons/icon-192.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
 
   <!-- Tipografías: Outfit (Display) + Plus Jakarta Sans (Body) + JetBrains Mono (Telemetría) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,17 +25,6 @@
 
   <!-- Estilos del Sistema Modular -->
   <link rel="stylesheet" href="./src/styles/main.css">
-
-  <!-- Google Cast Web Sender SDK oficial para Chrome en Android y Desktop -->
-  <script>
-    window['__onGCastApiAvailable'] = function(isAvailable) {
-      window.__gcastAvailable = isAvailable;
-      if (window.__onGCastApiReadyCallbacks) {
-        window.__onGCastApiReadyCallbacks.forEach(function(fn) { fn(isAvailable); });
-      }
-    };
-  </script>
-  <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 </head>
 <body>
 
@@ -101,15 +92,7 @@
           </button>
         </div>
 
-        <button id="btn-cast" class="btn-subtle btn-cast-header" type="button" aria-label="Enviar a Chromecast en la misma red Wi-Fi" title="Enviar a Chromecast / TV (C)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
-            <line x1="2" y1="20" x2="2.01" y2="20"></line>
-          </svg>
-          <span id="cast-btn-label" class="btn-label-text">Cast</span>
-        </button>
-
-        <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas por temática o importar desde YouTube">
+        <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas temáticas, cargar tus MP3/MP4 locales o importar listas">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="8" y1="6" x2="21" y2="6"></line>
             <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -121,6 +104,15 @@
           <span class="btn-label-text">Listas</span>
         </button>
 
+        <button id="btn-install-pwa" class="btn-subtle btn-install-pwa hidden" type="button" aria-label="Instalar SongQuiz como aplicación" title="Instalar SongQuiz en este dispositivo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span class="btn-label-text">Instalar</span>
+        </button>
+
         <button id="btn-mute" class="icon-btn" type="button" aria-label="Alternar silencio de audio" title="Silenciar / Activar sonido (M)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -130,10 +122,24 @@
       </div>
     </header>
 
+    <!-- AVISO SUTIL DE CONECTIVIDAD OFFLINE -->
+    <div id="offline-status-banner" class="offline-status-banner hidden" role="status" aria-live="polite">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+      <span>Sin conexión a Internet · Tus archivos locales y las pistas en caché siguen disponibles; puedes saltar el resto sin penalización.</span>
+    </div>
+
     <!-- BARRA DE FILTROS TEMÁTICOS EN UNA SOLA FILA -->
     <nav class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas rápidas">
       <button class="theme-pill active" data-theme-id="default" type="button" title="Catálogo maestro verificado de 291 canciones con curiosidades históricas">Catálogo Maestro</button>
-      <button class="theme-pill" data-theme-id="top_100_youtube" type="button" title="Las 100 canciones más reproducidas de la historia de YouTube en orden del #1 al #100">Top 100 YouTube</button>
+      <button class="theme-pill" data-theme-id="top_100_youtube" type="button" title="Las 100 canciones más reproducidas de la historia en orden del #1 al #100">Top 100 YouTube</button>
       <button class="theme-pill" data-theme-id="pop_hits" type="button">Global Pop</button>
       <button class="theme-pill" data-theme-id="rock_legends" type="button">Rock</button>
       <button class="theme-pill" data-theme-id="retro_80s" type="button">70s &amp; 80s</button>
@@ -163,42 +169,28 @@
           </div>
         </div>
 
-        <!-- BARRA EXTERNA DE CONTROL DEL REPRODUCTOR (NUNCA TAPA EL VÍDEO) -->
+        <!-- BARRA EXTERNA DE CONTROL DEL REPRODUCTOR (SIN -10s / +15s) -->
         <div class="stage-control-bar">
           <span class="stage-mode-indicator" id="stage-mode-indicator">
             <span id="stage-mode-icon" class="stage-icon-slot" aria-hidden="true">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
               </svg>
             </span>
-            <span id="stage-mode-text">Vídeo oculto hasta responder</span>
+            <span id="stage-mode-text">Audio sin anuncios</span>
           </span>
 
           <div class="audio-stage-toolbar">
-            <div class="stage-seek-group">
-              <button id="btn-play-pause" class="stage-mini-action stage-play-btn" type="button" aria-label="Reproducir o pausar canción" title="Reproducir / Pausar audio (Espacio)">
-                <span id="play-pause-icon" class="stage-icon-slot" aria-hidden="true">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
-                </span>
-                <span class="stage-btn-label" id="play-pause-label">Audio</span>
-              </button>
-              <button id="btn-seek-back" class="stage-mini-action" type="button" title="Retroceder 10 segundos">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="1 4 1 10 7 10"></polyline>
-                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                </svg>
-                <span>-10s</span>
-              </button>
-              <button id="btn-seek-forward" class="stage-mini-action" type="button" title="Adelantar 15 segundos">
-                <span>+15s</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="23 4 23 10 17 10"></polyline>
-                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-              </button>
-            </div>
-            <button id="btn-toggle-minimize" class="stage-minimize-btn" type="button" aria-label="Mostrar u ocultar el vídeo" title="Mostrar / Ocultar vídeo (V)">
+            <button id="btn-play-pause" class="stage-mini-action stage-play-btn" type="button" aria-label="Reproducir o pausar canción" title="Reproducir / Pausar audio (Espacio)">
+              <span id="play-pause-icon" class="stage-icon-slot" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+              </span>
+              <span class="stage-btn-label" id="play-pause-label">Audio</span>
+            </button>
+
+            <button id="btn-toggle-minimize" class="stage-minimize-btn hidden" type="button" aria-label="Mostrar u ocultar el vídeo local" title="Mostrar / Ocultar vídeo local">
               <svg id="icon-minimize-svg" class="icon-minimize" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;" aria-hidden="true">
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
                 <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
@@ -213,14 +205,39 @@
           </div>
         </div>
 
-        <!-- ESCENARIO DE AUDIO Y VÍDEO (OCULTO HASTA RESPONDER, SIN VISERA) -->
+        <!-- ESCENARIO DE AUDIO, CARÁTULA HD Y VÍDEO PERSONAL LOCAL -->
         <div class="audio-stage" id="audio-stage">
-          <!-- Reproductor de YouTube Embebido (siempre >= 200px para mantener el audio activo) -->
-          <div id="ytplayer-container" class="yt-player-container">
-            <div id="ytplayer"></div>
+          <!-- Reproductor HTML5 nativo exclusivamente para MP4/WebM personales cargados en local -->
+          <div id="local-video-container" class="local-video-container hidden">
+            <video id="local-video-player" class="local-video-player" playsinline controls></video>
           </div>
 
-          <!-- Cortina opaca de escucha: oculta 100% el vídeo y título hasta seleccionar respuesta -->
+          <!-- Tarjeta de revelación con Carátula HD + enlace opcional a YouTube -->
+          <div id="artwork-reveal-card" class="artwork-reveal-card hidden">
+            <div class="reveal-artwork-wrap" id="reveal-artwork-wrap">
+              <img id="reveal-artwork-img" class="reveal-artwork-img hidden" alt="" referrerpolicy="no-referrer">
+              <div id="reveal-artwork-fallback" class="reveal-artwork-fallback" aria-hidden="true">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18V5l12-2v13"></path>
+                  <circle cx="6" cy="18" r="3"></circle>
+                  <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+              </div>
+            </div>
+            <div class="reveal-track-info">
+              <h2 class="reveal-song-title" id="reveal-song-title"></h2>
+              <p class="reveal-song-artist" id="reveal-song-artist"></p>
+              <p class="reveal-song-meta" id="reveal-song-meta"></p>
+              <div class="reveal-actions">
+                <a id="btn-reveal-youtube" class="btn-subtle btn-reveal-youtube hidden" href="#" target="_blank" rel="noopener noreferrer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  <span>Ver vídeo en YouTube</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cortina opaca de escucha: visualizador espectral limpio durante la adivinanza -->
           <div class="listening-curtain" id="listening-curtain">
             <canvas id="visualizer-canvas" class="visualizer-canvas" aria-label="Visualizador espectral de audio"></canvas>
 
@@ -232,7 +249,7 @@
                 <span class="eq-bar bar-4"></span>
               </div>
               <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
-              <p class="stage-subtitle" id="stage-subtitle">Escucha con atención · El vídeo se revelará al responder</p>
+              <p class="stage-subtitle" id="stage-subtitle">Escucha con atención · Carátula HD al responder</p>
             </div>
           </div>
 
@@ -245,7 +262,7 @@
             <span class="tap-to-play-sub" id="tap-to-play-sub">Tu navegador requiere un toque para activar el sonido</span>
           </button>
 
-          <!-- Barra compacta visible si el usuario oculta el vídeo tras responder -->
+          <!-- Barra compacta visible si el usuario minimiza un vídeo local tras responder -->
           <div class="minimized-audio-bar" id="minimized-audio-bar">
             <div class="eq-bars" aria-hidden="true">
               <span class="eq-bar bar-1"></span>
@@ -255,7 +272,7 @@
             </div>
             <div class="minimized-meta">
               <span class="minimized-title" id="minimized-title">Modo audio puro</span>
-              <span class="minimized-subtitle" id="minimized-subtitle">Pulsa «Ver vídeo» para mostrar el videoclip completo</span>
+              <span class="minimized-subtitle" id="minimized-subtitle">Pulsa «Ver vídeo» para volver a mostrar el archivo</span>
             </div>
           </div>
         </div>
@@ -297,7 +314,7 @@
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
-            <span id="audio-unavailable-reason">No se pudo cargar el audio oficial de esta pista.</span>
+            <span id="audio-unavailable-reason">No se pudo cargar el audio sin anuncios de esta pista.</span>
           </div>
           <button id="btn-skip-unavailable" class="btn-skip-safe" type="button">
             Saltar sin penalización
@@ -400,11 +417,11 @@
           <line x1="10" y1="14" x2="21" y2="3"></line>
         </svg>
       </a>
-      <span class="footer-shortcuts" aria-hidden="true">1–4 Responder · Espacio Audio · V Vídeo · M Silencio</span>
+      <span class="footer-shortcuts" aria-hidden="true">1–4 Responder · Espacio Audio · M Silencio</span>
     </footer>
   </div>
 
-  <!-- MODAL GESTOR E IMPORTADOR DE PLAYLISTS -->
+  <!-- MODAL GESTOR E IMPORTADOR DE PLAYLISTS Y ARCHIVOS LOCALES -->
   <div class="modal-overlay" id="playlist-modal" role="dialog" aria-modal="true" aria-labelledby="importer-title">
     <div class="modal-card wide">
       <div class="modal-header-row">
@@ -424,6 +441,7 @@
       <!-- Pestañas WAI-ARIA Tablist -->
       <div class="playlist-tabs" role="tablist" aria-label="Secciones del gestor de playlists">
         <button id="tab-btn-link" class="playlist-tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="tab-link" tabindex="0" data-tab="tab-link">Temáticas y Enlace</button>
+        <button id="tab-btn-local" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-local" tabindex="-1" data-tab="tab-local">Mis Archivos</button>
         <button id="tab-btn-list" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-list" tabindex="-1" data-tab="tab-list">Lista Activa</button>
         <button id="tab-btn-json" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-json" tabindex="-1" data-tab="tab-json">Texto / JSON</button>
         <button id="tab-btn-youtube" class="playlist-tab-btn" type="button" role="tab" aria-selected="false" aria-controls="tab-youtube" tabindex="-1" data-tab="tab-youtube">Script CLI</button>
@@ -432,7 +450,7 @@
       <!-- Pestaña 1: Listas Temáticas e Importación por Enlace -->
       <div class="playlist-tab-content" id="tab-link" role="tabpanel" aria-labelledby="tab-btn-link">
         <div class="thematic-playlists-section">
-          <p class="modal-section-subtitle">Colecciones temáticas de carga instantánea</p>
+          <p class="modal-section-subtitle">Colecciones temáticas de carga instantánea (audio sin anuncios)</p>
           <div class="thematic-grid" id="thematic-playlists-grid">
             <!-- Inyectado dinámicamente por domRenderer.js -->
           </div>
@@ -450,7 +468,32 @@
         <div id="import-progress-status" class="import-progress-status" role="status" aria-live="polite"></div>
       </div>
 
-      <!-- Pestaña 2: Lista de Canciones Activas -->
+      <!-- Pestaña 2: Biblioteca Personal Local (MP3 / M4A / WAV / MP4 sin anuncios ni subidas) -->
+      <div class="playlist-tab-content" id="tab-local" role="tabpanel" aria-labelledby="tab-btn-local" hidden>
+        <div class="local-upload-zone" id="local-drop-zone">
+          <div class="local-upload-icon" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <p class="local-upload-title">Reproduce tus propios MP3 o vídeos MP4 sin anuncios</p>
+          <p class="local-upload-desc">
+            Los archivos se reproducen directamente desde tu dispositivo en esta sesión sin subirse a ningún servidor. Nombra tus archivos como <code>Artista - Título.mp3</code> o <code>Artista - Título.mp4</code> para detectar automáticamente las opciones.
+          </p>
+          <div class="local-upload-actions">
+            <button id="btn-pick-local-files" class="btn-primary" type="button">Seleccionar archivos (MP3 / MP4)</button>
+            <button id="btn-pick-local-folder" class="btn-subtle" type="button">Seleccionar carpeta</button>
+          </div>
+          <input id="local-files-input" type="file" multiple accept="audio/*,video/mp4,video/webm,.mp3,.m4a,.wav,.ogg,.aac,.flac,.mp4,.webm,.mov" class="visually-hidden">
+          <input id="local-folder-input" type="file" webkitdirectory directory multiple class="visually-hidden">
+        </div>
+
+        <div id="local-media-feedback" class="inline-feedback-banner hidden" role="status" aria-live="polite"></div>
+      </div>
+
+      <!-- Pestaña 3: Lista de Canciones Activas -->
       <div class="playlist-tab-content" id="tab-list" role="tabpanel" aria-labelledby="tab-btn-list" hidden>
         <div class="playlist-table-container">
           <table class="playlist-table">
@@ -476,7 +519,7 @@
         </div>
       </div>
 
-      <!-- Pestaña 3: Pegar Texto o JSON -->
+      <!-- Pestaña 4: Pegar Texto o JSON -->
       <div class="playlist-tab-content" id="tab-json" role="tabpanel" aria-labelledby="tab-btn-json" hidden>
         <p class="modal-section-subtitle">
           Pega un catálogo JSON válido o líneas con el formato <code>Artista - Título</code>:
@@ -491,7 +534,7 @@
         </div>
       </div>
 
-      <!-- Pestaña 4: Guía de Importador CLI YouTube -->
+      <!-- Pestaña 5: Guía de Importador CLI YouTube -->
       <div class="playlist-tab-content" id="tab-youtube" role="tabpanel" aria-labelledby="tab-btn-youtube" hidden>
         <div class="cli-guide-box">
           <p class="cli-guide-title">Importador CLI de listas públicas de YouTube</p>
@@ -541,86 +584,6 @@
     </div>
   </div>
 
-  <!-- MODAL DE CONEXIÓN A CHROMECAST Y PANTALLA TV -->
-  <div class="modal-overlay" id="cast-modal" role="dialog" aria-modal="true" aria-labelledby="cast-modal-title">
-    <div class="modal-card cast-modal-card">
-      <div class="modal-header-row">
-        <div class="modal-title-group">
-          <span class="cast-header-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
-              <line x1="2" y1="20" x2="2.01" y2="20"></line>
-            </svg>
-          </span>
-          <h2 class="modal-heading" id="cast-modal-title">Enviar a Chromecast / TV</h2>
-        </div>
-        <button id="btn-close-cast" class="icon-btn" type="button" aria-label="Cerrar panel de Chromecast">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <div class="cast-status-banner" id="cast-status-banner">
-        <span class="ad-status-dot" id="cast-status-dot" aria-hidden="true"></span>
-        <span id="cast-status-text">Asegúrate de que tu dispositivo y el Chromecast estén en la misma red Wi-Fi.</span>
-      </div>
-
-      <div class="cast-actions-stack">
-        <div class="cast-mode-card">
-          <div class="cast-mode-title">
-            <span class="cast-kicker">Recomendado · Vídeo y sonido</span>
-            <strong>1. Proyectar en Pantalla TV</strong>
-          </div>
-          <p class="cast-mode-desc">Adapta la escala para salón y emite imagen y sonido desde el menú Transmitir de Chrome.</p>
-          <div class="cast-buttons-row">
-            <button id="btn-toggle-tv-mode" class="btn-primary cast-main-btn" type="button">
-              <span id="btn-toggle-tv-mode-text">Activar Modo Pantalla TV</span>
-            </button>
-            <button id="btn-android-screen-cast" class="btn-subtle cast-secondary-btn" type="button">
-              <span>Duplicar pantalla</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="cast-mode-card">
-          <div class="cast-mode-title">
-            <strong>2. Pantalla de marcador Chromecast</strong>
-          </div>
-          <p class="cast-mode-desc">Conecta con el receptor de Google Cast para proyectar la ronda y revelar la carátula en HD.</p>
-          <button id="btn-connect-chromecast" class="btn-subtle cast-secondary-btn" type="button">
-            <google-cast-launcher class="modal-cast-launcher" aria-hidden="true"></google-cast-launcher>
-            <span id="btn-connect-chromecast-text">Conectar marcador Chromecast (Wi-Fi)</span>
-          </button>
-        </div>
-
-        <div class="cast-mode-card">
-          <div class="cast-mode-title">
-            <strong>3. Abrir en YouTube TV</strong>
-          </div>
-          <p class="cast-mode-desc">Abre el videoclip actual directamente en YouTube para enviarlo a tu Smart TV.</p>
-          <a id="btn-open-yt-cast-app" class="btn-subtle cast-secondary-btn" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-            <span>Abrir canción actual en YouTube</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="cast-instructions-grid">
-        <div class="cast-instruction-item">
-          <strong>Android / Chrome</strong>
-          <p>Usa el menú <strong>⋮ → Transmitir</strong> para enviar la pestaña completa con vídeo y audio al TV.</p>
-        </div>
-        <div class="cast-instruction-item">
-          <strong>iPad / iPhone</strong>
-          <p>Usa <strong>Duplicar pantalla / AirPlay</strong> desde el Centro de Control o abre el vídeo en la app YouTube.</p>
-        </div>
-      </div>
-
-      <div id="cast-inline-hint" class="inline-feedback-banner hidden" role="status" aria-live="polite"></div>
-    </div>
-  </div>
-
   <!-- DIÁLOGO ACCESIBLE DE CONFIRMACIÓN (REEMPLAZA window.confirm) -->
   <div class="modal-overlay" id="confirm-dialog-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
     <div class="modal-card confirm-modal-card">
@@ -629,6 +592,30 @@
       <div class="confirm-dialog-actions">
         <button id="btn-confirm-cancel" class="btn-subtle" type="button">Cancelar</button>
         <button id="btn-confirm-accept" class="btn-primary" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GUÍA DE INSTALACIÓN PWA PARA iOS / iPadOS SAFARI -->
+  <div class="modal-overlay" id="ios-install-modal" role="dialog" aria-modal="true" aria-labelledby="ios-install-title">
+    <div class="modal-card confirm-modal-card">
+      <div class="modal-header-row">
+        <h2 class="modal-heading" id="ios-install-title">Instalar SongQuiz en iOS</h2>
+        <button id="btn-close-ios-install" class="icon-btn" type="button" aria-label="Cerrar guía de instalación">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <p class="modal-lead">Añade SongQuiz a tu pantalla de inicio para abrirla en pantalla completa sin barras de navegación:</p>
+      <ol class="ios-install-steps">
+        <li>Pulsa el botón <strong>Compartir</strong> en la barra de Safari.</li>
+        <li>Desplázate y elige <strong>Añadir a pantalla de inicio</strong>.</li>
+        <li>Confirma pulsando <strong>Añadir</strong> en la esquina superior derecha.</li>
+      </ol>
+      <div class="confirm-dialog-actions">
+        <button id="btn-ios-install-done" class="btn-primary" type="button">Entendido</button>
       </div>
     </div>
   </div>
