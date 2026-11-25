@@ -40,7 +40,6 @@ function songquizStaticAssetsPlugin() {
       }
 
       const dirsToCopy = [
-        'assets/audio',
         'assets/icons'
       ];
 
