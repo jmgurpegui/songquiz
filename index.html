@@ -117,18 +117,6 @@
 
       <!-- Zona 3: Utilidades de Sesión -->
       <div class="header-actions">
-        <button id="btn-open-importer" class="btn-subtle" type="button" title="Explorar listas temáticas, cargar tus MP3/MP4 locales o importar listas">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-          </svg>
-          <span class="btn-label-text">Listas</span>
-        </button>
-
         <button id="btn-install-pwa" class="btn-subtle btn-install-pwa hidden" type="button" aria-label="Instalar SongQuiz como aplicación" title="Instalar SongQuiz en este dispositivo">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -154,8 +142,8 @@
       <span>Sin conexión a Internet · Tus archivos locales y las pistas en caché siguen disponibles; puedes saltar el resto sin penalización.</span>
     </div>
 
-    <!-- BARRA DE FILTROS TEMÁTICOS EN UNA SOLA FILA -->
-    <nav class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas rápidas">
+    <!-- BARRA DE FILTROS TEMÁTICOS Y LISTA PERSONALIZADA EN UNA SOLA FILA -->
+    <nav class="theme-pills-bar" id="theme-pills-bar" aria-label="Listas temáticas y personalizada">
       <button class="theme-pill active" data-theme-id="default" type="button" title="Catálogo maestro verificado de 291 canciones con curiosidades históricas">Catálogo Maestro</button>
       <button class="theme-pill" data-theme-id="top_100_youtube" type="button" title="Las 100 canciones más reproducidas de la historia en orden del #1 al #100">Top 100 YouTube</button>
       <button class="theme-pill" data-theme-id="pop_hits" type="button">Global Pop</button>
@@ -163,6 +151,17 @@
       <button class="theme-pill" data-theme-id="retro_80s" type="button">70s &amp; 80s</button>
       <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">90s &amp; 2000s</button>
       <button class="theme-pill" data-theme-id="latin_hits" type="button">Hits en Español</button>
+      <button id="btn-open-importer" class="theme-pill theme-pill-custom" type="button" data-custom-playlist-btn="true" title="Crear o importar tu lista personalizada (YouTube, MP3/MP4 locales o texto/JSON)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        <span>Lista personalizada</span>
+      </button>
     </nav>
 
     <!-- ESCENARIO PRINCIPAL DEL JUEGO -->
@@ -223,7 +222,28 @@
             <video id="local-video-player" class="local-video-player" playsinline controls></video>
           </div>
 
-          <!-- Tarjeta de revelación con Carátula HD + enlace opcional a YouTube -->
+          <!-- Reproductor embebido de YouTube (visible solo al terminar/responder la ronda para seguir dentro de la app) -->
+          <div id="youtube-embed-container" class="youtube-embed-container hidden">
+            <iframe
+              id="youtube-embed-iframe"
+              class="youtube-embed-iframe"
+              title="Vídeo musical oficial en YouTube"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+            <div class="youtube-embed-footer" id="youtube-embed-footer">
+              <div class="youtube-embed-meta">
+                <span class="youtube-embed-title" id="youtube-embed-title"></span>
+                <span class="youtube-embed-artist" id="youtube-embed-artist"></span>
+              </div>
+              <button id="btn-show-artwork-card" class="btn-subtle btn-embed-switch" type="button" title="Cambiar a vista de carátula HD">
+                Ver carátula
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjeta de revelación con Carátula HD + botón para ver el vídeo embebido dentro de la app -->
           <div id="artwork-reveal-card" class="artwork-reveal-card hidden">
             <div class="reveal-artwork-wrap" id="reveal-artwork-wrap">
               <img id="reveal-artwork-img" class="reveal-artwork-img hidden" alt="" referrerpolicy="no-referrer">
@@ -240,10 +260,10 @@
               <p class="reveal-song-artist" id="reveal-song-artist"></p>
               <p class="reveal-song-meta" id="reveal-song-meta"></p>
               <div class="reveal-actions">
-                <a id="btn-reveal-youtube" class="btn-subtle btn-reveal-youtube hidden" href="#" target="_blank" rel="noopener noreferrer">
+                <button id="btn-reveal-youtube" class="btn-subtle btn-reveal-youtube hidden" type="button">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
-                  <span>Ver vídeo en YouTube</span>
-                </a>
+                  <span>Ver vídeo aquí</span>
+                </button>
               </div>
             </div>
           </div>
@@ -269,7 +289,7 @@
                 </div>
                 <h1 class="stage-title" id="stage-title">¿Qué canción está sonando?</h1>
               </div>
-              <p class="stage-subtitle" id="stage-subtitle">Escucha con atención · Carátula HD al responder</p>
+              <p class="stage-subtitle" id="stage-subtitle">Escucha con atención · Vídeo y carátula al responder</p>
             </div>
           </div>
 
@@ -408,10 +428,6 @@
                 <span class="curiosity-preview" id="curiosity-preview"></span>
               </div>
               <div class="curiosity-header-actions">
-                <a id="btn-yt-external" class="btn-subtle btn-yt-mini" href="#" target="_blank" rel="noopener noreferrer" style="display: none;" title="Abrir vídeo oficial en YouTube">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
-                  <span>YouTube</span>
-                </a>
                 <button id="btn-toggle-curiosity" class="btn-curiosity-toggle" type="button" aria-expanded="false" aria-controls="curiosity-body">
                   <span id="curiosity-toggle-text">Leer más</span>
                   <span class="curiosity-chevron" id="curiosity-chevron" aria-hidden="true">▾</span>

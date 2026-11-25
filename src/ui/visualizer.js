@@ -118,7 +118,7 @@ export class AudioVisualizer {
     const midY = this.height / 2;
     this.ctx.beginPath();
     this.ctx.lineWidth = 1.5;
-    this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.28)';
+    this.ctx.strokeStyle = 'rgba(29, 185, 84, 0.28)';
     this.ctx.moveTo(24, midY);
     this.ctx.lineTo(Math.max(24, this.width - 24), midY);
     this.ctx.stroke();
@@ -153,35 +153,36 @@ export class AudioVisualizer {
   }
 
   /**
-   * Dibuja las barras de frecuencia en tiempo real con gradiente esmeralda sobrio.
+   * Dibuja un espectro discreto estilo estudio Spotify cuando se reproducen archivos locales MP3.
    * @private
    * @param {Uint8Array} freqData
    */
   _drawSpectrum(freqData) {
-    const barCount = 40;
-    const barSpacing = 4;
+    const barCount = 36;
+    const barSpacing = 5;
     const totalSpacing = barSpacing * (barCount - 1);
-    const barWidth = Math.max(3, (this.width - 48 - totalSpacing) / barCount);
+    const barWidth = Math.max(3, (this.width - 64 - totalSpacing) / barCount);
     const startX = (this.width - (barCount * barWidth + totalSpacing)) / 2;
 
-    const gradient = this.ctx.createLinearGradient(0, this.height, 0, 0);
-    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
-    gradient.addColorStop(0.55, '#10b981');
-    gradient.addColorStop(0.9, '#34d399');
-    gradient.addColorStop(1, '#a7f3d0');
+    const gradient = this.ctx.createLinearGradient(0, this.height, 0, this.height * 0.45);
+    gradient.addColorStop(0, 'rgba(29, 185, 84, 0.12)');
+    gradient.addColorStop(0.65, 'rgba(29, 185, 84, 0.34)');
+    gradient.addColorStop(1, 'rgba(30, 215, 96, 0.55)');
 
     if (this.peaks.length !== barCount) {
       this.peaks = new Array(barCount).fill(0);
     }
 
+    const maxBarHeight = Math.max(24, this.height * 0.42);
+
     for (let i = 0; i < barCount; i++) {
-      const dataIndex = Math.floor(Math.pow(i / barCount, 1.4) * (freqData.length - 1));
+      const dataIndex = Math.floor(Math.pow(i / barCount, 1.35) * (freqData.length - 1));
       const value = freqData[dataIndex] || 0;
       const percent = value / 255;
-      const barHeight = Math.max(4, percent * (this.height - 36));
+      const barHeight = Math.max(3, percent * maxBarHeight);
 
       const x = startX + i * (barWidth + barSpacing);
-      const y = this.height - barHeight - 12;
+      const y = this.height - barHeight - 10;
 
       if (barHeight >= this.peaks[i]) {
         this.peaks[i] = barHeight;
@@ -197,17 +198,11 @@ export class AudioVisualizer {
         this.ctx.rect(x, y, barWidth, barHeight);
       }
       this.ctx.fill();
-
-      if (this.peaks[i] > 4) {
-        const peakY = this.height - this.peaks[i] - 14;
-        this.ctx.fillStyle = 'rgba(167, 243, 208, 0.85)';
-        this.ctx.fillRect(x, peakY, barWidth, 2);
-      }
     }
   }
 
   /**
-   * Renderiza una sutil onda sinusoidal de estudio cuando el audio local está inactivo.
+   * Renderiza una sutil onda sinusoidal de estudio mientras suena el audio remoto.
    * @private
    */
   _drawIdleWave() {
@@ -219,8 +214,8 @@ export class AudioVisualizer {
       this.ctx.beginPath();
       this.ctx.lineWidth = w === 0 ? 1.6 : 1;
       this.ctx.strokeStyle = w === 0
-        ? 'rgba(52, 211, 153, 0.28)'
-        : 'rgba(148, 163, 184, 0.14)';
+        ? 'rgba(29, 185, 84, 0.26)'
+        : 'rgba(255, 255, 255, 0.08)';
 
       for (let x = 0; x < this.width; x += 3) {
         const freq = 0.011 * (w + 1);

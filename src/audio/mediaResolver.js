@@ -2,21 +2,28 @@
  * @fileoverview Motor de resolución multimedia sin anuncios para SongQuiz.
  * Resuelve en orden de prioridad:
  *   1. Archivos personales locales cargados por el usuario (MP3/M4A/WAV/OGG/MP4/WebM via ObjectURL)
- *   2. Audios locales auténticos empaquetados en `assets/audio/`
- *   3. Previews oficiales de 30 s sin anuncios + carátula HD (600×600) mediante iTunes Search API
- * Incluye caché en memoria por sesión y gestión segura de ObjectURLs sin fugas de memoria.
+ *   2. Audios locales auténticos personalizados (excluyendo los 6 .wav sintetizados heredados)
+ *   3. Previews oficiales de estudio (30 s, 0 anuncios) + carátula HD (600×600) mediante iTunes Search API
+ *      con búsqueda progresiva multi-región (US / ES / songTerm / ASCII) y filtrado de versiones falsas.
+ * Incluye utilidades seguras para embeber YouTube post-ronda dentro de la app sin salir fuera.
  */
 
 const ITUNES_SEARCH_ENDPOINT = 'https://itunes.apple.com/search';
 
-const AUTHENTIC_LOCAL_AUDIO_MAP = Object.freeze({
-  'assets/audio/blinding_lights.wav': ['blinding lights'],
-  'assets/audio/shape_of_you.wav': ['shape of you'],
-  'assets/audio/bohemian_rhapsody.wav': ['bohemian rhapsody'],
-  'assets/audio/billie_jean.wav': ['billie jean'],
-  'assets/audio/stayin_alive.wav': ["stayin' alive", 'stayin alive'],
-  'assets/audio/take_on_me.wav': ['take on me']
-});
+/**
+ * Los 6 archivos .wav originales del repositorio son tonos sintetizados de demostración (5–13 s),
+ * no grabaciones de estudio reales. Se excluyen para que temas como Bohemian Rhapsody,
+ * Shape of You, Blinding Lights, Billie Jean, Take On Me y Stayin' Alive reproduzcan
+ * siempre su preview oficial de estudio sin sonido metálico.
+ */
+const SYNTHESIZED_DEMO_AUDIO_PATHS = new Set([
+  'assets/audio/blinding_lights.wav',
+  'assets/audio/shape_of_you.wav',
+  'assets/audio/bohemian_rhapsody.wav',
+  'assets/audio/billie_jean.wav',
+  'assets/audio/stayin_alive.wav',
+  'assets/audio/take_on_me.wav'
+]);
 
 const SUPPORTED_AUDIO_EXTS = new Set(['mp3', 'm4a', 'wav', 'ogg', 'aac', 'flac', 'opus']);
 const SUPPORTED_VIDEO_EXTS = new Set(['mp4', 'webm', 'm4v', 'mov']);
@@ -27,8 +34,8 @@ const previewCache = new Map();
 const inflightRequests = new Map();
 
 /**
- * Comprueba si `song.audioSrc` corresponde realmente a una pista local auténtica empaquetada
- * (evitando reproducir un `.wav` de demostración perteneciente a otra canción).
+ * Comprueba si `song.audioSrc` corresponde a un archivo local real distinto de los 6 `.wav`
+ * sintetizados heredados.
  *
  * @param {Object|null|undefined} song
  * @returns {boolean}
@@ -39,14 +46,22 @@ export function hasAuthenticLocalAudio(song) {
   }
 
   const normalizedSrc = song.audioSrc.trim().replace(/^\.\//, '');
-  const expectedTitles = AUTHENTIC_LOCAL_AUDIO_MAP[normalizedSrc];
-
-  if (!expectedTitles) {
-    return true;
+  if (SYNTHESIZED_DEMO_AUDIO_PATHS.has(normalizedSrc)) {
+    return false;
   }
 
-  const normalizedTitle = String(song.title || '').trim().toLowerCase();
-  return expectedTitles.includes(normalizedTitle);
+  return true;
+}
+
+/**
+ * Valida y devuelve un ID de vídeo de YouTube seguro (11 caracteres alfanuméricos, `-` o `_`).
+ * @param {Object|null|undefined} song
+ * @returns {string|null}
+ */
+export function extractValidYoutubeId(song) {
+  const ytId = typeof song?.youtubeId === 'string' ? song.youtubeId.trim() : '';
+  if (!/^[a-zA-Z0-9_-]{11}$/.test(ytId)) return null;
+  return ytId;
 }
 
 /**
@@ -55,9 +70,33 @@ export function hasAuthenticLocalAudio(song) {
  * @returns {string|null}
  */
 export function buildExternalYoutubeUrl(song) {
-  const ytId = typeof song?.youtubeId === 'string' ? song.youtubeId.trim() : '';
-  if (!/^[a-zA-Z0-9_-]{11}$/.test(ytId)) return null;
+  const ytId = extractValidYoutubeId(song);
+  if (!ytId) return null;
   return `https://www.youtube.com/watch?v=${encodeURIComponent(ytId)}`;
+}
+
+/**
+ * Construye la URL segura de YouTube embebido (`youtube-nocookie.com`) para ver el vídeo
+ * dentro de SongQuiz al finalizar cada ronda sin abandonar la aplicación.
+ *
+ * @param {Object|null|undefined} song
+ * @param {{ autoplay?: boolean }} [options={}]
+ * @returns {string|null}
+ */
+export function buildYoutubeEmbedUrl(song, { autoplay = false } = {}) {
+  const ytId = extractValidYoutubeId(song);
+  if (!ytId) return null;
+
+  const params = new URLSearchParams({
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1'
+  });
+  if (autoplay) {
+    params.set('autoplay', '1');
+  }
+
+  return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(ytId)}?${params.toString()}`;
 }
 
 /**
@@ -66,8 +105,8 @@ export function buildExternalYoutubeUrl(song) {
  * @returns {string|null}
  */
 export function buildYoutubeThumbnailUrl(song) {
-  const ytId = typeof song?.youtubeId === 'string' ? song.youtubeId.trim() : '';
-  if (!/^[a-zA-Z0-9_-]{11}$/.test(ytId)) return null;
+  const ytId = extractValidYoutubeId(song);
+  if (!ytId) return null;
   return `https://i.ytimg.com/vi/${encodeURIComponent(ytId)}/hqdefault.jpg`;
 }
 
@@ -76,15 +115,29 @@ export function buildYoutubeThumbnailUrl(song) {
  * @param {string} value
  * @returns {string}
  */
-function normalizeMatchText(value) {
+export function normalizeMatchText(value) {
   return String(value || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .replace(/\((feat|ft|with|official|remaster|radio edit|version|remix)[^)]*\)/gi, ' ')
+    .replace(/\((feat|ft|with|official|remaster|remastered|radio edit|version|remix|audio|video|single|album|bonus|deluxe)[^)]*\)/gi, ' ')
     .replace(/\[[^\]]*\]/g, ' ')
     .replace(/\b(feat\.?|ft\.?|featuring|with|&|and|x)\b/gi, ' ')
     .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Elimina acentos y puntuación superflua para construir consultas ASCII limpias.
+ * @param {string} value
+ * @returns {string}
+ */
+function toAsciiQuery(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s'-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -96,7 +149,7 @@ function normalizeMatchText(value) {
  */
 function extractPrimaryArtist(artist) {
   return String(artist || '')
-    .split(/\b(?:feat\.?|ft\.?|featuring|with|&|x)\b|,|\//i)[0]
+    .split(/\b(?:feat\.?|ft\.?|featuring|with|&|x|vs\.?)\b|,|\//i)[0]
     .trim();
 }
 
@@ -112,110 +165,203 @@ function upgradeArtworkUrl(url) {
 
 /**
  * Puntúa una pista candidata devuelta por iTunes Search API frente a la canción objetivo.
+ * Prioriza grabaciones originales de estudio y penaliza karaoke, tributos, 8-bit o remixes no pedidos.
+ *
  * @param {Object} item
  * @param {string} normTitle
  * @param {string} normArtist
+ * @param {string} [rawTargetTitle='']
  * @returns {number}
  */
-function scoreITunesCandidate(item, normTitle, normArtist) {
+export function scoreITunesCandidate(item, normTitle, normArtist, rawTargetTitle = '') {
   if (!item || !item.previewUrl) return -1;
 
-  const candTitle = normalizeMatchText(item.trackName || item.trackCensoredName || '');
-  const candArtist = normalizeMatchText(item.artistName || '');
+  const rawCandTitle = String(item.trackName || item.trackCensoredName || '');
+  const rawCandArtist = String(item.artistName || '');
+  const rawCollection = String(item.collectionName || '');
+  const candTitle = normalizeMatchText(rawCandTitle);
+  const candArtist = normalizeMatchText(rawCandArtist);
+  const targetLower = String(rawTargetTitle || '').toLowerCase();
+
   let score = 0;
 
-  if (candTitle === normTitle) score += 60;
-  else if (candTitle.includes(normTitle) || normTitle.includes(candTitle)) score += 38;
-  else {
-    const titleWords = normTitle.split(' ').filter((w) => w.length >= 3);
+  if (candTitle === normTitle) {
+    score += 62;
+  } else if (candTitle.includes(normTitle) || normTitle.includes(candTitle)) {
+    score += 40;
+  } else {
+    const titleWords = normTitle.split(' ').filter((w) => w.length >= 2);
     const hits = titleWords.filter((w) => candTitle.includes(w)).length;
-    score += titleWords.length > 0 ? Math.round((hits / titleWords.length) * 30) : 0;
+    score += titleWords.length > 0 ? Math.round((hits / titleWords.length) * 32) : 0;
   }
 
-  if (candArtist === normArtist) score += 40;
-  else if (candArtist.includes(normArtist) || normArtist.includes(candArtist)) score += 28;
-  else {
+  if (candArtist === normArtist) {
+    score += 44;
+  } else if (candArtist.includes(normArtist) || normArtist.includes(candArtist)) {
+    score += 30;
+  } else {
     const artistWords = normArtist.split(' ').filter((w) => w.length >= 2);
     const hits = artistWords.filter((w) => candArtist.includes(w)).length;
     score += artistWords.length > 0 ? Math.round((hits / artistWords.length) * 24) : 0;
   }
 
-  // Penalizar karaoke, tributos o versiones instrumentales cuando el original no lo es
-  const rawTrack = `${item.trackName || ''} ${item.artistName || ''} ${item.collectionName || ''}`.toLowerCase();
-  if (/(karaoke|tribute|cover band|lullaby|ringtone|instrumental version)/i.test(rawTrack)) {
-    score -= 45;
+  // Penalizar severamente versiones falsas, karaoke, tributos, 8-bit o sintetizadas
+  const combinedRaw = `${rawCandTitle} ${rawCandArtist} ${rawCollection}`.toLowerCase();
+  if (/(karaoke|tribute|cover band|lullaby|ringtone|instrumental|8-bit|8 bit|chiptune|music box|soundalike|in the style of|originally performed|made famous|piano cover|midi)/i.test(combinedRaw)) {
+    score -= 65;
+  }
+
+  // Penalizar remixes, directos, sped up o acústicos si el título objetivo no los pide
+  const variantChecks = [
+    { rx: /\bremix\b/i, penalty: 20 },
+    { rx: /\b(sped up|slowed|reverb|nightcore|chipmunk)\b/i, penalty: 45 },
+    { rx: /\b(live|en vivo|concert|acoustic|unplugged|acapella|a cappella)\b/i, penalty: 18 }
+  ];
+  for (const { rx, penalty } of variantChecks) {
+    if (rx.test(rawCandTitle) && !rx.test(targetLower)) {
+      score -= penalty;
+    }
+  }
+
+  // Ligero bono si el título en bruto no añade paréntesis extraños
+  if (!/[(\[]/.test(rawCandTitle)) {
+    score += 4;
   }
 
   return score;
 }
 
 /**
- * Ejecuta una consulta individual a iTunes Search API con tiempo límite.
- * @param {string} term
- * @param {AbortSignal} [externalSignal]
- * @returns {Promise<Array<Object>>}
+ * Espera asíncrona cancelable por AbortSignal para reintentos breves.
+ * @param {number} ms
+ * @param {AbortSignal} [signal]
+ * @returns {Promise<void>}
  */
-async function queryITunes(term, externalSignal) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 7000);
-
-  const onExternalAbort = () => controller.abort();
-  if (externalSignal) {
-    if (externalSignal.aborted) {
-      clearTimeout(timeoutId);
-      throw new DOMException('Aborted', 'AbortError');
+function delay(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
     }
-    externalSignal.addEventListener('abort', onExternalAbort, { once: true });
-  }
-
-  try {
-    const url = `${ITUNES_SEARCH_ENDPOINT}?term=${encodeURIComponent(term)}&media=music&entity=song&limit=8`;
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data?.results) ? data.results : [];
-  } finally {
-    clearTimeout(timeoutId);
-    if (externalSignal) {
-      externalSignal.removeEventListener('abort', onExternalAbort);
-    }
-  }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer);
+      reject(new DOMException('Aborted', 'AbortError'));
+    }, { once: true });
+  });
 }
 
 /**
- * Busca el mejor preview oficial de 30 s y carátula HD en iTunes Search API para una canción.
+ * Ejecuta una consulta individual a iTunes Search API con tiempo límite y 1 reintento en errores transitorios.
+ *
+ * @param {string} term
+ * @param {AbortSignal} [externalSignal]
+ * @param {{ country?: string, attribute?: string, limit?: number }} [opts={}]
+ * @returns {Promise<Array<Object>>}
+ */
+async function queryITunes(term, externalSignal, opts = {}) {
+  const { country = '', attribute = '', limit = 12 } = opts;
+
+  const params = new URLSearchParams({
+    term,
+    media: 'music',
+    entity: 'song',
+    limit: String(limit)
+  });
+  if (country) params.set('country', country);
+  if (attribute) params.set('attribute', attribute);
+
+  const url = `${ITUNES_SEARCH_ENDPOINT}?${params.toString()}`;
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 7500);
+
+    const onExternalAbort = () => controller.abort();
+    if (externalSignal) {
+      if (externalSignal.aborted) {
+        clearTimeout(timeoutId);
+        throw new DOMException('Aborted', 'AbortError');
+      }
+      externalSignal.addEventListener('abort', onExternalAbort, { once: true });
+    }
+
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data?.results) ? data.results : [];
+      }
+      // Reintentar una vez ante saturación momentánea (429/5xx)
+      if ((res.status === 429 || res.status >= 500) && attempt === 0) {
+        await delay(350, externalSignal);
+        continue;
+      }
+      return [];
+    } catch (err) {
+      if (externalSignal?.aborted) {
+        throw new DOMException('Aborted', 'AbortError');
+      }
+      if (attempt === 0) {
+        await delay(300, externalSignal);
+        continue;
+      }
+      return [];
+    } finally {
+      clearTimeout(timeoutId);
+      if (externalSignal) {
+        externalSignal.removeEventListener('abort', onExternalAbort);
+      }
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Busca el mejor preview oficial de 30 s y carátula HD en iTunes Search API para una canción,
+ * usando estrategias progresivas multi-región para minimizar pistas sin audio.
+ *
  * @param {Object} song
  * @param {AbortSignal} [signal]
  * @returns {Promise<{ previewUrl: string, artworkUrl: string|null, collectionName: string }|null>}
  */
 async function fetchBestITunesPreview(song, signal) {
-  const cleanTitle = String(song.title || '').replace(/\([^)]*\)/g, '').trim();
+  const cleanTitle = String(song.title || '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
   const primaryArtist = extractPrimaryArtist(song.artist || '');
   const normTitle = normalizeMatchText(song.title || '');
   const normArtist = normalizeMatchText(primaryArtist || song.artist || '');
+  const asciiQuery = toAsciiQuery(`${primaryArtist} ${cleanTitle}`);
 
-  const searchTerms = [
-    `${primaryArtist} ${cleanTitle}`.trim(),
-    `${cleanTitle} ${primaryArtist}`.trim()
-  ].filter(Boolean);
+  /** @type {Array<{ term: string, country?: string, attribute?: string }>} */
+  const strategies = [
+    { term: `${primaryArtist} ${cleanTitle}`.trim() },
+    { term: `${cleanTitle} ${primaryArtist}`.trim(), country: 'ES' },
+    { term: cleanTitle, attribute: 'songTerm' }
+  ];
+
+  if (asciiQuery && asciiQuery.toLowerCase() !== `${primaryArtist} ${cleanTitle}`.trim().toLowerCase()) {
+    strategies.push({ term: asciiQuery, country: 'ES' });
+  }
 
   let bestItem = null;
   let bestScore = -1;
 
-  for (let i = 0; i < searchTerms.length; i += 1) {
-    const results = await queryITunes(searchTerms[i], signal);
+  for (const strategy of strategies) {
+    if (!strategy.term) continue;
+    const results = await queryITunes(strategy.term, signal, strategy);
     for (const item of results) {
-      const score = scoreITunesCandidate(item, normTitle, normArtist);
+      const score = scoreITunesCandidate(item, normTitle, normArtist, song.title || '');
       if (score > bestScore) {
         bestScore = score;
         bestItem = item;
       }
     }
-    // Si ya encontramos una coincidencia sólida, no hace falta la segunda consulta
-    if (bestItem && bestScore >= 45) break;
+    // Coincidencia de estudio muy sólida: no hace falta lanzar consultas de respaldo
+    if (bestItem && bestScore >= 75) break;
   }
 
-  if (!bestItem || bestScore < 20) {
+  if (!bestItem || bestScore < 22) {
     return null;
   }
 
@@ -237,12 +383,14 @@ async function fetchBestITunesPreview(song, signal) {
  *   artworkUrl: string|null,
  *   collectionName: string,
  *   externalYoutubeUrl: string|null,
+ *   youtubeEmbedUrl: string|null,
  *   isCrossOrigin: boolean,
  *   reason?: string
  * }>}
  */
 export async function resolveSongMedia(song, { signal } = {}) {
   const externalYoutubeUrl = buildExternalYoutubeUrl(song);
+  const youtubeEmbedUrl = buildYoutubeEmbedUrl(song, { autoplay: false });
   const ytThumb = buildYoutubeThumbnailUrl(song);
 
   if (!song) {
@@ -252,6 +400,7 @@ export async function resolveSongMedia(song, { signal } = {}) {
       artworkUrl: null,
       collectionName: '',
       externalYoutubeUrl: null,
+      youtubeEmbedUrl: null,
       isCrossOrigin: false,
       reason: 'No hay pista seleccionada.'
     };
@@ -265,13 +414,14 @@ export async function resolveSongMedia(song, { signal } = {}) {
       artworkUrl: null,
       collectionName: 'Biblioteca personal',
       externalYoutubeUrl,
+      youtubeEmbedUrl,
       isCrossOrigin: false
     };
   }
 
   const cacheKey = song.id || `${song.artist}|${song.title}`;
 
-  // 2. Pista local auténtica empaquetada en assets/audio/ (100% offline y 0 anuncios)
+  // 2. Pista local auténtica real (excluye los 6 .wav sintetizados heredados)
   if (hasAuthenticLocalAudio(song)) {
     const cached = previewCache.get(cacheKey);
     return {
@@ -280,6 +430,7 @@ export async function resolveSongMedia(song, { signal } = {}) {
       artworkUrl: cached?.artworkUrl || ytThumb,
       collectionName: cached?.collectionName || '',
       externalYoutubeUrl,
+      youtubeEmbedUrl,
       isCrossOrigin: false
     };
   }
@@ -294,6 +445,7 @@ export async function resolveSongMedia(song, { signal } = {}) {
         artworkUrl: cached.artworkUrl || ytThumb,
         collectionName: cached.collectionName || '',
         externalYoutubeUrl,
+        youtubeEmbedUrl,
         isCrossOrigin: true
       };
     }
@@ -307,12 +459,13 @@ export async function resolveSongMedia(song, { signal } = {}) {
       artworkUrl: ytThumb,
       collectionName: '',
       externalYoutubeUrl,
+      youtubeEmbedUrl,
       isCrossOrigin: false,
       reason: 'Sin conexión a Internet y esta canción no tiene archivo local en caché.'
     };
   }
 
-  // 4. Consulta bajo demanda a iTunes Search API (0 anuncios, sin API key)
+  // 4. Consulta bajo demanda a iTunes Search API (0 anuncios, grabación original de estudio)
   try {
     let reqPromise = inflightRequests.get(cacheKey);
     if (!reqPromise) {
@@ -331,6 +484,7 @@ export async function resolveSongMedia(song, { signal } = {}) {
         artworkUrl: match.artworkUrl || ytThumb,
         collectionName: match.collectionName || '',
         externalYoutubeUrl,
+        youtubeEmbedUrl,
         isCrossOrigin: true
       };
     }
@@ -341,6 +495,7 @@ export async function resolveSongMedia(song, { signal } = {}) {
       artworkUrl: ytThumb,
       collectionName: '',
       externalYoutubeUrl,
+      youtubeEmbedUrl,
       isCrossOrigin: false,
       reason: 'No se encontró preview oficial de 30 s sin anuncios para esta pista.'
     };
@@ -354,6 +509,7 @@ export async function resolveSongMedia(song, { signal } = {}) {
       artworkUrl: ytThumb,
       collectionName: '',
       externalYoutubeUrl,
+      youtubeEmbedUrl,
       isCrossOrigin: false,
       reason: 'No se pudo contactar con el servicio de previews sin anuncios.'
     };

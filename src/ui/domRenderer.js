@@ -11,7 +11,11 @@ import { THEMATIC_PLAYLISTS } from '../data/thematicPlaylists.js';
 import { removeStorageKey, escapeHtml } from '../utils/storageManager.js';
 import { auditSongCatalog, sanitizeImportedCatalog } from '../utils/catalogValidator.js';
 import { buildScaffoldingHint } from '../core/lyricsChallengeEngine.js';
-import { localMediaLibrary, buildYoutubeThumbnailUrl, buildExternalYoutubeUrl } from '../audio/mediaResolver.js';
+import {
+  localMediaLibrary,
+  buildYoutubeThumbnailUrl,
+  buildYoutubeEmbedUrl
+} from '../audio/mediaResolver.js';
 
 export class DOMRenderer {
   /**
@@ -39,8 +43,11 @@ export class DOMRenderer {
     this._lyricsEsRevealed = false;
     this._isCuriosityExpanded = false;
 
-    // Estado de vídeo local personal (MP4/WebM): oculto hasta responder
+    // Estado de vídeo local personal (MP4/WebM) y vídeo embebido de YouTube post-ronda
     this.isLocalVideoRound = false;
+    this.hasYoutubeEmbedRound = false;
+    this.showArtworkInsteadOfEmbed = false;
+    this._currentYoutubeEmbedSong = null;
     this.isPostRevealMinimized = false;
 
     this._cacheDOMElements();
@@ -89,6 +96,11 @@ export class DOMRenderer {
       audioStage: document.getElementById('audio-stage'),
       localVideoContainer: document.getElementById('local-video-container'),
       localVideoPlayer: document.getElementById('local-video-player'),
+      youtubeEmbedContainer: document.getElementById('youtube-embed-container'),
+      youtubeEmbedIframe: document.getElementById('youtube-embed-iframe'),
+      youtubeEmbedTitle: document.getElementById('youtube-embed-title'),
+      youtubeEmbedArtist: document.getElementById('youtube-embed-artist'),
+      btnShowArtworkCard: document.getElementById('btn-show-artwork-card'),
       artworkRevealCard: document.getElementById('artwork-reveal-card'),
       revealArtworkImg: document.getElementById('reveal-artwork-img'),
       revealArtworkFallback: document.getElementById('reveal-artwork-fallback'),
@@ -211,7 +223,58 @@ export class DOMRenderer {
   }
 
   /**
-   * Sincroniza la cortina de escucha, la tarjeta de Carátula HD y el reproductor de vídeo local MP4.
+   * Monta el reproductor embebido de YouTube dentro de `#audio-stage` al acabar la ronda
+   * deteniendo previamente el preview de 30 s para evitar audio superpuesto.
+   * @param {Object|null} song
+   * @param {{ autoplay?: boolean }} [options={}]
+   * @private
+   */
+  _mountYoutubeEmbed(song, { autoplay = true } = {}) {
+    const embedUrl = buildYoutubeEmbedUrl(song, { autoplay });
+    if (!embedUrl || !this.dom.youtubeEmbedIframe) {
+      this._clearYoutubeEmbed();
+      return false;
+    }
+
+    // Evitar doble audio: detener el preview de 30 s al mostrar el vídeo embebido
+    this.audioEngine.stop();
+    this._setPlayPauseButtonState(false);
+
+    this._currentYoutubeEmbedSong = song;
+    this.hasYoutubeEmbedRound = true;
+    this.showArtworkInsteadOfEmbed = false;
+
+    this.dom.youtubeEmbedIframe.title = `Vídeo oficial: ${song?.title || 'Canción'} — ${song?.artist || ''}`;
+    this.dom.youtubeEmbedIframe.src = embedUrl;
+
+    if (this.dom.youtubeEmbedTitle) {
+      this.dom.youtubeEmbedTitle.textContent = song?.title || '';
+    }
+    if (this.dom.youtubeEmbedArtist) {
+      const parts = [song?.artist, song?.year ? String(song.year) : ''].filter(Boolean);
+      this.dom.youtubeEmbedArtist.textContent = parts.join(' · ');
+    }
+    return true;
+  }
+
+  /**
+   * Descarga inmediatamente el iframe embebido de YouTube para detener su reproducción
+   * al cambiar de ronda, minimizar o reiniciar la partida.
+   * @private
+   */
+  _clearYoutubeEmbed() {
+    if (this.dom.youtubeEmbedIframe) {
+      if (this.dom.youtubeEmbedIframe.getAttribute('src')) {
+        this.dom.youtubeEmbedIframe.src = 'about:blank';
+        this.dom.youtubeEmbedIframe.removeAttribute('src');
+      }
+    }
+    this.dom.youtubeEmbedContainer?.classList.add('hidden');
+  }
+
+  /**
+   * Sincroniza la cortina de escucha, el vídeo embebido de YouTube, la Carátula HD
+   * y el reproductor de vídeo local MP4.
    * @private
    */
   _syncStageVisibility() {
@@ -219,18 +282,22 @@ export class DOMRenderer {
 
     const isRevealed = this.gameState.status === GameStates.ROUND_OVER;
     const showLocalVideo = isRevealed && this.isLocalVideoRound && !this.isPostRevealMinimized;
-    const showArtworkCard = isRevealed && !this.isLocalVideoRound && !this.isPostRevealMinimized;
+    const showYoutubeEmbed = isRevealed && !this.isLocalVideoRound && this.hasYoutubeEmbedRound && !this.showArtworkInsteadOfEmbed && !this.isPostRevealMinimized;
+    const showArtworkCard = isRevealed && !showLocalVideo && !showYoutubeEmbed && !this.isPostRevealMinimized;
+    const canToggleLocalVideo = isRevealed && this.isLocalVideoRound;
 
     this.dom.audioStage.classList.toggle('revealed', isRevealed);
-    this.dom.audioStage.classList.toggle('has-local-video', this.isLocalVideoRound);
+    this.dom.audioStage.classList.toggle('has-local-video', showLocalVideo);
+    this.dom.audioStage.classList.toggle('has-youtube-embed', showYoutubeEmbed);
     this.dom.audioStage.classList.toggle('minimized', isRevealed && this.isLocalVideoRound && this.isPostRevealMinimized);
 
     this.dom.localVideoContainer?.classList.toggle('hidden', !showLocalVideo);
+    this.dom.youtubeEmbedContainer?.classList.toggle('hidden', !showYoutubeEmbed);
     this.dom.artworkRevealCard?.classList.toggle('hidden', !showArtworkCard);
 
-    // Mostrar el botón Ver/Ocultar vídeo únicamente cuando la pista revelada sea un MP4 local
+    // Botón Ver/Ocultar vídeo en barra superior solo para vídeos MP4 locales (YouTube usa Ver carátula / Ver vídeo aquí)
     if (this.dom.btnToggleMinimize) {
-      this.dom.btnToggleMinimize.classList.toggle('hidden', !(isRevealed && this.isLocalVideoRound));
+      this.dom.btnToggleMinimize.classList.toggle('hidden', !canToggleLocalVideo);
     }
 
     if (this.dom.iconMinimizeSvg) {
@@ -249,9 +316,15 @@ export class DOMRenderer {
 
     if (this.dom.stageModeText) {
       if (isRevealed) {
-        this.dom.stageModeText.textContent = this.isLocalVideoRound
-          ? (this.isPostRevealMinimized ? 'Vídeo local oculto · Audio activo' : 'Vídeo local desbloqueado')
-          : 'Pista revelada · Sin anuncios';
+        if (this.isLocalVideoRound) {
+          this.dom.stageModeText.textContent = this.isPostRevealMinimized
+            ? 'Vídeo local oculto · Audio activo'
+            : 'Vídeo local desbloqueado';
+        } else if (showYoutubeEmbed) {
+          this.dom.stageModeText.textContent = 'Vídeo en YouTube · Sin salir de la app';
+        } else {
+          this.dom.stageModeText.textContent = 'Pista revelada · Sin anuncios';
+        }
       } else {
         this.dom.stageModeText.textContent = this.isLocalVideoRound
           ? 'Vídeo local oculto hasta responder'
@@ -444,10 +517,44 @@ export class DOMRenderer {
     });
 
     this.dom.btnToggleMinimize?.addEventListener('click', () => {
-      if (!this.isLocalVideoRound || this.gameState.status !== GameStates.ROUND_OVER) return;
-      this.isPostRevealMinimized = !this.isPostRevealMinimized;
+      if (this.gameState.status !== GameStates.ROUND_OVER) return;
+
+      if (this.isLocalVideoRound) {
+        this.isPostRevealMinimized = !this.isPostRevealMinimized;
+        this._syncStageVisibility();
+        this.announce(this.isPostRevealMinimized ? 'Vídeo local oculto en modo audio' : 'Vídeo local visible');
+        return;
+      }
+
+      if (this.hasYoutubeEmbedRound) {
+        if (!this.showArtworkInsteadOfEmbed) {
+          this.showArtworkInsteadOfEmbed = true;
+          this._clearYoutubeEmbed();
+          this._syncStageVisibility();
+          this.announce('Vídeo de YouTube oculto. Mostrando carátula HD.');
+        } else {
+          this._mountYoutubeEmbed(this._currentYoutubeEmbedSong || this.gameState.currentSong, { autoplay: true });
+          this._syncStageVisibility();
+          this.announce('Vídeo de YouTube embebido visible dentro de la aplicación.');
+        }
+      }
+    });
+
+    this.dom.btnShowArtworkCard?.addEventListener('click', () => {
+      if (this.gameState.status !== GameStates.ROUND_OVER || !this.hasYoutubeEmbedRound) return;
+      this.showArtworkInsteadOfEmbed = true;
+      this._clearYoutubeEmbed();
       this._syncStageVisibility();
-      this.announce(this.isPostRevealMinimized ? 'Vídeo local oculto en modo audio' : 'Vídeo local visible');
+      this.announce('Mostrando carátula HD de la canción.');
+    });
+
+    this.dom.btnRevealYoutube?.addEventListener('click', () => {
+      if (this.gameState.status !== GameStates.ROUND_OVER) return;
+      const targetSong = this._currentYoutubeEmbedSong || this.gameState.currentSong;
+      if (this._mountYoutubeEmbed(targetSong, { autoplay: true })) {
+        this._syncStageVisibility();
+        this.announce('Reproduciendo vídeo de YouTube dentro de SongQuiz.');
+      }
     });
 
     this.dom.btnPlayPause?.addEventListener('click', async () => {
@@ -724,7 +831,7 @@ export class DOMRenderer {
   _bindPlaylistManagerEvents() {
     this._renderThematicPlaylists();
 
-    this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach(pill => {
+    this.dom.themePillsBar?.querySelectorAll('.theme-pill[data-theme-id]').forEach(pill => {
       pill.addEventListener('click', () => {
         const themeId = pill.dataset.themeId;
         this._activateThematicPlaylist(themeId);
@@ -758,6 +865,7 @@ export class DOMRenderer {
         }
 
         const storageRes = this.gameLogic.setCustomPlaylist(songs, false, false);
+        this._setActivePlaylistPill('__custom__');
         this._renderPlaylistTable();
         const quotaNote = storageRes.errorCode === 'QUOTA_EXCEEDED'
           ? ' (Aviso: cuota de almacenamiento llena; activa solo en esta sesión).'
@@ -833,6 +941,7 @@ export class DOMRenderer {
         }
 
         const storageRes = this.gameLogic.setCustomPlaylist(sanitized, false, false);
+        this._setActivePlaylistPill('__custom__');
         this._renderPlaylistTable();
 
         if (storageRes.errorCode === 'QUOTA_EXCEEDED') {
@@ -870,6 +979,7 @@ export class DOMRenderer {
         confirmLabel: 'Sí, restablecer',
         onConfirm: () => {
           this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, false);
+          this._setActivePlaylistPill('default');
           this.dom.startScreen?.classList.remove('visually-hidden');
           this._renderPlaylistTable();
           this.announce('Catálogo restablecido al oficial por defecto.');
@@ -960,14 +1070,29 @@ export class DOMRenderer {
   }
 
   /**
+   * Marca visualmente la opción activa dentro de la barra de listas (temática o personalizada).
+   * @param {string} targetId - `themeId` o `'__custom__'` para activar "Lista personalizada".
+   * @private
+   */
+  _setActivePlaylistPill(targetId) {
+    const isCustom = targetId === '__custom__';
+    this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach((p) => {
+      if (p.dataset.customPlaylistBtn === 'true') {
+        p.classList.toggle('active', isCustom);
+      } else {
+        p.classList.toggle('active', !isCustom && p.dataset.themeId === targetId);
+      }
+    });
+  }
+
+  /**
    * Activa una lista temática predefinida y actualiza la partida en curso.
    * @param {string} themeId
    * @private
    */
   _activateThematicPlaylist(themeId) {
-    this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach(p => {
-      p.classList.toggle('active', p.dataset.themeId === themeId);
-    });
+    this._clearYoutubeEmbed();
+    this._setActivePlaylistPill(themeId);
 
     if (themeId === 'default') {
       this.gameLogic.resetToDefaultPlaylist(this.defaultSongs, true);
@@ -1049,8 +1174,9 @@ export class DOMRenderer {
       }
 
       try {
+        this._clearYoutubeEmbed();
         this.gameLogic.setLocalMediaPlaylist(tracks, true);
-        this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach((p) => p.classList.remove('active'));
+        this._setActivePlaylistPill('__custom__');
         this._renderPlaylistTable();
 
         const summaryParts = [];
@@ -1380,7 +1506,7 @@ export class DOMRenderer {
         this.dom.stageTitle.textContent = '¿Qué canción está sonando?';
         this.dom.stageSubtitle.textContent = this.isLocalVideoRound
           ? 'Escucha con atención · Tu vídeo local se revelará al responder'
-          : 'Escucha con atención · Carátula HD al responder';
+          : 'Escucha con atención · Vídeo y carátula al responder';
       }
     }
   }
@@ -1402,10 +1528,12 @@ export class DOMRenderer {
         break;
 
       case GameStates.GAME_OVER:
+        this._clearYoutubeEmbed();
         this._renderGameOverState(payload);
         break;
 
       case GameStates.IDLE:
+        this._clearYoutubeEmbed();
         this._hideAudioUnavailableBanner();
         break;
     }
@@ -1488,15 +1616,15 @@ export class DOMRenderer {
       this.dom.statusMsg.className = 'status-msg';
     }
 
-    // Cada ronda nueva oculta carátula y vídeo local hasta seleccionar respuesta
+    // Cada ronda nueva descarga cualquier vídeo embebido anterior y oculta carátula/vídeo hasta responder
+    this._clearYoutubeEmbed();
     this.isLocalVideoRound = Boolean(isLocalVideo || song?.isLocalVideo);
+    this.hasYoutubeEmbedRound = false;
+    this.showArtworkInsteadOfEmbed = false;
+    this._currentYoutubeEmbedSong = null;
     this.isPostRevealMinimized = false;
     this._syncStageVisibility();
     this._updateTimerControlState(false);
-
-    if (this.dom.btnYtExternal) {
-      this.dom.btnYtExternal.style.display = 'none';
-    }
 
     this._setPlayPauseButtonState(null);
 
@@ -1720,27 +1848,27 @@ export class DOMRenderer {
       this.dom.minimizedSubtitle.textContent = 'Pulsa «Ver vídeo» para volver a ver tu archivo local';
     }
 
-    // Poblar tarjeta de revelación con Carátula HD + botón opcional a YouTube
+    // Poblar tarjeta de revelación con Carátula HD (respaldo y vista alternativa)
     this._renderArtworkReveal(song, this.gameLogic.currentRoundMedia);
 
-    // Al responder (o agotar tiempo), revelar Carátula HD o vídeo local MP4
+    // Al acabar la ronda o responder, embeber el vídeo oficial de YouTube dentro de SongQuiz
+    // (sin salir fuera de la app) para todas las canciones con ID de YouTube válido.
     this.isPostRevealMinimized = false;
+    if (!this.isLocalVideoRound && buildYoutubeEmbedUrl(song)) {
+      this._mountYoutubeEmbed(song, { autoplay: true });
+    } else {
+      this.hasYoutubeEmbedRound = false;
+      this.showArtworkInsteadOfEmbed = false;
+      this._currentYoutubeEmbedSong = null;
+      this._clearYoutubeEmbed();
+    }
+
     this._syncStageVisibility();
     this.dom.btnNext?.classList.remove('hidden');
 
     this.dom.timerStatusDot?.classList.remove('paused');
     if (this.dom.timerStatusLabel) {
       this.dom.timerStatusLabel.textContent = `${song.title} — ${song.artist}`;
-    }
-
-    const ytUrl = buildExternalYoutubeUrl(song);
-    if (this.dom.btnYtExternal) {
-      if (ytUrl) {
-        this.dom.btnYtExternal.href = ytUrl;
-        this.dom.btnYtExternal.style.display = 'inline-flex';
-      } else {
-        this.dom.btnYtExternal.style.display = 'none';
-      }
     }
 
     const triviaText = song.culturalTrivia || `${song.title} es un tema destacado de ${song.artist}.`;
@@ -1789,14 +1917,9 @@ export class DOMRenderer {
       this.dom.revealSongMeta.textContent = metaParts.join(' · ');
     }
 
-    const ytUrl = roundMedia?.externalYoutubeUrl || buildExternalYoutubeUrl(song);
+    const hasEmbed = Boolean(buildYoutubeEmbedUrl(song));
     if (this.dom.btnRevealYoutube) {
-      if (ytUrl) {
-        this.dom.btnRevealYoutube.href = ytUrl;
-        this.dom.btnRevealYoutube.classList.remove('hidden');
-      } else {
-        this.dom.btnRevealYoutube.classList.add('hidden');
-      }
+      this.dom.btnRevealYoutube.classList.toggle('hidden', !hasEmbed);
     }
 
     const img = this.dom.revealArtworkImg;

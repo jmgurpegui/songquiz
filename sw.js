@@ -3,7 +3,7 @@
  * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios e iconos.
  */
 
-const CACHE_NAME = 'songquiz-v3.8.2';
+const CACHE_NAME = 'songquiz-v3.9.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -17,13 +17,7 @@ const PRECACHE_ASSETS = [
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/icons/icon-maskable-512.png',
-  './assets/icons/apple-touch-icon.png',
-  './assets/audio/blinding_lights.wav',
-  './assets/audio/shape_of_you.wav',
-  './assets/audio/bohemian_rhapsody.wav',
-  './assets/audio/billie_jean.wav',
-  './assets/audio/stayin_alive.wav',
-  './assets/audio/take_on_me.wav'
+  './assets/icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -68,6 +62,9 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
   const isSameOrigin = url.origin === self.location.origin;
+
+  // No interceptar streams de audio externos (iTunes Range requests) ni iframes de YouTube
+  if (!isSameOrigin) return;
 
   // Navegación HTML (soporta apertura offline de la PWA/TWA incluyendo ?mode=lyrics)
   if (event.request.mode === 'navigate' && isSameOrigin) {
