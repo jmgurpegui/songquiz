@@ -151,6 +151,14 @@
       <button class="theme-pill" data-theme-id="retro_80s" type="button">70s &amp; 80s</button>
       <button class="theme-pill" data-theme-id="millennial_90s_00s" type="button">90s &amp; 2000s</button>
       <button class="theme-pill" data-theme-id="latin_hits" type="button">Hits en Español</button>
+      <button id="btn-review-failed" class="theme-pill theme-pill-review" type="button" data-review-failed-btn="true" title="Repasar únicamente las canciones que has fallado anteriormente">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        <span>Repasar falladas</span>
+        <span id="failed-count-badge" class="failed-count-num">0</span>
+      </button>
       <button id="btn-open-importer" class="theme-pill theme-pill-custom" type="button" data-custom-playlist-btn="true" title="Crear o importar tu lista personalizada (YouTube, MP3/MP4 locales o texto/JSON)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -163,6 +171,37 @@
         <span>Lista personalizada</span>
       </button>
     </nav>
+
+    <!-- BARRA COMPACTA DE FILTROS POR DÉCADA Y NIVEL DE DIFICULTAD -->
+    <div class="session-filters-bar" aria-label="Filtros por década y nivel de dificultad">
+      <div class="session-filter-group">
+        <span class="session-filter-label" id="decade-filter-label">Década</span>
+        <div class="decade-filter-strip" id="decade-filter-group" role="radiogroup" aria-labelledby="decade-filter-label">
+          <button class="filter-chip-btn active" type="button" role="radio" aria-checked="true" data-decade="all">Todas</button>
+          <button class="filter-chip-btn" type="button" role="radio" aria-checked="false" data-decade="classic">60s–70s</button>
+          <button class="filter-chip-btn" type="button" role="radio" aria-checked="false" data-decade="1980s">80s</button>
+          <button class="filter-chip-btn" type="button" role="radio" aria-checked="false" data-decade="1990s">90s</button>
+          <button class="filter-chip-btn" type="button" role="radio" aria-checked="false" data-decade="2000s">2000s</button>
+          <button class="filter-chip-btn" type="button" role="radio" aria-checked="false" data-decade="2010s">2010s</button>
+          <button class="filter-chip-btn" type="button" role="radio" aria-checked="false" data-decade="2020s">2020s</button>
+        </div>
+      </div>
+
+      <div class="session-filter-group session-difficulty-group">
+        <span class="session-filter-label" id="difficulty-filter-label">Dificultad</span>
+        <div class="difficulty-segmented" id="difficulty-group" role="radiogroup" aria-labelledby="difficulty-filter-label">
+          <button class="difficulty-btn active" type="button" role="radio" aria-checked="true" data-difficulty="normal" title="Normal: 4 opciones variadas (×1)">Normal</button>
+          <button class="difficulty-btn" type="button" role="radio" aria-checked="false" data-difficulty="hard" title="Difícil: 4 opciones del mismo artista, género y época (×1.25 pts)">Difícil</button>
+          <button class="difficulty-btn" type="button" role="radio" aria-checked="false" data-difficulty="expert" title="Experto: escritura libre del título sin opciones (×1.5 pts)">Experto</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVISO INLINE DE FILTROS / REPASO SIN ALERTAS NATIVAS -->
+    <div id="filter-feedback-banner" class="filter-feedback-banner hidden" role="status" aria-live="polite">
+      <span id="filter-feedback-text"></span>
+      <button id="btn-reset-filter-feedback" class="btn-subtle btn-filter-reset hidden" type="button">Mostrar todas</button>
+    </div>
 
     <!-- ESCENARIO PRINCIPAL DEL JUEGO -->
     <main class="game-viewport">
@@ -406,6 +445,26 @@
             <label for="lyrics-input-field" class="visually-hidden">Escribe la palabra en inglés que falta</label>
             <input type="text" id="lyrics-input-field" class="lyrics-input-field" autocomplete="off" spellcheck="false" placeholder="Escribe la palabra que falta en inglés y pulsa Enter...">
             <button id="btn-lyrics-submit" class="btn-primary btn-cta-inline" type="button">Comprobar</button>
+          </div>
+        </section>
+
+        <!-- MODO EXPERTO (ESCRITURA LIBRE DEL TÍTULO EN CLASSIC) -->
+        <section class="classic-expert-box hidden" id="classic-expert-box" aria-label="Modo Experto: escritura libre de la canción">
+          <div class="classic-expert-header">
+            <div class="classic-expert-meta">
+              <span class="classic-expert-title">Modo Experto</span>
+              <span class="meta-separator" aria-hidden="true">·</span>
+              <span class="classic-expert-sub">Escribe el título de la canción (×1.5 pts)</span>
+            </div>
+            <button id="btn-classic-expert-hint" class="lyrics-action-chip" type="button" title="Mostrar pista progresiva (artista / iniciales)">
+              Pista
+            </button>
+          </div>
+          <p id="classic-expert-hint-text" class="classic-expert-hint-text hidden"></p>
+          <div class="classic-expert-input-row">
+            <label for="classic-expert-input" class="visually-hidden">Escribe el título de la canción</label>
+            <input type="text" id="classic-expert-input" class="lyrics-input-field" autocomplete="off" spellcheck="false" placeholder="Escribe el título (o Título - Artista) y pulsa Enter...">
+            <button id="btn-classic-expert-submit" class="btn-primary btn-cta-inline" type="button">Comprobar</button>
           </div>
         </section>
 

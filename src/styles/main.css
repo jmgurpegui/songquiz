@@ -435,7 +435,7 @@ body[data-device-view="mobile"] .footer-shortcuts {
   flex-wrap: nowrap;
   overflow-x: auto;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
   padding: 2px 0;
   scrollbar-width: none;
@@ -450,9 +450,9 @@ body[data-device-view="mobile"] .footer-shortcuts {
   border: 1px solid transparent;
   color: var(--color-secondary);
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
-  padding: 6px 12px;
+  padding: 6px 9px;
   border-radius: var(--radius-md);
   cursor: pointer;
   white-space: nowrap;
@@ -469,6 +469,56 @@ body[data-device-view="mobile"] .footer-shortcuts {
   background: var(--color-accent-tint);
   color: var(--color-accent-light);
   border-color: var(--color-accent-border);
+}
+
+.theme-pill-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--color-border);
+}
+
+.theme-pill-review.has-failed {
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.theme-pill-review:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-main);
+}
+
+.theme-pill-review.has-failed:hover {
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fef3c7;
+}
+
+.theme-pill-review.active {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-light);
+  border-color: var(--color-accent-border);
+}
+
+.failed-count-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text-dim);
+  min-width: 1.15em;
+  text-align: center;
+}
+
+.theme-pill-review.has-failed .failed-count-num {
+  color: var(--color-warning);
+}
+
+.theme-pill-review.active .failed-count-num {
+  color: var(--color-accent-light);
 }
 
 .theme-pill-custom {
@@ -490,6 +540,142 @@ body[data-device-view="mobile"] .footer-shortcuts {
   background: var(--color-accent-tint);
   color: var(--color-accent-light);
   border-color: var(--color-accent-border);
+}
+
+/* ==========================================================================
+   BARRA COMPACTA DE FILTROS POR DÉCADA Y NIVEL DE DIFICULTAD
+   ========================================================================== */
+.session-filters-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 12px;
+  background: rgba(24, 24, 24, 0.86);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.session-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.session-difficulty-group {
+  flex-shrink: 0;
+}
+
+.session-filter-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.decade-filter-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
+}
+
+.decade-filter-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 9px;
+  min-height: 28px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.filter-chip-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-main);
+}
+
+.filter-chip-btn.active {
+  background: var(--color-accent-tint);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent-light);
+}
+
+.difficulty-segmented {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface-well);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 2px;
+  gap: 2px;
+}
+
+.difficulty-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-secondary);
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  min-height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.difficulty-btn:hover {
+  color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.difficulty-btn.active {
+  background: var(--color-surface-elevated);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent-light);
+}
+
+.filter-feedback-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  color: #fde68a;
+  font-size: 0.78rem;
+  font-weight: 500;
+  animation: fadeSlideUp 160ms var(--ease-out-expo);
+}
+
+.btn-filter-reset {
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  color: var(--color-text-main);
+  border-color: var(--color-warning-border);
 }
 
 /* ==========================================================================
@@ -1598,6 +1784,67 @@ body[data-device-view="mobile"] .footer-shortcuts {
 }
 
 /* ==========================================================================
+   CAJA MODO EXPERTO (ESCRITURA LIBRE EN CLASSIC)
+   ========================================================================== */
+.classic-expert-box {
+  background: rgba(24, 24, 24, 0.94);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeSlideUp 180ms var(--ease-out-expo);
+}
+
+.classic-expert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.classic-expert-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.classic-expert-title {
+  font-family: var(--font-heading);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-accent-light);
+}
+
+.classic-expert-sub {
+  font-size: 0.78rem;
+  color: var(--color-secondary);
+}
+
+.classic-expert-hint-text {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #fde68a;
+  background: var(--color-surface-well);
+  border: 1px solid var(--color-warning-border);
+  padding: 7px 11px;
+  border-radius: var(--radius-sm);
+}
+
+.classic-expert-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.score-difficulty-tag {
+  color: var(--color-accent-light);
+  font-weight: 700;
+}
+
+/* ==========================================================================
    FEEDBACK DE RONDA Y CURIOSIDAD MUSICAL PLEGABLE
    ========================================================================== */
 .bottom-feedback-row {
@@ -2664,6 +2911,41 @@ body.tv-cast-mode .option-title-main {
 
   .mode-info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .session-filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .session-difficulty-group {
+    justify-content: space-between;
+  }
+
+  .difficulty-segmented {
+    flex: 1;
+    justify-content: stretch;
+  }
+
+  .difficulty-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .classic-expert-input-row {
+    flex-direction: column;
+  }
+
+  .classic-expert-meta .meta-separator {
+    display: none;
+  }
+
+  .classic-expert-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 
   .game-card {

@@ -3,7 +3,7 @@
  * Estrategia Network-First con fallback a caché para código/datos y Cache-First para audios e iconos.
  */
 
-const CACHE_NAME = 'songquiz-v3.9.0';
+const CACHE_NAME = 'songquiz-v3.10.0';
 
 const PRECACHE_ASSETS = [
   './',

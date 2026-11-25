@@ -4,7 +4,7 @@
  * prevención de race conditions (_roundToken) y persistencia resiliente de progreso.
  */
 
-import { GameStates, GameModes } from './gameState.js';
+import { GameStates, GameModes, LyricsInputLevels, DifficultyLevels, DecadeFilters } from './gameState.js';
 import { shuffle, generateOptions } from '../utils/random.js';
 import { sfx } from '../audio/soundFX.js';
 import {
@@ -16,6 +16,13 @@ import {
 import { readStorageJSON, writeStorageJSON, removeStorageKey } from '../utils/storageManager.js';
 import { sanitizeImportedCatalog } from '../utils/catalogValidator.js';
 import { evaluateLyricsAnswer, buildLyricsRoundData } from './lyricsChallengeEngine.js';
+import {
+  DIFFICULTY_SCORE_MULTIPLIER,
+  DECADE_LABELS,
+  filterSongsByDecade,
+  getFailedSongsFromCatalog,
+  evaluateClassicTypedAnswer
+} from './sessionFilters.js';
 
 export const STORAGE_KEYS = Object.freeze({
   HIGH_SCORE: 'songquiz_high_score',
@@ -74,6 +81,7 @@ export class GameLogic {
     this.lastRoundOptions = [];
     this.isOrderedMode = false;
     this.isLocalMediaSession = false;
+    this.isFailedReviewSession = false;
     this.timerInterval = null;
     this.roundStartTime = 0;
     this._accumulatedElapsedMs = 0;
@@ -168,14 +176,30 @@ export class GameLogic {
    * @private
    */
   async _resolvePlayableSongsForMode(sourceSongs) {
+    let workingPool = filterSongsByDecade(sourceSongs, this.gameState.decadeFilter);
+
+    // Si un filtro de década guardado no produce pistas en la lista actual, volver a "Todas" sin romper el arranque
+    if (workingPool.length === 0 && this.gameState.decadeFilter !== DecadeFilters.ALL) {
+      this.gameState.setDecadeFilter(DecadeFilters.ALL);
+      workingPool = [...sourceSongs];
+    }
+
     if (this.gameState.gameMode !== GameModes.LYRICS) {
-      return this.isOrderedMode ? [...sourceSongs] : shuffle(sourceSongs);
+      return this.isOrderedMode ? [...workingPool] : shuffle(workingPool);
     }
 
     const bank = await this.loadLyricsBank();
-    let eligible = sourceSongs.filter((s) => s && bank.has(s.id));
+    let eligible = workingPool.filter((s) => s && bank.has(s.id));
 
     if (eligible.length === 0 && this.masterCatalog.length > 0) {
+      const filteredMaster = filterSongsByDecade(this.masterCatalog, this.gameState.decadeFilter);
+      eligible = filteredMaster.filter((s) => s && bank.has(s.id));
+    }
+
+    if (eligible.length === 0 && this.masterCatalog.length > 0) {
+      if (this.gameState.decadeFilter !== DecadeFilters.ALL) {
+        this.gameState.setDecadeFilter(DecadeFilters.ALL);
+      }
       eligible = this.masterCatalog.filter((s) => s && bank.has(s.id));
     }
 
@@ -189,6 +213,7 @@ export class GameLogic {
    * @param {boolean} [autoStart=true]
    */
   async startNewGame(defaultSongs, ordered = false, autoStart = true) {
+    this._clearTimer();
     this._abortPendingMedia();
     this._roundToken += 1;
     const initToken = this._roundToken;
@@ -200,7 +225,7 @@ export class GameLogic {
     this.isOrderedMode = Boolean(ordered);
     this.lastRoundOptions = [];
 
-    if (!this.isLocalMediaSession) {
+    if (!this.isLocalMediaSession && !this.isFailedReviewSession) {
       const savedCustom = this.getCustomPlaylist();
       if (!ordered && savedCustom && Array.isArray(savedCustom) && savedCustom.length > 0) {
         this.allSongs = [...savedCustom];
@@ -269,6 +294,7 @@ export class GameLogic {
       localMediaLibrary.revokeAll();
       this.isLocalMediaSession = false;
     }
+    this.isFailedReviewSession = false;
 
     this.allSongs = [...sanitized];
     this.isOrderedMode = Boolean(ordered);
@@ -297,6 +323,7 @@ export class GameLogic {
     }
 
     this.isLocalMediaSession = true;
+    this.isFailedReviewSession = false;
     this.isOrderedMode = false;
     this.allSongs = [...localTracks];
 
@@ -318,11 +345,126 @@ export class GameLogic {
       localMediaLibrary.revokeAll();
       this.isLocalMediaSession = false;
     }
+    this.isFailedReviewSession = false;
     removeStorageKey(STORAGE_KEYS.CUSTOM_PLAYLIST);
     const catalog = (Array.isArray(defaultSongs) && defaultSongs.length > 0)
       ? defaultSongs
       : this.masterCatalog;
     this.startNewGame(catalog, false, autoStart);
+  }
+
+  /**
+   * Devuelve las canciones falladas pendientes de repaso cruzando `failedSongIds` con el catálogo.
+   * @returns {Array<Object>}
+   */
+  getFailedReviewSongs() {
+    const progress = this.getProgressStats();
+    const pool = [...this.masterCatalog, ...this.allSongs];
+    return getFailedSongsFromCatalog(progress.failedSongIds, pool);
+  }
+
+  /**
+   * Inicia una sesión enfocada únicamente en las canciones falladas previamente ("Repasar falladas").
+   * @param {boolean} [autoStart=true]
+   * @returns {Promise<{ ok: boolean, count: number, message?: string }>}
+   */
+  async startFailedReviewSession(autoStart = true) {
+    const failedSongs = this.getFailedReviewSongs();
+    if (failedSongs.length === 0) {
+      return {
+        ok: false,
+        count: 0,
+        message: 'Aún no tienes canciones falladas para repasar. Cuando falles una ronda aparecerá aquí automáticamente.'
+      };
+    }
+
+    if (this.isLocalMediaSession) {
+      localMediaLibrary.revokeAll();
+      this.isLocalMediaSession = false;
+    }
+
+    // Si el filtro de década actual excluye todas las falladas, restablecerlo a "Todas" automáticamente
+    if (
+      this.gameState.decadeFilter !== DecadeFilters.ALL &&
+      filterSongsByDecade(failedSongs, this.gameState.decadeFilter).length === 0
+    ) {
+      this.gameState.setDecadeFilter(DecadeFilters.ALL);
+    }
+
+    this.isFailedReviewSession = true;
+    this.isOrderedMode = false;
+    this.allSongs = [...failedSongs];
+
+    await this.startNewGame(this.allSongs, false, autoStart);
+    return { ok: true, count: this.gameState.totalRounds };
+  }
+
+  /**
+   * Aplica un filtro por década sobre la lista activa sin perder la partida si no hay coincidencias.
+   * @param {string} decadeKey
+   * @returns {Promise<{ ok: boolean, count: number, message?: string }>}
+   */
+  async setDecadeFilter(decadeKey) {
+    if (!Object.values(DecadeFilters).includes(decadeKey)) {
+      return { ok: false, count: 0, message: 'Década no válida.' };
+    }
+
+    const baseList = this.allSongs.length > 0 ? this.allSongs : this.masterCatalog;
+    let filtered = filterSongsByDecade(baseList, decadeKey);
+
+    if (this.gameState.gameMode === GameModes.LYRICS) {
+      try {
+        const bank = await this.loadLyricsBank();
+        const lyricsFiltered = filtered.filter((s) => s && bank.has(s.id));
+        if (lyricsFiltered.length === 0) {
+          const masterLyricsFiltered = filterSongsByDecade(this.masterCatalog, decadeKey)
+            .filter((s) => s && bank.has(s.id));
+          filtered = masterLyricsFiltered;
+        } else {
+          filtered = lyricsFiltered;
+        }
+      } catch {
+        // Si falla la carga, se mantiene validación estándar
+      }
+    }
+
+    if (filtered.length === 0) {
+      const label = DECADE_LABELS[decadeKey] || decadeKey;
+      return {
+        ok: false,
+        count: 0,
+        message: `No hay canciones de ${label} en la lista activa. Cambia a "Todas" o selecciona Catálogo Maestro.`
+      };
+    }
+
+    this.gameState.setDecadeFilter(decadeKey);
+    const shouldAutoStart = this.gameState.status !== GameStates.IDLE;
+    await this.startNewGame(baseList, this.isOrderedMode, shouldAutoStart);
+    return { ok: true, count: this.gameState.totalRounds };
+  }
+
+  /**
+   * Cambia el nivel de dificultad (Normal / Difícil / Experto) y actualiza la sesión activa.
+   * @param {'normal'|'hard'|'expert'} level
+   * @returns {Promise<{ ok: boolean, difficulty: string }>}
+   */
+  async setDifficulty(level) {
+    if (!Object.values(DifficultyLevels).includes(level)) {
+      return { ok: false, difficulty: this.gameState.difficulty };
+    }
+
+    this.gameState.setDifficulty(level);
+    if (level === DifficultyLevels.EXPERT && this.gameState.gameMode === GameModes.LYRICS) {
+      this.gameState.setLyricsLevel(LyricsInputLevels.GUIDED);
+    }
+
+    const baseList = this.allSongs.length > 0 ? this.allSongs : this.masterCatalog;
+    if (baseList.length > 0) {
+      const shouldAutoStart = this.gameState.status !== GameStates.IDLE;
+      await this.startNewGame(baseList, this.isOrderedMode, shouldAutoStart);
+    }
+
+    return { ok: true, difficulty: this.gameState.difficulty };
   }
 
   /**
@@ -395,13 +537,17 @@ export class GameLogic {
         correctAnswer = lyricsData.targetWord;
       } else {
         const distractorPool = this._buildDistractorPool();
-        const classicSet = generateOptions(track, distractorPool, 4, this.lastRoundOptions);
+        const classicSet = generateOptions(track, distractorPool, 4, this.lastRoundOptions, {
+          difficulty: this.gameState.difficulty
+        });
         options = classicSet.options;
         correctAnswer = classicSet.correctAnswer;
       }
     } else {
       const distractorPool = this._buildDistractorPool();
-      const classicSet = generateOptions(track, distractorPool, 4, this.lastRoundOptions);
+      const classicSet = generateOptions(track, distractorPool, 4, this.lastRoundOptions, {
+        difficulty: this.gameState.difficulty
+      });
       options = classicSet.options;
       correctAnswer = classicSet.correctAnswer;
     }
@@ -416,6 +562,9 @@ export class GameLogic {
       roundNumber: this.gameState.currentIndex + 1,
       totalRounds: this.gameState.totalRounds,
       gameMode: this.gameState.gameMode,
+      difficulty: this.gameState.difficulty,
+      decadeFilter: this.gameState.decadeFilter,
+      isFailedReview: this.isFailedReviewSession,
       lyricsLevel: this.gameState.lyricsLevel,
       lyricsData,
       isOrderedMode: this.isOrderedMode,
@@ -690,6 +839,9 @@ export class GameLogic {
         { allowFuzzy: true }
       );
       isCorrect = evaluation.isCorrect;
+    } else if (this.gameState.difficulty === DifficultyLevels.EXPERT || meta.isTypedClassic) {
+      evaluation = evaluateClassicTypedAnswer(rawSelectedOption, this.gameState.currentSong);
+      isCorrect = evaluation.isCorrect;
     } else {
       const selected = String(rawSelectedOption || '').trim().toLowerCase();
       const correct = String(this.gameState.correctAnswer || '').trim().toLowerCase();
@@ -700,6 +852,7 @@ export class GameLogic {
     let speedBonus = 0;
     let speedBadge = '';
     let multiplier = 1.0;
+    const difficultyMultiplier = DIFFICULTY_SCORE_MULTIPLIER[this.gameState.difficulty] || 1.0;
     const basePoints = 100;
     const hintsUsed = Math.max(0, Number(meta.hintsUsed) || 0);
 
@@ -731,7 +884,7 @@ export class GameLogic {
         multiplier = 1.5;
       }
 
-      pointsEarned = Math.round((basePoints + speedBonus) * multiplier);
+      pointsEarned = Math.round((basePoints + speedBonus) * multiplier * difficultyMultiplier);
       sfx.playCorrect();
 
       if (this.gameState.streak + 1 >= 3) {
@@ -763,6 +916,8 @@ export class GameLogic {
       speedBonus,
       speedBadge,
       multiplier,
+      difficulty: this.gameState.difficulty,
+      difficultyMultiplier,
       gameMode: this.gameState.gameMode
     });
 
@@ -953,7 +1108,16 @@ export class GameLogic {
     }
 
     progress.updatedAt = new Date().toISOString();
-    return writeStorageJSON(STORAGE_KEYS.PROGRESS, progress);
+    const writeRes = writeStorageJSON(STORAGE_KEYS.PROGRESS, progress);
+
+    this.gameState.dispatchEvent(new CustomEvent('progressUpdate', {
+      detail: {
+        failedCount: this.getFailedReviewSongs().length,
+        progress
+      }
+    }));
+
+    return writeRes;
   }
 
   /** Re-export helper for tests/callers. */

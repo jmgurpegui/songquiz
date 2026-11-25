@@ -4,6 +4,9 @@
  */
 
 import { readStorageRaw, readStorageJSON, writeStorageJSON } from '../utils/storageManager.js';
+import { DifficultyLevels, DecadeFilters } from './sessionFilters.js';
+
+export { DifficultyLevels, DecadeFilters };
 
 export const GameStates = Object.freeze({
   IDLE: 'IDLE',
@@ -25,6 +28,8 @@ export const LyricsInputLevels = Object.freeze({
 
 const GAME_MODE_STORAGE_KEY = 'songquiz_game_mode';
 const LYRICS_LEVEL_STORAGE_KEY = 'songquiz_lyrics_level';
+const DIFFICULTY_STORAGE_KEY = 'songquiz_difficulty';
+const DECADE_FILTER_STORAGE_KEY = 'songquiz_decade_filter';
 
 /** Mapa de transiciones permitidas por la FSM. Toda transición fuera de este grafo es rechazada. */
 const VALID_TRANSITIONS = Object.freeze({
@@ -68,6 +73,12 @@ export class GameState extends EventTarget {
 
     /** @type {'recognition'|'guided'} */
     this.lyricsLevel = this._loadSavedLyricsLevel();
+
+    /** @type {'normal'|'hard'|'expert'} */
+    this.difficulty = this._loadSavedDifficulty();
+
+    /** @type {string} */
+    this.decadeFilter = this._loadSavedDecadeFilter();
 
     /** @type {Array<Object>} */
     this.playlist = [];
@@ -138,6 +149,32 @@ export class GameState extends EventTarget {
   }
 
   /**
+   * Carga el nivel de dificultad guardado ('normal', 'hard' o 'expert').
+   * @private
+   * @returns {'normal'|'hard'|'expert'}
+   */
+  _loadSavedDifficulty() {
+    return readStorageJSON(
+      DIFFICULTY_STORAGE_KEY,
+      DifficultyLevels.NORMAL,
+      (v) => Object.values(DifficultyLevels).includes(v)
+    );
+  }
+
+  /**
+   * Carga el filtro de década guardado.
+   * @private
+   * @returns {string}
+   */
+  _loadSavedDecadeFilter() {
+    return readStorageJSON(
+      DECADE_FILTER_STORAGE_KEY,
+      DecadeFilters.ALL,
+      (v) => Object.values(DecadeFilters).includes(v)
+    );
+  }
+
+  /**
    * Cambia el nivel de andamiaje en Lyrics Challenge ('recognition' o 'guided').
    * @param {'recognition'|'guided'} level
    */
@@ -148,6 +185,34 @@ export class GameState extends EventTarget {
 
     this.dispatchEvent(new CustomEvent('lyricsLevelChange', {
       detail: { level: this.lyricsLevel }
+    }));
+  }
+
+  /**
+   * Cambia el nivel de dificultad ('normal', 'hard', 'expert') y lo persiste.
+   * @param {'normal'|'hard'|'expert'} level
+   */
+  setDifficulty(level) {
+    if (!Object.values(DifficultyLevels).includes(level)) return;
+    this.difficulty = level;
+    writeStorageJSON(DIFFICULTY_STORAGE_KEY, level);
+
+    this.dispatchEvent(new CustomEvent('difficultyChange', {
+      detail: { difficulty: this.difficulty }
+    }));
+  }
+
+  /**
+   * Cambia el filtro de década activo y lo persiste.
+   * @param {string} decade
+   */
+  setDecadeFilter(decade) {
+    if (!Object.values(DecadeFilters).includes(decade)) return;
+    this.decadeFilter = decade;
+    writeStorageJSON(DECADE_FILTER_STORAGE_KEY, decade);
+
+    this.dispatchEvent(new CustomEvent('decadeFilterChange', {
+      detail: { decadeFilter: this.decadeFilter }
     }));
   }
 

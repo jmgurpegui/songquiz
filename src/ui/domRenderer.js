@@ -5,12 +5,19 @@
  * y soporte completo para Classic Trivia y Lyrics Challenge con andamiaje progresivo.
  */
 
-import { GameStates, GameModes, LyricsInputLevels } from '../core/gameState.js';
+import {
+  GameStates,
+  GameModes,
+  LyricsInputLevels,
+  DifficultyLevels,
+  DecadeFilters
+} from '../core/gameState.js';
 import { fetchPlaylistFromYouTube, parseTextPlaylist } from '../utils/playlistParser.js';
 import { THEMATIC_PLAYLISTS } from '../data/thematicPlaylists.js';
 import { removeStorageKey, escapeHtml } from '../utils/storageManager.js';
 import { auditSongCatalog, sanitizeImportedCatalog } from '../utils/catalogValidator.js';
 import { buildScaffoldingHint } from '../core/lyricsChallengeEngine.js';
+import { buildClassicExpertHint, DECADE_LABELS } from '../core/sessionFilters.js';
 import {
   localMediaLibrary,
   buildYoutubeThumbnailUrl,
@@ -38,9 +45,10 @@ export class DOMRenderer {
     this._modalStack = [];
     this._confirmCallback = null;
 
-    // Estado pedagógico de la ronda actual en Lyrics Challenge
+    // Estado pedagógico de la ronda actual en Lyrics Challenge y pistas de Classic Experto
     this._lyricsHintLevel = 0;
     this._lyricsEsRevealed = false;
+    this._classicExpertHintLevel = 0;
     this._isCuriosityExpanded = false;
 
     // Estado de vídeo local personal (MP4/WebM) y vídeo embebido de YouTube post-ronda
@@ -61,6 +69,9 @@ export class DOMRenderer {
     this._bindPWAEvents();
     this._updateModeButtons();
     this._updateLyricsLevelButtons();
+    this._updateDecadeFilterButtons();
+    this._updateDifficultyButtons();
+    this._updateFailedReviewCount();
     this._initAutoDeviceDetection();
   }
 
@@ -81,7 +92,7 @@ export class DOMRenderer {
       a11yAnnouncer: document.getElementById('a11y-announcer'),
       a11yAlert: document.getElementById('a11y-alert'),
 
-      // Selector de modo, popover explicativo y listas temáticas
+      // Selector de modo, popover explicativo, listas temáticas, repaso y filtros
       btnModeClassic: document.getElementById('btn-mode-classic'),
       btnModeLyrics: document.getElementById('btn-mode-lyrics'),
       btnModeInfo: document.getElementById('btn-mode-info'),
@@ -89,6 +100,13 @@ export class DOMRenderer {
       modeInfoPopover: document.getElementById('mode-info-popover'),
       themePillsBar: document.getElementById('theme-pills-bar'),
       thematicPlaylistsGrid: document.getElementById('thematic-playlists-grid'),
+      btnReviewFailed: document.getElementById('btn-review-failed'),
+      failedCountBadge: document.getElementById('failed-count-badge'),
+      decadeFilterGroup: document.getElementById('decade-filter-group'),
+      difficultyGroup: document.getElementById('difficulty-group'),
+      filterFeedbackBanner: document.getElementById('filter-feedback-banner'),
+      filterFeedbackText: document.getElementById('filter-feedback-text'),
+      btnResetFilterFeedback: document.getElementById('btn-reset-filter-feedback'),
 
       stageOverlay: document.getElementById('stage-overlay'),
       stageTitle: document.getElementById('stage-title'),
@@ -150,6 +168,13 @@ export class DOMRenderer {
       lyricsInputRow: document.getElementById('lyrics-input-row'),
       lyricsInputField: document.getElementById('lyrics-input-field'),
       btnLyricsSubmit: document.getElementById('btn-lyrics-submit'),
+
+      // Caja de modo Experto (escritura libre en Classic)
+      classicExpertBox: document.getElementById('classic-expert-box'),
+      classicExpertInput: document.getElementById('classic-expert-input'),
+      btnClassicExpertSubmit: document.getElementById('btn-classic-expert-submit'),
+      btnClassicExpertHint: document.getElementById('btn-classic-expert-hint'),
+      classicExpertHintText: document.getElementById('classic-expert-hint-text'),
 
       optionsGrid: document.getElementById('options-grid'),
       statusMsg: document.getElementById('status-msg'),
@@ -712,6 +737,115 @@ export class DOMRenderer {
         submitTypedAnswer();
       }
     });
+
+    // Lista inteligente "Repasar falladas"
+    this.dom.btnReviewFailed?.addEventListener('click', async () => {
+      this._hideFilterFeedback();
+      const res = await this.gameLogic.startFailedReviewSession(true);
+      if (!res.ok) {
+        this._showFilterFeedback(res.message || 'Aún no tienes canciones falladas para repasar.');
+        return;
+      }
+      this._clearYoutubeEmbed();
+      this._setActivePlaylistPill('__failed__');
+      this.dom.startScreen?.classList.add('visually-hidden');
+      this._renderPlaylistTable();
+      this._updateDecadeFilterButtons();
+      this._updateFailedReviewCount();
+      this.announce(`Sesión de repaso activada con ${res.count} canciones falladas.`);
+    });
+
+    // Filtro por década
+    this.dom.decadeFilterGroup?.querySelectorAll('.filter-chip-btn[data-decade]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const decade = btn.dataset.decade;
+        if (!decade) return;
+        this._hideFilterFeedback();
+        const res = await this.gameLogic.setDecadeFilter(decade);
+        if (!res.ok) {
+          this._showFilterFeedback(
+            res.message || 'No hay canciones de esa década en la lista activa.',
+            { showResetDecade: true }
+          );
+          return;
+        }
+        this._updateDecadeFilterButtons();
+        this._syncIdleRoundIndicator();
+        const label = DECADE_LABELS[decade] || decade;
+        this.announce(`Filtro por década aplicado: ${label}. ${res.count} canciones disponibles.`);
+      });
+    });
+
+    this.dom.btnResetFilterFeedback?.addEventListener('click', async () => {
+      this._hideFilterFeedback();
+      const res = await this.gameLogic.setDecadeFilter(DecadeFilters.ALL);
+      if (res.ok) {
+        this._updateDecadeFilterButtons();
+        this._syncIdleRoundIndicator();
+        this.announce(`Filtro de década restablecido a Todas (${res.count} canciones).`);
+      }
+    });
+
+    // Nivel de dificultad (Normal / Difícil / Experto)
+    this.dom.difficultyGroup?.querySelectorAll('.difficulty-btn[data-difficulty]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const level = btn.dataset.difficulty;
+        if (!level) return;
+        this._hideFilterFeedback();
+        const res = await this.gameLogic.setDifficulty(level);
+        if (res.ok) {
+          this._updateDifficultyButtons();
+          this._updateLyricsLevelButtons();
+          this._applyLyricsLevelLayout();
+          const labels = {
+            [DifficultyLevels.NORMAL]: 'Normal (4 opciones)',
+            [DifficultyLevels.HARD]: 'Difícil (opciones muy parecidas, ×1.25 puntos)',
+            [DifficultyLevels.EXPERT]: 'Experto (escritura libre, ×1.5 puntos)'
+          };
+          this.announce(`Dificultad cambiada a ${labels[level] || level}.`);
+        }
+      });
+    });
+
+    // Pista progresiva y envío por teclado en Classic Experto
+    this.dom.btnClassicExpertHint?.addEventListener('click', () => {
+      const song = this.gameState.currentSong;
+      if (!song || this.gameState.status === GameStates.ROUND_OVER) return;
+      this._classicExpertHintLevel = Math.min(2, this._classicExpertHintLevel + 1);
+      const hint = buildClassicExpertHint(song, /** @type {1|2} */ (this._classicExpertHintLevel));
+      if (this.dom.classicExpertHintText) {
+        this.dom.classicExpertHintText.textContent = hint;
+        this.dom.classicExpertHintText.classList.remove('hidden');
+      }
+      if (this.dom.btnClassicExpertHint) {
+        this.dom.btnClassicExpertHint.textContent = this._classicExpertHintLevel >= 2 ? 'Pista máx.' : 'Más pista';
+        this.dom.btnClassicExpertHint.disabled = this._classicExpertHintLevel >= 2;
+      }
+      this.announce(`Pista nivel ${this._classicExpertHintLevel}: ${hint}`);
+    });
+
+    const submitClassicExpertAnswer = () => {
+      const val = this.dom.classicExpertInput?.value.trim();
+      if (!val) {
+        this.dom.classicExpertInput?.focus();
+        this.announce('Escribe el título de la canción antes de comprobar.', true);
+        return;
+      }
+      if (this.gameState.status === GameStates.PLAYING || this.gameState.status === GameStates.AWAITING_AUDIO) {
+        this.gameLogic.submitAnswer(val, {
+          hintsUsed: this._classicExpertHintLevel,
+          isTypedClassic: true
+        });
+      }
+    };
+
+    this.dom.btnClassicExpertSubmit?.addEventListener('click', submitClassicExpertAnswer);
+    this.dom.classicExpertInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitClassicExpertAnswer();
+      }
+    });
   }
 
   /**
@@ -768,7 +902,8 @@ export class DOMRenderer {
   }
 
   /**
-   * Muestra u oculta la cuadrícula de opciones o el campo de escritura guiada según el nivel activo.
+   * Muestra u oculta la cuadrícula de opciones, la caja de Lyrics Challenge
+   * o el campo de escritura libre de Classic Experto según el modo y dificultad activos.
    * @private
    */
   _applyLyricsLevelLayout() {
@@ -776,14 +911,131 @@ export class DOMRenderer {
     if (!isLyricsActive) {
       this.dom.lyricsChallengeBox?.classList.add('hidden');
       this.dom.lyricsInputRow?.classList.add('hidden');
-      this.dom.optionsGrid?.classList.remove('hidden');
+
+      const isRoundActive = this.gameState.status !== GameStates.IDLE;
+      const isClassicExpert = isRoundActive && this.gameState.difficulty === DifficultyLevels.EXPERT;
+      this.dom.classicExpertBox?.classList.toggle('hidden', !isClassicExpert);
+      this.dom.optionsGrid?.classList.toggle('hidden', isClassicExpert);
       return;
     }
 
+    this.dom.classicExpertBox?.classList.add('hidden');
     this.dom.lyricsChallengeBox?.classList.remove('hidden');
     const isGuided = this.gameState.lyricsLevel === LyricsInputLevels.GUIDED;
     this.dom.lyricsInputRow?.classList.toggle('hidden', !isGuided);
     this.dom.optionsGrid?.classList.toggle('hidden', isGuided);
+  }
+
+  /**
+   * Actualiza el contador tabular en vivo de canciones pendientes de repaso.
+   * @private
+   */
+  _updateFailedReviewCount() {
+    const resolvedCount = this.gameLogic.masterCatalog.length > 0 || this.gameLogic.allSongs.length > 0
+      ? this.gameLogic.getFailedReviewSongs().length
+      : this.gameLogic.getProgressStats().failedSongIds.length;
+
+    if (this.dom.failedCountBadge) {
+      this.dom.failedCountBadge.textContent = String(resolvedCount);
+    }
+    if (this.dom.btnReviewFailed) {
+      this.dom.btnReviewFailed.classList.toggle('has-failed', resolvedCount > 0);
+      this.dom.btnReviewFailed.setAttribute(
+        'aria-label',
+        resolvedCount > 0
+          ? `Repasar falladas (${resolvedCount} canciones pendientes)`
+          : 'Repasar falladas (sin canciones pendientes)'
+      );
+    }
+  }
+
+  /**
+   * Sincroniza el estado activo de los chips de filtro por década.
+   * @private
+   */
+  _updateDecadeFilterButtons() {
+    const activeDecade = this.gameState.decadeFilter || DecadeFilters.ALL;
+    this.dom.decadeFilterGroup?.querySelectorAll('.filter-chip-btn[data-decade]').forEach((btn) => {
+      const isSelected = btn.dataset.decade === activeDecade;
+      btn.classList.toggle('active', isSelected);
+      btn.setAttribute('aria-checked', String(isSelected));
+    });
+  }
+
+  /**
+   * Sincroniza el estado activo del selector segmentado de dificultad.
+   * @private
+   */
+  _updateDifficultyButtons() {
+    const activeDiff = this.gameState.difficulty || DifficultyLevels.NORMAL;
+    this.dom.difficultyGroup?.querySelectorAll('.difficulty-btn[data-difficulty]').forEach((btn) => {
+      const isSelected = btn.dataset.difficulty === activeDiff;
+      btn.classList.toggle('active', isSelected);
+      btn.setAttribute('aria-checked', String(isSelected));
+    });
+  }
+
+  /**
+   * Muestra un aviso inline para filtros sin resultados o repaso vacío (sin window.alert).
+   * @param {string} message
+   * @param {{ showResetDecade?: boolean }} [options={}]
+   * @private
+   */
+  _showFilterFeedback(message, { showResetDecade = false } = {}) {
+    if (!this.dom.filterFeedbackBanner || !this.dom.filterFeedbackText) return;
+    this.dom.filterFeedbackText.textContent = message;
+    this.dom.btnResetFilterFeedback?.classList.toggle('hidden', !showResetDecade);
+    this.dom.filterFeedbackBanner.classList.remove('hidden');
+    this.announce(message, true);
+  }
+
+  /**
+   * Oculta el aviso inline de filtros / repaso.
+   * @private
+   */
+  _hideFilterFeedback() {
+    this.dom.filterFeedbackBanner?.classList.add('hidden');
+    this.dom.btnResetFilterFeedback?.classList.add('hidden');
+  }
+
+  /**
+   * Reinicia el cuadro de respuesta libre del modo Classic Experto para una nueva ronda.
+   * @private
+   */
+  _resetClassicExpertInput() {
+    this._classicExpertHintLevel = 0;
+    if (this.dom.classicExpertInput) {
+      this.dom.classicExpertInput.value = '';
+      this.dom.classicExpertInput.disabled = false;
+    }
+    if (this.dom.btnClassicExpertSubmit) {
+      this.dom.btnClassicExpertSubmit.disabled = false;
+    }
+    if (this.dom.btnClassicExpertHint) {
+      this.dom.btnClassicExpertHint.textContent = 'Pista';
+      this.dom.btnClassicExpertHint.disabled = false;
+    }
+    if (this.dom.classicExpertHintText) {
+      this.dom.classicExpertHintText.textContent = '';
+      this.dom.classicExpertHintText.classList.add('hidden');
+    }
+  }
+
+  /**
+   * Sincroniza `#round-indicator` cuando la sesión está lista en estado IDLE (antes de empezar).
+   * @private
+   */
+  _syncIdleRoundIndicator() {
+    if (this.gameState.status !== GameStates.IDLE || !this.dom.roundIndicator) return;
+    const total = this.gameState.totalRounds || 0;
+    if (total === 0) return;
+    if (this.gameLogic.isFailedReviewSession) {
+      this.dom.roundIndicator.textContent = `Repaso · 1 / ${total}`;
+    } else if (this.gameLogic.isOrderedMode) {
+      this.dom.roundIndicator.textContent = `Top 100 YT · #1 / ${total}`;
+    } else {
+      this.dom.roundIndicator.textContent = `Pista 1 / ${total}`;
+    }
   }
 
   /**
@@ -1070,17 +1322,20 @@ export class DOMRenderer {
   }
 
   /**
-   * Marca visualmente la opción activa dentro de la barra de listas (temática o personalizada).
-   * @param {string} targetId - `themeId` o `'__custom__'` para activar "Lista personalizada".
+   * Marca visualmente la opción activa dentro de la barra de listas (temática, repaso o personalizada).
+   * @param {string} targetId - `themeId`, `'__failed__'` o `'__custom__'`.
    * @private
    */
   _setActivePlaylistPill(targetId) {
     const isCustom = targetId === '__custom__';
+    const isFailed = targetId === '__failed__';
     this.dom.themePillsBar?.querySelectorAll('.theme-pill').forEach((p) => {
       if (p.dataset.customPlaylistBtn === 'true') {
         p.classList.toggle('active', isCustom);
+      } else if (p.dataset.reviewFailedBtn === 'true') {
+        p.classList.toggle('active', isFailed);
       } else {
-        p.classList.toggle('active', !isCustom && p.dataset.themeId === targetId);
+        p.classList.toggle('active', !isCustom && !isFailed && p.dataset.themeId === targetId);
       }
     });
   }
@@ -1091,6 +1346,7 @@ export class DOMRenderer {
    * @private
    */
   _activateThematicPlaylist(themeId) {
+    this._hideFilterFeedback();
     this._clearYoutubeEmbed();
     this._setActivePlaylistPill(themeId);
 
@@ -1398,6 +1654,26 @@ export class DOMRenderer {
       this._onStateChange(currentState, payload);
     });
 
+    this.gameState.addEventListener('gameInit', () => {
+      this._updateFailedReviewCount();
+      this._updateDecadeFilterButtons();
+      this._updateDifficultyButtons();
+      this._syncIdleRoundIndicator();
+    });
+
+    this.gameState.addEventListener('progressUpdate', () => {
+      this._updateFailedReviewCount();
+    });
+
+    this.gameState.addEventListener('decadeFilterChange', () => {
+      this._updateDecadeFilterButtons();
+    });
+
+    this.gameState.addEventListener('difficultyChange', () => {
+      this._updateDifficultyButtons();
+      this._applyLyricsLevelLayout();
+    });
+
     this.gameState.addEventListener('modeChange', () => {
       this._updateModeButtons();
     });
@@ -1603,9 +1879,20 @@ export class DOMRenderer {
    * Configura la interfaz al iniciar una ronda activa con accesibilidad WAI-ARIA y escape XSS.
    * @private
    */
-  _renderPlayingState({ options = [], roundNumber, totalRounds, isOrderedMode, isLocalVideo = false, song, lyricsData = null, gameMode }) {
+  _renderPlayingState({
+    options = [],
+    roundNumber,
+    totalRounds,
+    isOrderedMode,
+    isLocalVideo = false,
+    isFailedReview = false,
+    song,
+    lyricsData = null,
+    gameMode
+  }) {
     this._hideTapToPlay();
     this._hideAudioUnavailableBanner();
+    this._resetClassicExpertInput();
     this.dom.discoveryPanel?.classList.remove('active');
     this._setCuriosityExpanded(false);
     this.dom.btnNext?.classList.add('hidden');
@@ -1634,7 +1921,9 @@ export class DOMRenderer {
     }
 
     if (this.dom.roundIndicator) {
-      if (gameMode === GameModes.LYRICS) {
+      if (isFailedReview || this.gameLogic.isFailedReviewSession) {
+        this.dom.roundIndicator.textContent = `Repaso · ${roundNumber} / ${totalRounds}`;
+      } else if (gameMode === GameModes.LYRICS) {
         this.dom.roundIndicator.textContent = `Lyrics · ${roundNumber} / ${totalRounds}`;
       } else if (this.gameLogic.isLocalMediaSession) {
         this.dom.roundIndicator.textContent = `Mis Archivos · ${roundNumber} / ${totalRounds}`;
@@ -1666,8 +1955,16 @@ export class DOMRenderer {
     this.announce(`Pista ${roundNumber} de ${totalRounds}. Preparando canción.`);
     this._updateTimer(this.gameState.maxRoundTime, this.gameState.maxRoundTime);
 
-    // Renderizar Lyrics Challenge si corresponde
+    // Renderizar Lyrics Challenge o modo Classic Experto según corresponda
     this._renderLyricsChallengeBox(lyricsData);
+
+    if (
+      gameMode === GameModes.CLASSIC &&
+      this.gameState.difficulty === DifficultyLevels.EXPERT &&
+      !this._activeModal
+    ) {
+      setTimeout(() => this.dom.classicExpertInput?.focus(), 60);
+    }
 
     // Inyectar las 4 opciones de respuesta en cuadrícula 2x2 con escape XSS estricto
     if (!this.dom.optionsGrid) return;
@@ -1751,6 +2048,8 @@ export class DOMRenderer {
     speedBonus = 0,
     speedBadge = '',
     multiplier = 1,
+    difficultyMultiplier = 1,
+    difficulty = DifficultyLevels.NORMAL,
     isTimeout,
     gameMode,
     lyricsData,
@@ -1780,6 +2079,15 @@ export class DOMRenderer {
     }
     if (this.dom.btnLyricsHintLetters) {
       this.dom.btnLyricsHintLetters.disabled = true;
+    }
+    if (this.dom.classicExpertInput) {
+      this.dom.classicExpertInput.disabled = true;
+    }
+    if (this.dom.btnClassicExpertSubmit) {
+      this.dom.btnClassicExpertSubmit.disabled = true;
+    }
+    if (this.dom.btnClassicExpertHint) {
+      this.dom.btnClassicExpertHint.disabled = true;
     }
 
     const blankEl = document.getElementById('lyrics-blank-token');
@@ -1818,6 +2126,10 @@ export class DOMRenderer {
           ? `<span class="score-speed-tag">${cleanSpeedBadge} (+${speedBonus})</span>`
           : '';
         const streakHtml = multiplier > 1 ? `<span class="score-streak-tag">×${multiplier} racha</span>` : '';
+        const diffLabel = difficulty === DifficultyLevels.EXPERT ? 'Experto' : 'Difícil';
+        const difficultyHtml = difficultyMultiplier > 1
+          ? `<span class="score-difficulty-tag">×${difficultyMultiplier} ${diffLabel}</span>`
+          : '';
 
         this.dom.statusMsg.innerHTML = `
           <div class="score-feedback-card correct">
@@ -1826,6 +2138,7 @@ export class DOMRenderer {
               <span class="score-points-badge">+${pointsEarned} pts</span>
               ${bonusHtml}
               ${streakHtml}
+              ${difficultyHtml}
             </span>
           </div>
         `;
